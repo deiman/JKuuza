@@ -100,7 +100,22 @@ public class AppView extends FrameView {
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
         private void initComponents() {
 
-                mainPanel = new javax.swing.JPanel();
+                jpMainPanel = new javax.swing.JPanel();
+                jtpTabbedPane = new javax.swing.JTabbedPane();
+                jpCrawler = new javax.swing.JPanel();
+                jtaCrawlerDescription = new javax.swing.JTextArea();
+                jpCrawlerBodyLeft = new javax.swing.JPanel();
+                jspCrawlerBodyLeft = new javax.swing.JScrollPane();
+                jlstCrawlerUrls = new javax.swing.JList();
+                jbtCrawlertAddUrls = new javax.swing.JButton();
+                jbtCrawlerRemoveUrls = new javax.swing.JButton();
+                jbtCrawlerAddUrlsFromFile = new javax.swing.JButton();
+                jbtCrawlerRun = new javax.swing.JButton();
+                jpCrawlerBodyRight = new javax.swing.JPanel();
+                jsplpCrawlerConsoleSplitPane = new javax.swing.JSplitPane();
+                jspCrawlerConsole = new javax.swing.JScrollPane();
+                jtaCrawlerConsole = new javax.swing.JTextArea();
+                jpCrawlerBodyBottom = new javax.swing.JPanel();
                 menuBar = new javax.swing.JMenuBar();
                 javax.swing.JMenu fileMenu = new javax.swing.JMenu();
                 javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -112,22 +127,186 @@ public class AppView extends FrameView {
                 statusAnimationLabel = new javax.swing.JLabel();
                 progressBar = new javax.swing.JProgressBar();
 
-                mainPanel.setName("mainPanel"); // NOI18N
+                jpMainPanel.setName("jpMainPanel"); // NOI18N
 
-                org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
-                mainPanel.setLayout(mainPanelLayout);
-                mainPanelLayout.setHorizontalGroup(
-                        mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 400, Short.MAX_VALUE)
+                jtpTabbedPane.setName("jtpTabbedPane"); // NOI18N
+
+                jpCrawler.setName("jpCrawler"); // NOI18N
+
+                org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cz.mefi100feles.jkuuza.app.App.class).getContext().getResourceMap(AppView.class);
+                jtaCrawlerDescription.setBackground(resourceMap.getColor("jtaCrawlerDescription.background")); // NOI18N
+                jtaCrawlerDescription.setColumns(20);
+                jtaCrawlerDescription.setEditable(false);
+                jtaCrawlerDescription.setLineWrap(true);
+                jtaCrawlerDescription.setRows(5);
+                jtaCrawlerDescription.setText(resourceMap.getString("jtaCrawlerDescription.text")); // NOI18N
+                jtaCrawlerDescription.setWrapStyleWord(true);
+                jtaCrawlerDescription.setName("jtaCrawlerDescription"); // NOI18N
+
+                jpCrawlerBodyLeft.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                jpCrawlerBodyLeft.setName("jpCrawlerBodyLeft"); // NOI18N
+
+                jspCrawlerBodyLeft.setName("jspCrawlerBodyLeft"); // NOI18N
+
+                jlstCrawlerUrls.setModel(new javax.swing.AbstractListModel() {
+                        String[] strings = { "http://example1.com", "http://example2.com", "http://example3.com", "http://example4.com", "http://example5.com" };
+                        public int getSize() { return strings.length; }
+                        public Object getElementAt(int i) { return strings[i]; }
+                });
+                jlstCrawlerUrls.setName("jlstCrawlerUrls"); // NOI18N
+                jspCrawlerBodyLeft.setViewportView(jlstCrawlerUrls);
+
+                jbtCrawlertAddUrls.setText(resourceMap.getString("jbtCrawlertAddUrls.text")); // NOI18N
+                jbtCrawlertAddUrls.setName("jbtCrawlertAddUrls"); // NOI18N
+
+                jbtCrawlerRemoveUrls.setText(resourceMap.getString("jbtCrawlerRemoveUrls.text")); // NOI18N
+                jbtCrawlerRemoveUrls.setName("jbtCrawlerRemoveUrls"); // NOI18N
+
+                jbtCrawlerAddUrlsFromFile.setText(resourceMap.getString("jbtCrawlerAddUrlsFromFile.text")); // NOI18N
+                jbtCrawlerAddUrlsFromFile.setName("jbtCrawlerAddUrlsFromFile"); // NOI18N
+
+                jbtCrawlerRun.setFont(resourceMap.getFont("jbtCrawlerRun.font")); // NOI18N
+                jbtCrawlerRun.setText(resourceMap.getString("jbtCrawlerRun.text")); // NOI18N
+                jbtCrawlerRun.setName("jbtCrawlerRun"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpCrawlerBodyLeftLayout = new org.jdesktop.layout.GroupLayout(jpCrawlerBodyLeft);
+                jpCrawlerBodyLeft.setLayout(jpCrawlerBodyLeftLayout);
+                jpCrawlerBodyLeftLayout.setHorizontalGroup(
+                        jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jbtCrawlerRun, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                                        .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
+                                                .add(jbtCrawlertAddUrls, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 95, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jbtCrawlerRemoveUrls)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jbtCrawlerAddUrlsFromFile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
+                        .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .add(jspCrawlerBodyLeft, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                                        .addContainerGap()))
                 );
-                mainPanelLayout.setVerticalGroup(
-                        mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 252, Short.MAX_VALUE)
+
+                jpCrawlerBodyLeftLayout.linkSize(new java.awt.Component[] {jbtCrawlerAddUrlsFromFile, jbtCrawlerRemoveUrls, jbtCrawlertAddUrls}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+                jpCrawlerBodyLeftLayout.setVerticalGroup(
+                        jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
+                                .addContainerGap(270, Short.MAX_VALUE)
+                                .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jbtCrawlerAddUrlsFromFile)
+                                        .add(jbtCrawlerRemoveUrls)
+                                        .add(jbtCrawlertAddUrls))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jbtCrawlerRun)
+                                .add(23, 23, 23))
+                        .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .add(jspCrawlerBodyLeft, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 246, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .addContainerGap(101, Short.MAX_VALUE)))
+                );
+
+                jpCrawlerBodyRight.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                jpCrawlerBodyRight.setName("jpCrawlerBodyRight"); // NOI18N
+
+                jsplpCrawlerConsoleSplitPane.setBorder(null);
+                jsplpCrawlerConsoleSplitPane.setDividerLocation(200);
+                jsplpCrawlerConsoleSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+                jsplpCrawlerConsoleSplitPane.setName("jsplpCrawlerConsoleSplitPane"); // NOI18N
+
+                jspCrawlerConsole.setBorder(null);
+                jspCrawlerConsole.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                jspCrawlerConsole.setName("jspCrawlerConsole"); // NOI18N
+
+                jtaCrawlerConsole.setBackground(resourceMap.getColor("jtaCrawlerConsole.background")); // NOI18N
+                jtaCrawlerConsole.setColumns(20);
+                jtaCrawlerConsole.setFont(resourceMap.getFont("jtaCrawlerConsole.font")); // NOI18N
+                jtaCrawlerConsole.setForeground(resourceMap.getColor("jtaCrawlerConsole.foreground")); // NOI18N
+                jtaCrawlerConsole.setRows(6);
+                jtaCrawlerConsole.setText(resourceMap.getString("jtaCrawlerConsole.text")); // NOI18N
+                jtaCrawlerConsole.setName("jtaCrawlerConsole"); // NOI18N
+                jspCrawlerConsole.setViewportView(jtaCrawlerConsole);
+
+                jsplpCrawlerConsoleSplitPane.setLeftComponent(jspCrawlerConsole);
+
+                jpCrawlerBodyBottom.setBorder(null);
+                jpCrawlerBodyBottom.setName("jpCrawlerBodyBottom"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpCrawlerBodyBottomLayout = new org.jdesktop.layout.GroupLayout(jpCrawlerBodyBottom);
+                jpCrawlerBodyBottom.setLayout(jpCrawlerBodyBottomLayout);
+                jpCrawlerBodyBottomLayout.setHorizontalGroup(
+                        jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 590, Short.MAX_VALUE)
+                );
+                jpCrawlerBodyBottomLayout.setVerticalGroup(
+                        jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 261, Short.MAX_VALUE)
+                );
+
+                jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);
+
+                org.jdesktop.layout.GroupLayout jpCrawlerBodyRightLayout = new org.jdesktop.layout.GroupLayout(jpCrawlerBodyRight);
+                jpCrawlerBodyRight.setLayout(jpCrawlerBodyRightLayout);
+                jpCrawlerBodyRightLayout.setHorizontalGroup(
+                        jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+                );
+                jpCrawlerBodyRightLayout.setVerticalGroup(
+                        jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                );
+
+                org.jdesktop.layout.GroupLayout jpCrawlerLayout = new org.jdesktop.layout.GroupLayout(jpCrawler);
+                jpCrawler.setLayout(jpCrawlerLayout);
+                jpCrawlerLayout.setHorizontalGroup(
+                        jpCrawlerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpCrawlerLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jpCrawlerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jtaCrawlerDescription, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 714, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jpCrawlerLayout.createSequentialGroup()
+                                                .add(jpCrawlerBodyLeft, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jpCrawlerBodyRight, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addContainerGap())
+                );
+                jpCrawlerLayout.setVerticalGroup(
+                        jpCrawlerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpCrawlerLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jtaCrawlerDescription, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 41, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(18, 18, 18)
+                                .add(jpCrawlerLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jpCrawlerBodyRight, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(jpCrawlerBodyLeft, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
+                );
+
+                jtpTabbedPane.addTab(resourceMap.getString("jpCrawler.TabConstraints.tabTitle"), jpCrawler); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpMainPanelLayout = new org.jdesktop.layout.GroupLayout(jpMainPanel);
+                jpMainPanel.setLayout(jpMainPanelLayout);
+                jpMainPanelLayout.setHorizontalGroup(
+                        jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpMainPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 957, Short.MAX_VALUE)
+                                .addContainerGap())
+                );
+                jpMainPanelLayout.setVerticalGroup(
+                        jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpMainPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
                 );
 
                 menuBar.setName("menuBar"); // NOI18N
 
-                org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cz.mefi100feles.jkuuza.app.App.class).getContext().getResourceMap(AppView.class);
                 fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
                 fileMenu.setName("fileMenu"); // NOI18N
 
@@ -162,11 +341,11 @@ public class AppView extends FrameView {
                 statusPanel.setLayout(statusPanelLayout);
                 statusPanelLayout.setHorizontalGroup(
                         statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
                         .add(statusPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(statusMessageLabel)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 226, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 797, Short.MAX_VALUE)
                                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(statusAnimationLabel)
@@ -184,13 +363,28 @@ public class AppView extends FrameView {
                                 .add(3, 3, 3))
                 );
 
-                setComponent(mainPanel);
+                setComponent(jpMainPanel);
                 setMenuBar(menuBar);
                 setStatusBar(statusPanel);
         }// </editor-fold>//GEN-END:initComponents
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel mainPanel;
+        private javax.swing.JButton jbtCrawlerAddUrlsFromFile;
+        private javax.swing.JButton jbtCrawlerRemoveUrls;
+        private javax.swing.JButton jbtCrawlerRun;
+        private javax.swing.JButton jbtCrawlertAddUrls;
+        private javax.swing.JList jlstCrawlerUrls;
+        private javax.swing.JPanel jpCrawler;
+        private javax.swing.JPanel jpCrawlerBodyBottom;
+        private javax.swing.JPanel jpCrawlerBodyLeft;
+        private javax.swing.JPanel jpCrawlerBodyRight;
+        private javax.swing.JPanel jpMainPanel;
+        private javax.swing.JScrollPane jspCrawlerBodyLeft;
+        private javax.swing.JScrollPane jspCrawlerConsole;
+        private javax.swing.JSplitPane jsplpCrawlerConsoleSplitPane;
+        private javax.swing.JTextArea jtaCrawlerConsole;
+        private javax.swing.JTextArea jtaCrawlerDescription;
+        private javax.swing.JTabbedPane jtpTabbedPane;
         private javax.swing.JMenuBar menuBar;
         private javax.swing.JProgressBar progressBar;
         private javax.swing.JLabel statusAnimationLabel;
