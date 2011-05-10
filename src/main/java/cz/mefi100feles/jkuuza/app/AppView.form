@@ -136,15 +136,15 @@
                                   <Component id="jbtCrawlerRemoveUrls" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jbtCrawlertAddUrls" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="jbtCrawlerRun" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jspCrawlerBodyLeft" min="-2" pref="246" max="-2" attributes="0"/>
-                                  <EmptySpace pref="101" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="jspCrawlerBodyLeft" pref="246" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="101" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -307,9 +307,9 @@
         </Container>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JMenuBar" name="menuBar">
+    <Container class="javax.swing.JMenuBar" name="jmbMenuBar">
       <Properties>
-        <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="jmbMenuBar" noResource="true"/>
       </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
@@ -366,9 +366,9 @@
         </Menu>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPanel" name="statusPanel">
+    <Container class="javax.swing.JPanel" name="jpStatusPanel">
       <Properties>
-        <Property name="name" type="java.lang.String" value="statusPanel" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="jpStatusPanel" noResource="true"/>
       </Properties>
 
       <Layout>
@@ -435,10 +435,10 @@
       <ComponentRef name="jpMainPanel"/>
     </Property>
     <Property name="menuBar" type="javax.swing.JMenuBar" editor="org.netbeans.modules.form.ComponentChooserEditor">
-      <ComponentRef name="menuBar"/>
+      <ComponentRef name="jmbMenuBar"/>
     </Property>
     <Property name="statusBar" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
-      <ComponentRef name="statusPanel"/>
+      <ComponentRef name="jpStatusPanel"/>
     </Property>
   </Properties>
   <AuxValues>
