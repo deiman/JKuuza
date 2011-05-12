@@ -10,9 +10,13 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jtpTabbedPane" pref="957" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="jtpTabbedPane" alignment="0" pref="910" max="32767" attributes="1"/>
+                      <Component id="jpFlashMessages" alignment="0" pref="910" max="32767" attributes="1"/>
+                      <Component id="jlbClearFlashMessages" alignment="1" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -21,12 +25,40 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jtpTabbedPane" pref="484" max="32767" attributes="0"/>
+                  <Component id="jpFlashMessages" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Component id="jlbClearFlashMessages" min="-2" max="-2" attributes="1"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jtpTabbedPane" pref="478" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
+        <Container class="javax.swing.JPanel" name="jpFlashMessages">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="jpFlashMessages" noResource="true"/>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="1"/>
+            <Property name="rows" type="int" value="0"/>
+            <Property name="verticalGap" type="int" value="5"/>
+          </Layout>
+        </Container>
+        <Component class="javax.swing.JLabel" name="jlbClearFlashMessages">
+          <Properties>
+            <Property name="font" type="java.awt.Font" resourceKey="jlbClearFlashMessages.font"/>
+            <Property name="text" type="java.lang.String" resourceKey="jlbClearFlashMessages.text"/>
+            <Property name="name" type="java.lang.String" value="jlbClearFlashMessages" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jlbClearFlashMessagesMouseClicked"/>
+          </Events>
+        </Component>
         <Container class="javax.swing.JTabbedPane" name="jtpTabbedPane">
           <Properties>
             <Property name="name" type="java.lang.String" value="jtpTabbedPane" noResource="true"/>
@@ -52,7 +84,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jtaCrawlerDescription" alignment="0" min="-2" pref="714" max="-2" attributes="0"/>
+                              <Component id="jtaCrawlerFlashMessages" alignment="0" min="-2" pref="714" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jpCrawlerBodyLeft" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -67,7 +99,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtaCrawlerDescription" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="jtaCrawlerFlashMessages" min="-2" pref="41" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jpCrawlerBodyRight" max="32767" attributes="0"/>
@@ -79,16 +111,16 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JTextArea" name="jtaCrawlerDescription">
+                <Component class="javax.swing.JTextArea" name="jtaCrawlerFlashMessages">
                   <Properties>
-                    <Property name="background" type="java.awt.Color" resourceKey="jtaCrawlerDescription.background"/>
+                    <Property name="background" type="java.awt.Color" resourceKey="jtaCrawlerFlashMessages.background"/>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="lineWrap" type="boolean" value="true"/>
                     <Property name="rows" type="int" value="5"/>
-                    <Property name="text" type="java.lang.String" resourceKey="jtaCrawlerDescription.text"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jtaCrawlerFlashMessages.text"/>
                     <Property name="wrapStyleWord" type="boolean" value="true"/>
-                    <Property name="name" type="java.lang.String" value="jtaCrawlerDescription" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="jtaCrawlerFlashMessages" noResource="true"/>
                   </Properties>
                 </Component>
                 <Container class="javax.swing.JPanel" name="jpCrawlerBodyLeft">
@@ -121,7 +153,7 @@
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jspCrawlerBodyLeft" pref="297" max="32767" attributes="1"/>
+                                  <Component id="jspCrawlerBodyLeft" pref="0" max="32767" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -130,7 +162,7 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <EmptySpace pref="270" max="32767" attributes="0"/>
+                              <EmptySpace pref="264" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jbtCrawlerAddUrlsFromFile" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jbtCrawlerRemoveUrls" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -143,7 +175,7 @@
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="jspCrawlerBodyLeft" pref="246" max="32767" attributes="0"/>
+                                  <Component id="jspCrawlerBodyLeft" pref="0" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="101" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -191,6 +223,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="jbtCrawlerAddUrlsFromFile">
                       <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="cz.mefi100feles.jkuuza.app.AppView" id="loadCrawlerUrlsFromFile" methodName="loadCrawlerUrlsFromFile"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jbtCrawlerAddUrlsFromFile.text"/>
                         <Property name="name" type="java.lang.String" value="jbtCrawlerAddUrlsFromFile" noResource="true"/>
                       </Properties>
@@ -217,12 +252,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="0" pref="590" max="32767" attributes="0"/>
+                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="0" pref="543" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="1" pref="359" max="32767" attributes="0"/>
+                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="1" pref="353" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -266,6 +301,8 @@
                                 <Property name="foreground" type="java.awt.Color" resourceKey="jtaCrawlerConsole.foreground"/>
                                 <Property name="rows" type="int" value="6"/>
                                 <Property name="text" type="java.lang.String" resourceKey="jtaCrawlerConsole.text"/>
+                                <Property name="doubleBuffered" type="boolean" value="true"/>
+                                <Property name="dragEnabled" type="boolean" value="true"/>
                                 <Property name="name" type="java.lang.String" value="jtaCrawlerConsole" noResource="true"/>
                               </Properties>
                             </Component>
@@ -287,12 +324,12 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="590" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="543" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="261" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="147" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
@@ -374,11 +411,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="981" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="934" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="797" max="32767" attributes="0"/>
+                  <EmptySpace pref="750" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -429,6 +466,11 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JFileChooser" name="jfchCrawlerUrlsChooser">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jfchCrawlerUrlsChooser" noResource="true"/>
+      </Properties>
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -451,6 +493,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,40,0,0,3,-43"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,52,0,0,3,-90"/>
   </AuxValues>
 </Form>
