@@ -3,6 +3,7 @@
  */
 package cz.mefi100feles.jkuuza.app;
 
+import java.awt.Component;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import org.jdesktop.application.Action;
@@ -14,6 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Scanner;
 import javax.swing.DefaultListModel;
 import javax.swing.Timer;
@@ -36,8 +41,8 @@ public class AppView extends FrameView {
 
 		crawlerUrlsListModel = new DefaultListModel();
 		jlstCrawlerUrls.setModel(crawlerUrlsListModel);
-
-		jlbClearFlashMessages.setVisible(false);
+		jpHeaderPanel.setVisible(false);		
+		flashMessagesList = new ArrayList<JLabel>();
 
 		// status bar initialization - message timeout, idle icon and busy animation, etc
 		ResourceMap resourceMap = getResourceMap();
@@ -131,7 +136,7 @@ public class AppView extends FrameView {
 
 
 	/**
-	 * Loads URLs from File and adds them to crawlerUrlsListModel
+	 * Loads URLs from File and adds them to ListModel
 	 *
 	 * @param file
 	 */
@@ -155,7 +160,7 @@ public class AppView extends FrameView {
 	}
 
 	/**
-	 * Creates JTextField with message and display it in panel
+	 * Creates JTextField with message and displays it in panel
 	 *
 	 * @param message text to display in message
 	 * @param type enum type of message
@@ -163,21 +168,35 @@ public class AppView extends FrameView {
 	public void displayFlashMessage(String message, FlashMessageType type) {
 		ResourceMap resourceMap = getResourceMap();
 		JLabel jlbFlashMessage = new JLabel(message, resourceMap.getIcon("FlashMessage.flashIcons[" + type + "]"), JLabel.RIGHT);
-
 		jlbFlashMessage.setForeground(type.getForegroundColor());
-		jlbClearFlashMessages.setVisible(true);
-		jpFlashMessages.add(jlbFlashMessage);
+		jlbFlashMessage.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+		flashMessagesList.add(jlbFlashMessage);
+		redrawFlashMessages();
+	}
+
+	/**
+	 * Removes all flash messages from panel and hides him.
+	 */
+	private void redrawFlashMessages() {
+		jpFlashMessages.removeAll();
+		
+		ListIterator<JLabel> it = flashMessagesList.listIterator(flashMessagesList.size());
+
+		while (it.hasPrevious()) {
+			jpFlashMessages.add(it.previous());
+		}
+		jpHeaderPanel.setVisible(true);
 		jpFlashMessages.revalidate();
 	}
 
 	/**
-	 * Remove all messages from panel
+	 * Removes all messages from panel
 	 */
 	public void clearFlashMessages() {
 		jpFlashMessages.removeAll();
 		jpFlashMessages.revalidate();
-		jlbClearFlashMessages.setVisible(false);
-		jlbClearFlashMessages.revalidate();
+		jpHeaderPanel.setVisible(false);
+		jpHeaderPanel.revalidate();
 	}
 
 	/** This method is called from within the constructor to
@@ -190,6 +209,8 @@ public class AppView extends FrameView {
         private void initComponents() {
 
                 jpMainPanel = new javax.swing.JPanel();
+                jpHeaderPanel = new javax.swing.JPanel();
+                jScrollPane1 = new javax.swing.JScrollPane();
                 jpFlashMessages = new javax.swing.JPanel();
                 jlbClearFlashMessages = new javax.swing.JLabel();
                 jtpTabbedPane = new javax.swing.JTabbedPane();
@@ -220,10 +241,19 @@ public class AppView extends FrameView {
                 jfchCrawlerUrlsChooser = new javax.swing.JFileChooser();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
+                jpMainPanel.setPreferredSize(new java.awt.Dimension(800, 527));
+
+                jpHeaderPanel.setBorder(null);
+                jpHeaderPanel.setName("jpHeaderPanel"); // NOI18N
+
+                jScrollPane1.setBorder(null);
+                jScrollPane1.setAlignmentX(2.0F);
+                jScrollPane1.setName("jScrollPane1"); // NOI18N
 
                 jpFlashMessages.setBorder(null);
                 jpFlashMessages.setName("jpFlashMessages"); // NOI18N
-                jpFlashMessages.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
+                jpFlashMessages.setLayout(new javax.swing.BoxLayout(jpFlashMessages, javax.swing.BoxLayout.PAGE_AXIS));
+                jScrollPane1.setViewportView(jpFlashMessages);
 
                 org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cz.mefi100feles.jkuuza.app.App.class).getContext().getResourceMap(AppView.class);
                 jlbClearFlashMessages.setFont(resourceMap.getFont("jlbClearFlashMessages.font")); // NOI18N
@@ -234,6 +264,21 @@ public class AppView extends FrameView {
                                 jlbClearFlashMessagesMouseClicked(evt);
                         }
                 });
+
+                org.jdesktop.layout.GroupLayout jpHeaderPanelLayout = new org.jdesktop.layout.GroupLayout(jpHeaderPanel);
+                jpHeaderPanel.setLayout(jpHeaderPanelLayout);
+                jpHeaderPanelLayout.setHorizontalGroup(
+                        jpHeaderPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jpHeaderPanelLayout.createSequentialGroup()
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 783, Short.MAX_VALUE)
+                                .add(18, 18, 18)
+                                .add(jlbClearFlashMessages, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 11, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                );
+                jpHeaderPanelLayout.setVerticalGroup(
+                        jpHeaderPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jlbClearFlashMessages, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
+                );
 
                 jtpTabbedPane.setName("jtpTabbedPane"); // NOI18N
 
@@ -303,7 +348,7 @@ public class AppView extends FrameView {
                 jpCrawlerBodyLeftLayout.setVerticalGroup(
                         jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
-                                .addContainerGap(264, Short.MAX_VALUE)
+                                .addContainerGap(389, Short.MAX_VALUE)
                                 .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jbtCrawlerAddUrlsFromFile)
                                         .add(jbtCrawlerRemoveUrls)
@@ -350,11 +395,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyBottom.setLayout(jpCrawlerBodyBottomLayout);
                 jpCrawlerBodyBottomLayout.setHorizontalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 543, Short.MAX_VALUE)
+                        .add(0, 445, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyBottomLayout.setVerticalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 325, Short.MAX_VALUE)
+                        .add(0, 380, Short.MAX_VALUE)
                 );
 
                 jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);
@@ -363,11 +408,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyRight.setLayout(jpCrawlerBodyRightLayout);
                 jpCrawlerBodyRightLayout.setHorizontalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
+                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyRightLayout.setVerticalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
                 );
 
                 org.jdesktop.layout.GroupLayout jpCrawlerLayout = new org.jdesktop.layout.GroupLayout(jpCrawler);
@@ -405,20 +450,18 @@ public class AppView extends FrameView {
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMainPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 910, Short.MAX_VALUE)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jpFlashMessages, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 910, Short.MAX_VALUE)
-                                        .add(jlbClearFlashMessages))
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jpHeaderPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
                 );
                 jpMainPanelLayout.setVerticalGroup(
                         jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpMainPanelLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(jpFlashMessages, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(5, 5, 5)
-                                .add(jlbClearFlashMessages)
+                                .add(jpHeaderPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE))
+                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
+                                .addContainerGap())
                 );
 
                 jmbMenuBar.setName("jmbMenuBar"); // NOI18N
@@ -456,11 +499,11 @@ public class AppView extends FrameView {
                 jpStatusPanel.setLayout(jpStatusPanelLayout);
                 jpStatusPanelLayout.setHorizontalGroup(
                         jpStatusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 934, Short.MAX_VALUE)
+                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 836, Short.MAX_VALUE)
                         .add(jpStatusPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(statusMessageLabel)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 750, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 652, Short.MAX_VALUE)
                                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(statusAnimationLabel)
@@ -494,6 +537,7 @@ public class AppView extends FrameView {
 		clearFlashMessages();
 	}//GEN-LAST:event_jlbClearFlashMessagesMouseClicked
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JButton jbtCrawlerAddUrlsFromFile;
         private javax.swing.JButton jbtCrawlerRemoveUrls;
         private javax.swing.JButton jbtCrawlerRun;
@@ -507,6 +551,7 @@ public class AppView extends FrameView {
         private javax.swing.JPanel jpCrawlerBodyLeft;
         private javax.swing.JPanel jpCrawlerBodyRight;
         private javax.swing.JPanel jpFlashMessages;
+        private javax.swing.JPanel jpHeaderPanel;
         private javax.swing.JPanel jpMainPanel;
         private javax.swing.JPanel jpStatusPanel;
         private javax.swing.JScrollPane jspCrawlerBodyLeft;
@@ -526,4 +571,5 @@ public class AppView extends FrameView {
 	private int busyIconIndex = 0;
 	private JDialog aboutBox;
 	private DefaultListModel crawlerUrlsListModel;
+	private List<JLabel> flashMessagesList;
 }
