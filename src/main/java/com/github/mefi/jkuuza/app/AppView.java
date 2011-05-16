@@ -1,7 +1,7 @@
 /*
  * AppView.java
  */
-package cz.mefi100feles.jkuuza.app;
+package com.github.mefi.jkuuza.app;
 
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -255,7 +255,7 @@ public class AppView extends FrameView {
                 jpFlashMessages.setLayout(new javax.swing.BoxLayout(jpFlashMessages, javax.swing.BoxLayout.PAGE_AXIS));
                 jScrollPane1.setViewportView(jpFlashMessages);
 
-                org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(cz.mefi100feles.jkuuza.app.App.class).getContext().getResourceMap(AppView.class);
+                org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(com.github.mefi.jkuuza.app.App.class).getContext().getResourceMap(AppView.class);
                 jlbClearFlashMessages.setFont(resourceMap.getFont("jlbClearFlashMessages.font")); // NOI18N
                 jlbClearFlashMessages.setText(resourceMap.getString("jlbClearFlashMessages.text")); // NOI18N
                 jlbClearFlashMessages.setName("jlbClearFlashMessages"); // NOI18N
@@ -312,7 +312,7 @@ public class AppView extends FrameView {
                 jbtCrawlerRemoveUrls.setText(resourceMap.getString("jbtCrawlerRemoveUrls.text")); // NOI18N
                 jbtCrawlerRemoveUrls.setName("jbtCrawlerRemoveUrls"); // NOI18N
 
-                javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(cz.mefi100feles.jkuuza.app.App.class).getContext().getActionMap(AppView.class, this);
+                javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.github.mefi.jkuuza.app.App.class).getContext().getActionMap(AppView.class, this);
                 jbtCrawlerAddUrlsFromFile.setAction(actionMap.get("loadCrawlerUrlsFromFile")); // NOI18N
                 jbtCrawlerAddUrlsFromFile.setText(resourceMap.getString("jbtCrawlerAddUrlsFromFile.text")); // NOI18N
                 jbtCrawlerAddUrlsFromFile.setName("jbtCrawlerAddUrlsFromFile"); // NOI18N

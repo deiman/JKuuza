@@ -2,7 +2,7 @@
  * App.java
  */
 
-package cz.mefi100feles.jkuuza.app;
+package com.github.mefi.jkuuza.app;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;

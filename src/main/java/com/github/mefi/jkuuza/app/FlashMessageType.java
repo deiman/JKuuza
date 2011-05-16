@@ -1,4 +1,4 @@
-package cz.mefi100feles.jkuuza.app;
+package com.github.mefi.jkuuza.app;
 
 import java.awt.Color;
 

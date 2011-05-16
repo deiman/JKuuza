@@ -264,7 +264,7 @@
                     <Component class="javax.swing.JButton" name="jbtCrawlerAddUrlsFromFile">
                       <Properties>
                         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="cz.mefi100feles.jkuuza.app.AppView" id="loadCrawlerUrlsFromFile" methodName="loadCrawlerUrlsFromFile"/>
+                          <action class="com.github.mefi.jkuuza.app.AppView" id="loadCrawlerUrlsFromFile" methodName="loadCrawlerUrlsFromFile"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jbtCrawlerAddUrlsFromFile.text"/>
                         <Property name="name" type="java.lang.String" value="jbtCrawlerAddUrlsFromFile" noResource="true"/>
@@ -369,7 +369,7 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="380" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="272" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
@@ -430,7 +430,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="cz.mefi100feles.jkuuza.app.DesktopApplication1View" id="showAboutBox" methodName="showAboutBox"/>
+                  <action class="com.github.mefi.jkuuza.app.DesktopApplication1View" id="showAboutBox" methodName="showAboutBox"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
               </Properties>
