@@ -1,4 +1,4 @@
-package com.github.mefi.jkuuza.app;
+package com.github.mefi.jkuuza.gui.model;
 
 import java.awt.Color;
 

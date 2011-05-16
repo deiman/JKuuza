@@ -1,8 +1,10 @@
 /*
  * AppView.java
  */
-package com.github.mefi.jkuuza.app;
+package com.github.mefi.jkuuza.gui;
 
+import com.github.mefi.jkuuza.gui.model.FlashMessageType;
+import com.github.mefi.jkuuza.app.App;
 import java.awt.Component;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -399,7 +401,7 @@ public class AppView extends FrameView {
                 );
                 jpCrawlerBodyBottomLayout.setVerticalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 380, Short.MAX_VALUE)
+                        .add(0, 272, Short.MAX_VALUE)
                 );
 
                 jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);

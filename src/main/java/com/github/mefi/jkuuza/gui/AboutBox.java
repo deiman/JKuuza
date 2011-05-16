@@ -2,7 +2,7 @@
  * AboutBox.java
  */
 
-package com.github.mefi.jkuuza.app;
+package com.github.mefi.jkuuza.gui;
 
 import org.jdesktop.application.Action;
 
@@ -98,13 +98,13 @@ public class AboutBox extends javax.swing.JDialog {
                                                         .add(appVendorLabel)
                                                         .add(appHomepageLabel)))
                                         .add(org.jdesktop.layout.GroupLayout.LEADING, appTitleLabel)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, appDescLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, appDescLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                                         .add(closeButton))
                                 .addContainerGap())
                 );
                 layout.setVerticalGroup(
                         layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(imageLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(imageLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 196, Short.MAX_VALUE)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(appTitleLabel)
@@ -122,7 +122,7 @@ public class AboutBox extends javax.swing.JDialog {
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(homepageLabel)
                                         .add(appHomepageLabel))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .add(closeButton)
                                 .addContainerGap())
                 );

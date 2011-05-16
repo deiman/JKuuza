@@ -4,6 +4,7 @@
 
 package com.github.mefi.jkuuza.app;
 
+import com.github.mefi.jkuuza.gui.AppView;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
