@@ -5,7 +5,8 @@ package com.github.mefi.jkuuza.gui;
 
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
-import java.awt.Component;
+import com.github.mefi.jkuuza.gui.model.FlashMessage;
+import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import org.jdesktop.application.Action;
@@ -18,9 +19,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Scanner;
 import javax.swing.DefaultListModel;
 import javax.swing.Timer;
@@ -29,13 +28,14 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * The application's main frame.
  */
 public class AppView extends FrameView {
 
-	public AppView(SingleFrameApplication app) {
+	private AppView(SingleFrameApplication app) {
 		// <editor-fold defaultstate="collapsed" desc="...">
 		super(app);
 
@@ -43,7 +43,7 @@ public class AppView extends FrameView {
 
 		crawlerUrlsListModel = new DefaultListModel();
 		jlstCrawlerUrls.setModel(crawlerUrlsListModel);
-		jpHeaderPanel.setVisible(false);		
+		jpHeaderPanel.setVisible(false);
 		flashMessagesList = new ArrayList<JLabel>();
 
 		// status bar initialization - message timeout, idle icon and busy animation, etc
@@ -136,7 +136,6 @@ public class AppView extends FrameView {
 		}
 	}
 
-
 	/**
 	 * Loads URLs from File and adds them to ListModel
 	 *
@@ -162,43 +161,46 @@ public class AppView extends FrameView {
 	}
 
 	/**
-	 * Creates JTextField with message and displays it in panel
+	 * Creates FlashMessage and displays it
 	 *
 	 * @param message text to display in message
 	 * @param type enum type of message
 	 */
 	public void displayFlashMessage(String message, FlashMessageType type) {
 		ResourceMap resourceMap = getResourceMap();
-		JLabel jlbFlashMessage = new JLabel(message, resourceMap.getIcon("FlashMessage.flashIcons[" + type + "]"), JLabel.RIGHT);
-		jlbFlashMessage.setForeground(type.getForegroundColor());
-		jlbFlashMessage.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
-		flashMessagesList.add(jlbFlashMessage);
-		redrawFlashMessages();
+
+		FlashMessage flashMessage = new FlashMessage(message, type, resourceMap.getIcon("FlashMessage.flashIcons[" + type + "]"));
+		FlashMessagesDisplayer displayer = FlashMessagesDisplayer.getInstance();
+		displayer.add(flashMessage);
+		displayer.repaint();
+		System.out.println(getFlashMessagesPanel().getComponents().length);
 	}
 
 	/**
-	 * Removes all flash messages from panel and hides him.
-	 */
-	private void redrawFlashMessages() {
-		jpFlashMessages.removeAll();
-		
-		ListIterator<JLabel> it = flashMessagesList.listIterator(flashMessagesList.size());
-
-		while (it.hasPrevious()) {
-			jpFlashMessages.add(it.previous());
-		}
-		jpHeaderPanel.setVisible(true);
-		jpFlashMessages.revalidate();
-	}
-
-	/**
-	 * Removes all messages from panel
+	 * Removes all FlashMessages from panel and hides him
 	 */
 	public void clearFlashMessages() {
-		jpFlashMessages.removeAll();
-		jpFlashMessages.revalidate();
-		jpHeaderPanel.setVisible(false);
-		jpHeaderPanel.revalidate();
+		FlashMessagesDisplayer displayer = FlashMessagesDisplayer.getInstance();
+		displayer.removeAll();
+		displayer.hide();
+	}
+
+	/**
+	 * Returns instance of JPanel for FlashMessages
+	 *
+	 * @return JPanel
+	 */
+	public JPanel getFlashMessagesPanel() {
+		return jpFlashMessages;
+	}
+
+	/**
+	 * Returns instance of header JPanel
+	 *
+	 * @return JPanel
+	 */
+	public JPanel getHeaderPanel() {
+		return jpHeaderPanel;
 	}
 
 	/** This method is called from within the constructor to
@@ -531,6 +533,23 @@ public class AppView extends FrameView {
         }// </editor-fold>//GEN-END:initComponents
 
 	/**
+	 * Returns AppView singleton
+	 *
+	 * @return AppView
+	 */
+	public static synchronized AppView getInstance() {
+		if (appView == null) {
+			appView = new AppView(App.getApplication());
+		}
+		return appView;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+
+	/**
 	 * handles mouse click event
 	 *
 	 * @param evt
@@ -574,4 +593,5 @@ public class AppView extends FrameView {
 	private JDialog aboutBox;
 	private DefaultListModel crawlerUrlsListModel;
 	private List<JLabel> flashMessagesList;
+	private static AppView appView;
 }

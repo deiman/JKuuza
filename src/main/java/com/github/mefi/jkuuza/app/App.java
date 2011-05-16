@@ -17,7 +17,7 @@ public class App extends SingleFrameApplication {
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
-        show(new AppView(this));
+        show(AppView.getInstance());
     }
 
     /**
