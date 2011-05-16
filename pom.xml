@@ -57,11 +57,6 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-		<dependency>
-			<groupId>unknown.binary</groupId>
-			<artifactId>AbsoluteLayout</artifactId>
-			<version>SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
