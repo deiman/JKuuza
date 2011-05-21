@@ -4,6 +4,7 @@
  */
 package com.github.mefi.jkuuza.crawler;
 
+import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.io.IOException;
 import java.util.List;
 import org.niocchi.core.Crawler;
@@ -49,20 +50,27 @@ public class SimpleCrawler {
 		// create the url pool
 		urlPool = new ExpandableURLPool(list);
 
-		// --- create the worker
-		worker = new DbSaveWorker(crawler, urlPool);		
+		// create the worker
+		worker = new DbSaveWorker(crawler, urlPool);
+		// print info
+		CrawlerConsole.print("Crawler initialized.", true);
 	}
 
 	
 	public void crawl(List list) throws IOException, InterruptedException, ResourceException, URLPoolException {
 
 		this.init(list);
+
 		// start workers
 		worker.start();
+		CrawlerConsole.print("Crawler started.", true);
+
 		// start crawler
 		crawler.run(urlPool);
+
 		// wait for workers to finish
 		worker.join();
+		CrawlerConsole.print("Crawler finished.", true);
 	}
 
 	public void execute(List list) throws Exception {

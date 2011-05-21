@@ -4,6 +4,7 @@
  */
 package com.github.mefi.jkuuza.crawler;
 
+import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +83,7 @@ public class ExpandableURLPool implements URLPool {
 	public void setProcessed(Query query) {
 		outstandingQueryies--;
 		dump(query);
-
+		
 	}
 
 	/**

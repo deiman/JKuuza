@@ -1,5 +1,6 @@
 package com.github.mefi.jkuuza.crawler;
 
+import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,6 +31,8 @@ public class DbSaveWorker extends Worker {
 	 */
 	public void processResource(Query query) {
 
+		CrawlerConsole.print("[crawled] - " + query.getOriginalURL().toString());
+
 		byte[] bytes = query.getResource().getBytes();
 		String htmlContent = new String(bytes);
 
@@ -43,7 +46,7 @@ public class DbSaveWorker extends Worker {
 		for (String link : links) {
 			pool.addURL(link);
 		}
-
+		
 		//TODO: save content to db
 	}
 }

@@ -413,6 +413,7 @@ public class AppView extends FrameView {
 
                 jspCrawlerConsole.setBorder(null);
                 jspCrawlerConsole.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                jspCrawlerConsole.setAutoscrolls(true);
                 jspCrawlerConsole.setName("jspCrawlerConsole"); // NOI18N
 
                 jtaCrawlerConsole.setBackground(resourceMap.getColor("jtaCrawlerConsole.background")); // NOI18N
@@ -421,6 +422,7 @@ public class AppView extends FrameView {
                 jtaCrawlerConsole.setForeground(resourceMap.getColor("jtaCrawlerConsole.foreground")); // NOI18N
                 jtaCrawlerConsole.setRows(6);
                 jtaCrawlerConsole.setText(resourceMap.getString("jtaCrawlerConsole.text")); // NOI18N
+                jtaCrawlerConsole.setAutoscrolls(true);
                 jtaCrawlerConsole.setDoubleBuffered(true);
                 jtaCrawlerConsole.setDragEnabled(true);
                 jtaCrawlerConsole.setName("jtaCrawlerConsole"); // NOI18N

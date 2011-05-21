@@ -323,6 +323,7 @@
                               <Border info="null"/>
                             </Property>
                             <Property name="verticalScrollBarPolicy" type="int" value="22"/>
+                            <Property name="autoscrolls" type="boolean" value="true"/>
                             <Property name="name" type="java.lang.String" value="jspCrawlerConsole" noResource="true"/>
                           </Properties>
                           <AuxValues>
@@ -344,6 +345,7 @@
                                 <Property name="foreground" type="java.awt.Color" resourceKey="jtaCrawlerConsole.foreground"/>
                                 <Property name="rows" type="int" value="6"/>
                                 <Property name="text" type="java.lang.String" resourceKey="jtaCrawlerConsole.text"/>
+                                <Property name="autoscrolls" type="boolean" value="true"/>
                                 <Property name="doubleBuffered" type="boolean" value="true"/>
                                 <Property name="dragEnabled" type="boolean" value="true"/>
                                 <Property name="name" type="java.lang.String" value="jtaCrawlerConsole" noResource="true"/>
