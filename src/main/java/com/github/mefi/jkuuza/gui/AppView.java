@@ -6,6 +6,7 @@ package com.github.mefi.jkuuza.gui;
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
 import com.github.mefi.jkuuza.crawler.SimpleCrawler;
+import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import com.github.mefi.jkuuza.gui.model.FlashMessage;
 import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import java.io.FileNotFoundException;
@@ -32,6 +33,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 /**
  * The application's main frame.
@@ -207,6 +209,15 @@ public class AppView extends FrameView {
 		FlashMessagesDisplayer displayer = FlashMessagesDisplayer.getInstance();
 		displayer.removeAll();
 		displayer.hide();
+	}
+
+	/**
+	 * Returns instance of JTextArea for crawler Console
+	 *
+	 * @return JTextArea
+	 */
+	public JTextArea getCrawlerConsole() {
+		return jtaCrawlerConsole;
 	}
 
 	/**
