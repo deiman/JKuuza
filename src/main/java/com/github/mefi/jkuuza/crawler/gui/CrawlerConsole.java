@@ -21,7 +21,7 @@ public class CrawlerConsole {
 	 */
 	public static void print(String text) {
 		AppView appView = AppView.getInstance();
-		appView.getCrawlerConsole().append(text + newline);
+		appView.getCrawlerConsole().insert(text + newline, 0);
 	}
 
 	/**
@@ -33,7 +33,7 @@ public class CrawlerConsole {
 	public static void print(String text, boolean withDate) {
 		if (withDate) {
 			String date = getFormatedDate();
-			text = date + ": " + text;
+			text = "[" + date + "] - " + text;
 		}
 		print(text);
 	}
