@@ -272,6 +272,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="jbtCrawlerRun">
                       <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.github.mefi.jkuuza.gui.AppView" id="runCrawler" methodName="runCrawler"/>
+                        </Property>
                         <Property name="font" type="java.awt.Font" resourceKey="jbtCrawlerRun.font"/>
                         <Property name="text" type="java.lang.String" resourceKey="jbtCrawlerRun.text"/>
                         <Property name="name" type="java.lang.String" value="jbtCrawlerRun" noResource="true"/>

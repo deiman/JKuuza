@@ -5,10 +5,13 @@ package com.github.mefi.jkuuza.gui;
 
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
+import com.github.mefi.jkuuza.crawler.SimpleCrawler;
 import com.github.mefi.jkuuza.gui.model.FlashMessage;
 import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -157,6 +160,27 @@ public class AppView extends FrameView {
 			displayFlashMessage("CHYBA: zvolený soubor neexistuje.", FlashMessageType.ERROR);
 		} catch (MalformedURLException ex) {
 			displayFlashMessage("CHYBA: neplatná URL [" + url + "] - " + ex.getMessage() + ".", FlashMessageType.ERROR);
+		}
+	}
+
+	@Action
+	public void runCrawler() {
+		try {
+			SimpleCrawler crawler = new SimpleCrawler();
+			if (crawlerUrlsListModel.isEmpty()) {
+				displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
+			} else {
+				List list = new ArrayList();
+				for (int i = 0; i < crawlerUrlsListModel.size(); i++) {
+					list.add(crawlerUrlsListModel.get(i).toString());
+				}
+				crawler.execute(list);
+			}
+
+
+
+		} catch (Exception ex) {
+			Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -321,6 +345,7 @@ public class AppView extends FrameView {
                 jbtCrawlerAddUrlsFromFile.setText(resourceMap.getString("jbtCrawlerAddUrlsFromFile.text")); // NOI18N
                 jbtCrawlerAddUrlsFromFile.setName("jbtCrawlerAddUrlsFromFile"); // NOI18N
 
+                jbtCrawlerRun.setAction(actionMap.get("runCrawler")); // NOI18N
                 jbtCrawlerRun.setFont(resourceMap.getFont("jbtCrawlerRun.font")); // NOI18N
                 jbtCrawlerRun.setText(resourceMap.getString("jbtCrawlerRun.text")); // NOI18N
                 jbtCrawlerRun.setName("jbtCrawlerRun"); // NOI18N
