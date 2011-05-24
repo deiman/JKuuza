@@ -181,7 +181,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jbtCrawlerRun" alignment="0" pref="297" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jbtCrawlertAddUrls" linkSize="3" min="-2" pref="95" max="-2" attributes="0"/>
+                                      <Component id="jbtShowAddCrawlerUrlDialog" linkSize="3" min="-2" pref="95" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jbtCrawlerRemoveUrls" linkSize="3" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -206,7 +206,7 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jbtCrawlerAddUrlsFromFile" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jbtCrawlerRemoveUrls" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jbtCrawlertAddUrls" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jbtShowAddCrawlerUrlDialog" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="jbtCrawlerRun" min="-2" max="-2" attributes="0"/>
@@ -233,7 +233,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JList" name="jlstCrawlerUrls">
+                        <Component class="javax.swing.JList" name="jlstCrawlerQueue">
                           <Properties>
                             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                               <StringArray count="5">
@@ -244,19 +244,25 @@
                                 <StringItem index="4" value="http://example5.com"/>
                               </StringArray>
                             </Property>
-                            <Property name="name" type="java.lang.String" value="jlstCrawlerUrls" noResource="true"/>
+                            <Property name="name" type="java.lang.String" value="jlstCrawlerQueue" noResource="true"/>
                           </Properties>
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Component class="javax.swing.JButton" name="jbtCrawlertAddUrls">
+                    <Component class="javax.swing.JButton" name="jbtShowAddCrawlerUrlDialog">
                       <Properties>
-                        <Property name="text" type="java.lang.String" resourceKey="jbtCrawlertAddUrls.text"/>
-                        <Property name="name" type="java.lang.String" value="jbtCrawlertAddUrls" noResource="true"/>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.github.mefi.jkuuza.gui.AppView" id="showCrawlerUrlDialog" methodName="showCrawlerUrlDialog"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" resourceKey="jbtShowAddCrawlerUrlDialog.text"/>
+                        <Property name="name" type="java.lang.String" value="jbtShowAddCrawlerUrlDialog" noResource="true"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JButton" name="jbtCrawlerRemoveUrls">
                       <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.github.mefi.jkuuza.gui.AppView" id="removeSelectedUrlFromCrawlerQueue" methodName="removeSelectedUrlFromCrawlerQueue"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" resourceKey="jbtCrawlerRemoveUrls.text"/>
                         <Property name="name" type="java.lang.String" value="jbtCrawlerRemoveUrls" noResource="true"/>
                       </Properties>
@@ -516,6 +522,73 @@
         <Property name="name" type="java.lang.String" value="jfchCrawlerUrlsChooser" noResource="true"/>
       </Properties>
     </Component>
+    <Container class="javax.swing.JDialog" name="jdCrawlerAddUrl">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jdCrawlerAddUrl" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jlbCrawlerAddUrlDialog" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jtfCrawlerAddUrl" pref="377" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="182" max="-2" attributes="0"/>
+                          <Component id="jbtCrawlerAddUrl" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jlbCrawlerAddUrlDialog" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfCrawlerAddUrl" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jbtCrawlerAddUrl" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="jlbCrawlerAddUrlDialog">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerAddUrlDialog.text"/>
+            <Property name="name" type="java.lang.String" value="jlbCrawlerAddUrlDialog" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfCrawlerAddUrl">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfCrawlerAddUrl.text"/>
+            <Property name="name" type="java.lang.String" value="jtfCrawlerAddUrl" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jtfCrawlerAddUrlKeyReleased"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jbtCrawlerAddUrl">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.github.mefi.jkuuza.gui.AppView" id="loadCrawlerUrlFromDialog" methodName="loadCrawlerUrlFromDialog"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="jbtCrawlerAddUrl.text"/>
+            <Property name="name" type="java.lang.String" value="jbtCrawlerAddUrl" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <Properties>
     <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">

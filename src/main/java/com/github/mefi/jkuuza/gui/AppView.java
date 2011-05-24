@@ -10,6 +10,7 @@ import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import com.github.mefi.jkuuza.gui.model.FlashMessage;
 import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,10 +18,12 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
+import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +49,8 @@ public class AppView extends FrameView {
 
 		initComponents();
 
-		crawlerUrlsListModel = new DefaultListModel();
-		jlstCrawlerUrls.setModel(crawlerUrlsListModel);
+		crawlerQueueModel = new DefaultListModel();
+		jlstCrawlerQueue.setModel(crawlerQueueModel);
 		jpHeaderPanel.setVisible(false);
 		flashMessagesList = new ArrayList<JLabel>();
 
@@ -135,10 +138,62 @@ public class AppView extends FrameView {
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = jfchCrawlerUrlsChooser.getSelectedFile();
-			setCrawlerUrlsListFromFile(file);
+			setCrawlerQueueFromFile(file);
 		} else {
 			//System.out.println("File access cancelled by user.");
 		}
+	}
+
+	@Action
+	public void loadCrawlerUrlFromDialog() {
+		String defaultText = "http://";
+		String url = jtfCrawlerAddUrl.getText();
+		
+		if (!url.equals(defaultText)) {
+			addUrlToCrawlerQueue(url);
+		}
+		jdCrawlerAddUrl.setVisible(false);
+		jtfCrawlerAddUrl.setText(defaultText);
+
+	}
+
+	private void addUrlToCrawlerQueue(String u) {
+		URL url = null;
+		int responseCode = 0;
+
+		try {
+			url = new URL(u);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+			responseCode = connection.getResponseCode();
+
+		} catch (MalformedURLException ex) {
+			displayFlashMessage("CHYBA: neplatná URL [" + url.toString() + "] - " + ex.getMessage() + ".", FlashMessageType.ERROR);
+		} catch (IOException ex) {
+			displayFlashMessage("CHYBA: nepodařilo se připojit k URL [" + url.toString() + "] " + ".", FlashMessageType.ERROR);
+		}
+
+		if (responseCode != 0 && responseCode != 404) {
+			crawlerQueueModel.addElement(url);
+			CrawlerConsole.print("Přidána URL " + url.toString() + " [status " + responseCode + "]");
+		} else {
+			displayFlashMessage("CHYBA: Stránka [" + url.toString() + "] nenalezena.", FlashMessageType.ERROR);
+		}
+
+		if (!crawlerQueueModel.isEmpty()) {
+			jlstCrawlerQueue.setSelectedValue(crawlerQueueModel.lastElement(), true);
+		}
+	}
+
+	@Action
+	public void showCrawlerUrlDialog() {
+		if (jdCrawlerAddUrl == null) {
+			JFrame mainFrame = App.getApplication().getMainFrame();
+			jdCrawlerAddUrl = new JDialog(mainFrame);
+			jdCrawlerAddUrl.setLocationRelativeTo(mainFrame);
+		}
+		App.getApplication().show(jdCrawlerAddUrl);
 	}
 
 	/**
@@ -146,35 +201,36 @@ public class AppView extends FrameView {
 	 *
 	 * @param file
 	 */
-	private void setCrawlerUrlsListFromFile(File file) {
+	private void setCrawlerQueueFromFile(File file) {
 		String url = "";
 		try {
 			Scanner scanner = new Scanner(file);
 			while (scanner.hasNextLine()) {
 				url = scanner.nextLine();
-				crawlerUrlsListModel.addElement(new URL(url));
-
-			}
-			if (!crawlerUrlsListModel.isEmpty()) {
-				jlstCrawlerUrls.setSelectedValue(crawlerUrlsListModel.lastElement(), true);
+				addUrlToCrawlerQueue(url);
 			}
 		} catch (FileNotFoundException ex) {
 			displayFlashMessage("CHYBA: zvolený soubor neexistuje.", FlashMessageType.ERROR);
-		} catch (MalformedURLException ex) {
-			displayFlashMessage("CHYBA: neplatná URL [" + url + "] - " + ex.getMessage() + ".", FlashMessageType.ERROR);
 		}
 	}
 
 	@Action
+	public void removeSelectedUrlFromCrawlerQueue() {
+		URL url = (URL) crawlerQueueModel.remove(jlstCrawlerQueue.getSelectedIndex());
+		CrawlerConsole.print("Smazána URL " + url.toString() + ".");
+	}
+
+	@Action
 	public void runCrawler() {
+		CrawlerConsole.print("running..");
 		try {
 			SimpleCrawler crawler = new SimpleCrawler();
-			if (crawlerUrlsListModel.isEmpty()) {
+			if (crawlerQueueModel.isEmpty()) {
 				displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
 			} else {
 				List list = new ArrayList();
-				for (int i = 0; i < crawlerUrlsListModel.size(); i++) {
-					list.add(crawlerUrlsListModel.get(i).toString());
+				for (int i = 0; i < crawlerQueueModel.size(); i++) {
+					list.add(crawlerQueueModel.get(i).toString());
 				}
 				crawler.execute(list);
 			}
@@ -184,6 +240,7 @@ public class AppView extends FrameView {
 		} catch (Exception ex) {
 			Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 		}
+
 	}
 
 	/**
@@ -199,7 +256,6 @@ public class AppView extends FrameView {
 		FlashMessagesDisplayer displayer = FlashMessagesDisplayer.getInstance();
 		displayer.add(flashMessage);
 		displayer.repaint();
-		System.out.println(getFlashMessagesPanel().getComponents().length);
 	}
 
 	/**
@@ -257,8 +313,8 @@ public class AppView extends FrameView {
                 jtaCrawlerFlashMessages = new javax.swing.JTextArea();
                 jpCrawlerBodyLeft = new javax.swing.JPanel();
                 jspCrawlerBodyLeft = new javax.swing.JScrollPane();
-                jlstCrawlerUrls = new javax.swing.JList();
-                jbtCrawlertAddUrls = new javax.swing.JButton();
+                jlstCrawlerQueue = new javax.swing.JList();
+                jbtShowAddCrawlerUrlDialog = new javax.swing.JButton();
                 jbtCrawlerRemoveUrls = new javax.swing.JButton();
                 jbtCrawlerAddUrlsFromFile = new javax.swing.JButton();
                 jbtCrawlerRun = new javax.swing.JButton();
@@ -278,6 +334,10 @@ public class AppView extends FrameView {
                 statusAnimationLabel = new javax.swing.JLabel();
                 progressBar = new javax.swing.JProgressBar();
                 jfchCrawlerUrlsChooser = new javax.swing.JFileChooser();
+                jdCrawlerAddUrl = new javax.swing.JDialog();
+                jlbCrawlerAddUrlDialog = new javax.swing.JLabel();
+                jtfCrawlerAddUrl = new javax.swing.JTextField();
+                jbtCrawlerAddUrl = new javax.swing.JButton();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
                 jpMainPanel.setPreferredSize(new java.awt.Dimension(800, 527));
@@ -309,7 +369,7 @@ public class AppView extends FrameView {
                 jpHeaderPanelLayout.setHorizontalGroup(
                         jpHeaderPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpHeaderPanelLayout.createSequentialGroup()
-                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 783, Short.MAX_VALUE)
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
                                 .add(18, 18, 18)
                                 .add(jlbClearFlashMessages, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 11, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 );
@@ -337,21 +397,23 @@ public class AppView extends FrameView {
 
                 jspCrawlerBodyLeft.setName("jspCrawlerBodyLeft"); // NOI18N
 
-                jlstCrawlerUrls.setModel(new javax.swing.AbstractListModel() {
+                jlstCrawlerQueue.setModel(new javax.swing.AbstractListModel() {
                         String[] strings = { "http://example1.com", "http://example2.com", "http://example3.com", "http://example4.com", "http://example5.com" };
                         public int getSize() { return strings.length; }
                         public Object getElementAt(int i) { return strings[i]; }
                 });
-                jlstCrawlerUrls.setName("jlstCrawlerUrls"); // NOI18N
-                jspCrawlerBodyLeft.setViewportView(jlstCrawlerUrls);
+                jlstCrawlerQueue.setName("jlstCrawlerQueue"); // NOI18N
+                jspCrawlerBodyLeft.setViewportView(jlstCrawlerQueue);
 
-                jbtCrawlertAddUrls.setText(resourceMap.getString("jbtCrawlertAddUrls.text")); // NOI18N
-                jbtCrawlertAddUrls.setName("jbtCrawlertAddUrls"); // NOI18N
+                javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.github.mefi.jkuuza.app.App.class).getContext().getActionMap(AppView.class, this);
+                jbtShowAddCrawlerUrlDialog.setAction(actionMap.get("showCrawlerUrlDialog")); // NOI18N
+                jbtShowAddCrawlerUrlDialog.setText(resourceMap.getString("jbtShowAddCrawlerUrlDialog.text")); // NOI18N
+                jbtShowAddCrawlerUrlDialog.setName("jbtShowAddCrawlerUrlDialog"); // NOI18N
 
+                jbtCrawlerRemoveUrls.setAction(actionMap.get("removeSelectedUrlFromCrawlerQueue")); // NOI18N
                 jbtCrawlerRemoveUrls.setText(resourceMap.getString("jbtCrawlerRemoveUrls.text")); // NOI18N
                 jbtCrawlerRemoveUrls.setName("jbtCrawlerRemoveUrls"); // NOI18N
 
-                javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.github.mefi.jkuuza.app.App.class).getContext().getActionMap(AppView.class, this);
                 jbtCrawlerAddUrlsFromFile.setAction(actionMap.get("loadCrawlerUrlsFromFile")); // NOI18N
                 jbtCrawlerAddUrlsFromFile.setText(resourceMap.getString("jbtCrawlerAddUrlsFromFile.text")); // NOI18N
                 jbtCrawlerAddUrlsFromFile.setName("jbtCrawlerAddUrlsFromFile"); // NOI18N
@@ -370,7 +432,7 @@ public class AppView extends FrameView {
                                 .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                         .add(jbtCrawlerRun, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                                         .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
-                                                .add(jbtCrawlertAddUrls, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 95, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                .add(jbtShowAddCrawlerUrlDialog, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 95, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(jbtCrawlerRemoveUrls)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -383,16 +445,16 @@ public class AppView extends FrameView {
                                         .addContainerGap()))
                 );
 
-                jpCrawlerBodyLeftLayout.linkSize(new java.awt.Component[] {jbtCrawlerAddUrlsFromFile, jbtCrawlerRemoveUrls, jbtCrawlertAddUrls}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+                jpCrawlerBodyLeftLayout.linkSize(new java.awt.Component[] {jbtCrawlerAddUrlsFromFile, jbtCrawlerRemoveUrls, jbtShowAddCrawlerUrlDialog}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
                 jpCrawlerBodyLeftLayout.setVerticalGroup(
                         jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
-                                .addContainerGap(389, Short.MAX_VALUE)
+                                .addContainerGap(227, Short.MAX_VALUE)
                                 .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jbtCrawlerAddUrlsFromFile)
                                         .add(jbtCrawlerRemoveUrls)
-                                        .add(jbtCrawlertAddUrls))
+                                        .add(jbtShowAddCrawlerUrlDialog))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jbtCrawlerRun)
                                 .add(23, 23, 23))
@@ -437,11 +499,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyBottom.setLayout(jpCrawlerBodyBottomLayout);
                 jpCrawlerBodyBottomLayout.setHorizontalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 445, Short.MAX_VALUE)
+                        .add(0, 409, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyBottomLayout.setVerticalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 272, Short.MAX_VALUE)
+                        .add(0, 110, Short.MAX_VALUE)
                 );
 
                 jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);
@@ -450,11 +512,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyRight.setLayout(jpCrawlerBodyRightLayout);
                 jpCrawlerBodyRightLayout.setHorizontalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyRightLayout.setVerticalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 );
 
                 org.jdesktop.layout.GroupLayout jpCrawlerLayout = new org.jdesktop.layout.GroupLayout(jpCrawler);
@@ -492,7 +554,7 @@ public class AppView extends FrameView {
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMainPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE)
                                         .add(org.jdesktop.layout.GroupLayout.LEADING, jpHeaderPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
                 );
@@ -502,7 +564,7 @@ public class AppView extends FrameView {
                                 .addContainerGap()
                                 .add(jpHeaderPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
+                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
                                 .addContainerGap())
                 );
 
@@ -565,6 +627,51 @@ public class AppView extends FrameView {
 
                 jfchCrawlerUrlsChooser.setName("jfchCrawlerUrlsChooser"); // NOI18N
 
+                jdCrawlerAddUrl.setName("jdCrawlerAddUrl"); // NOI18N
+
+                jlbCrawlerAddUrlDialog.setText(resourceMap.getString("jlbCrawlerAddUrlDialog.text")); // NOI18N
+                jlbCrawlerAddUrlDialog.setName("jlbCrawlerAddUrlDialog"); // NOI18N
+
+                jtfCrawlerAddUrl.setText(resourceMap.getString("jtfCrawlerAddUrl.text")); // NOI18N
+                jtfCrawlerAddUrl.setName("jtfCrawlerAddUrl"); // NOI18N
+                jtfCrawlerAddUrl.addKeyListener(new java.awt.event.KeyAdapter() {
+                        public void keyReleased(java.awt.event.KeyEvent evt) {
+                                jtfCrawlerAddUrlKeyReleased(evt);
+                        }
+                });
+
+                jbtCrawlerAddUrl.setAction(actionMap.get("loadCrawlerUrlFromDialog")); // NOI18N
+                jbtCrawlerAddUrl.setText(resourceMap.getString("jbtCrawlerAddUrl.text")); // NOI18N
+                jbtCrawlerAddUrl.setName("jbtCrawlerAddUrl"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jdCrawlerAddUrlLayout = new org.jdesktop.layout.GroupLayout(jdCrawlerAddUrl.getContentPane());
+                jdCrawlerAddUrl.getContentPane().setLayout(jdCrawlerAddUrlLayout);
+                jdCrawlerAddUrlLayout.setHorizontalGroup(
+                        jdCrawlerAddUrlLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jdCrawlerAddUrlLayout.createSequentialGroup()
+                                .add(jdCrawlerAddUrlLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jdCrawlerAddUrlLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(jlbCrawlerAddUrlDialog)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jtfCrawlerAddUrl, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE))
+                                        .add(jdCrawlerAddUrlLayout.createSequentialGroup()
+                                                .add(182, 182, 182)
+                                                .add(jbtCrawlerAddUrl)))
+                                .addContainerGap())
+                );
+                jdCrawlerAddUrlLayout.setVerticalGroup(
+                        jdCrawlerAddUrlLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jdCrawlerAddUrlLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jdCrawlerAddUrlLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbCrawlerAddUrlDialog)
+                                        .add(jtfCrawlerAddUrl, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jbtCrawlerAddUrl)
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                );
+
                 setComponent(jpMainPanel);
                 setMenuBar(jmbMenuBar);
                 setStatusBar(jpStatusPanel);
@@ -595,15 +702,22 @@ public class AppView extends FrameView {
 	private void jlbClearFlashMessagesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlbClearFlashMessagesMouseClicked
 		clearFlashMessages();
 	}//GEN-LAST:event_jlbClearFlashMessagesMouseClicked
+
+	private void jtfCrawlerAddUrlKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtfCrawlerAddUrlKeyReleased
+		// TODO add your handling code here:
+	}//GEN-LAST:event_jtfCrawlerAddUrlKeyReleased
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JButton jbtCrawlerAddUrl;
         private javax.swing.JButton jbtCrawlerAddUrlsFromFile;
         private javax.swing.JButton jbtCrawlerRemoveUrls;
         private javax.swing.JButton jbtCrawlerRun;
-        private javax.swing.JButton jbtCrawlertAddUrls;
+        private javax.swing.JButton jbtShowAddCrawlerUrlDialog;
+        private javax.swing.JDialog jdCrawlerAddUrl;
         private javax.swing.JFileChooser jfchCrawlerUrlsChooser;
         private javax.swing.JLabel jlbClearFlashMessages;
-        private javax.swing.JList jlstCrawlerUrls;
+        private javax.swing.JLabel jlbCrawlerAddUrlDialog;
+        private javax.swing.JList jlstCrawlerQueue;
         private javax.swing.JMenuBar jmbMenuBar;
         private javax.swing.JPanel jpCrawler;
         private javax.swing.JPanel jpCrawlerBodyBottom;
@@ -618,6 +732,7 @@ public class AppView extends FrameView {
         private javax.swing.JSplitPane jsplpCrawlerConsoleSplitPane;
         private javax.swing.JTextArea jtaCrawlerConsole;
         private javax.swing.JTextArea jtaCrawlerFlashMessages;
+        private javax.swing.JTextField jtfCrawlerAddUrl;
         private javax.swing.JTabbedPane jtpTabbedPane;
         private javax.swing.JProgressBar progressBar;
         private javax.swing.JLabel statusAnimationLabel;
@@ -629,7 +744,7 @@ public class AppView extends FrameView {
 	private final Icon[] busyIcons = new Icon[15];
 	private int busyIconIndex = 0;
 	private JDialog aboutBox;
-	private DefaultListModel crawlerUrlsListModel;
+	private DefaultListModel crawlerQueueModel;
 	private List<JLabel> flashMessagesList;
 	private static AppView appView;
 }
