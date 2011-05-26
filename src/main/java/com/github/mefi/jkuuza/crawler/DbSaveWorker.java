@@ -11,6 +11,7 @@ import org.niocchi.core.Crawler;
 import org.niocchi.core.Worker;
 import org.niocchi.core.query.Query;
 import com.github.mefi.jkuuza.parser.LinksExtractor;
+import java.net.URL;
 
 /**
  *
@@ -38,10 +39,17 @@ public class DbSaveWorker extends Worker {
 
 		byte[] bytes = query.getResource().getBytes();
 		String html = new String(bytes);
+		String url = query.getOriginalURL().toString();
 
 		String host = query.getHost();
-		String hostUrl = "http://" + host;
-		Document doc = Jsoup.parse(html, hostUrl);
+
+		if (url.split("/").length < 4) {
+			//http://example.com <- no slash at the end
+			url = url + "/";
+		} 
+
+		String baseUrl = url.substring(0, url.lastIndexOf('/')+1);
+		Document doc = Jsoup.parse(html, baseUrl);
 
 		LinksExtractor extractor = new LinksExtractor(doc);
 		Set<String> links = extractor.getInternalLinks(host);
