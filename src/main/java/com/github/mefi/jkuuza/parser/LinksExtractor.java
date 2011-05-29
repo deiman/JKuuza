@@ -1,7 +1,11 @@
 package com.github.mefi.jkuuza.parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jsoup.nodes.Document;
@@ -36,29 +40,94 @@ public class LinksExtractor {
 		Elements allLinks = doc.select("a[href]");
 		Set<String> internalLinks = new HashSet<String>();
 
-		Pattern pattern = Pattern.compile("^(http|https|ftp)://(www.)?" + host + "*");
-
-		if (!host.isEmpty()) {
-			host = host.replace("www.", "");
-		}
+		host = canonizeHost(host);
 
 		for (Element link : allLinks) {
+			String linkUrl = createLinkUrl(link);
 
-			String linkUrl = link.attr("abs:href").toString();
-			Matcher matcher = pattern.matcher(linkUrl);
-
-			if (!link.attr("abs:href").isEmpty() && matcher.find()) {
-
-				// remove anchor
-				if (linkUrl.contains("#")) {
-					linkUrl = linkUrl.substring(0, linkUrl.indexOf("#"));
-				}
-
-				if (internalLinks.add(linkUrl)) {
-				}
-
+			if (isInternal(linkUrl, host)) {
+				internalLinks.add(linkUrl);
 			}
 		}
 		return internalLinks;
 	}
+
+	/**
+	 * Creates normalized url from link in org.jsoup.nodes.Element
+	 *
+	 * @param link Element
+	 * @return String with url
+	 */
+	public String createLinkUrl(Element link) {
+		
+		URI linkUri = null;
+
+		String linkUrl = link.attr("abs:href").toString();
+		// remove anchor
+		if (linkUrl.contains("#")) {
+			linkUrl = linkUrl.substring(0, linkUrl.indexOf("#"));
+		}
+		try {
+			linkUri = new URI(linkUrl);
+			linkUri = linkUri.normalize();
+			
+		} catch (URISyntaxException ex) {
+			//Logger.getLogger(LinksExtractor.class.getName()).log(Level.SEVERE, null, ex);
+			return "";
+		}
+		return linkUri.toString();
+	}
+
+	/**
+	 * Check if link points back to the domain specified by host
+	 *
+	 * @param linkUrl
+	 * @param host
+	 * @return true if host is part od link url
+	 */
+	public boolean isInternal(String linkUrl, String host) {
+		Pattern pattern = Pattern.compile("^(http|https|ftp)://(www.)?[a-zA-Z0-9.]*" + host + "*");
+		Matcher matcher = pattern.matcher(linkUrl);
+
+		if (!linkUrl.isEmpty() && matcher.find()) {
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+
+	/**
+	 * Transforms String host to required form
+	 *
+	 * @param host
+	 * @return host in form example.com; foo.example.com; ...
+	 */
+	protected String canonizeHost(String host) {
+		host = host.trim();
+		host = host.replace("https://", "");
+		host = host.replace("http://", "");
+		host = host.replace("www.", "");
+
+		return host;
+	}
+
+	/**
+	 * Returns Document
+	 *
+	 * @return Doc
+	 */
+	public Document getDoc() {
+		return doc;
+	}
+
+	/**
+	 * Sets document
+	 *
+	 * @param doc Document
+	 */
+	public void setDoc(Document doc) {
+		this.doc = doc;
+	}
+
 }
