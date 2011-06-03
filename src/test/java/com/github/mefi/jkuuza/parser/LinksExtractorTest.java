@@ -197,4 +197,16 @@ public class LinksExtractorTest {
 		this.doc.normalise();
 		this.extractor = new LinksExtractor(doc);
 	}
+
+	/**
+	 * Test of removePhpsessid method, of class LinksExtractor.
+	 */ @Test
+	public void testRemovePhpsessid() {
+		System.out.println("removePhpsessid");
+		
+		assertEquals("http://example.com", extractor.removePhpsessid("http://example.com?PHPSESSID=37f8b870e53af9a55119f29b9d889783"));
+		assertEquals("http://example.com?foo=bar", extractor.removePhpsessid("http://example.com?PHPSESSID=37f8b870e53af9a55119f29b9d889783&foo=bar"));
+		assertEquals("http://example.com?foo=bar", extractor.removePhpsessid("http://example.com?foo=bar&PHPSESSID=37f8b870e53af9a55119f29b9d889783"));
+		assertEquals("http://example.com", extractor.removePhpsessid("http://example.com"));
+	}
 }

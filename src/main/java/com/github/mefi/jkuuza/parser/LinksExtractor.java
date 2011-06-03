@@ -69,6 +69,9 @@ public class LinksExtractor {
 		if (linkUrl.contains("/../")) {
 			linkUrl = linkUrl.replace("/../", "/");
 		}
+
+		linkUrl = removePhpsessid(linkUrl);
+		
 		try {
 			linkUri = new URI(linkUrl);
 			linkUri = linkUri.normalize();
@@ -112,6 +115,31 @@ public class LinksExtractor {
 		host = host.replace("www.", "");
 
 		return host;
+	}
+
+	/**
+	 * Removes php session from url
+	 *
+	 * @param host
+	 * @return host in form example.com; foo.example.com; ...
+	 */
+	protected String removePhpsessid(String string) {
+		if (string.contains("PHPSESSID")) {
+			Pattern pattern = Pattern.compile("PHPSESSID=[a-z0-9]{32}[&]?");
+			Matcher matcher = pattern.matcher(string);
+			String output = matcher.replaceAll("");
+			
+			if (output.endsWith("?")) {
+				output = output.substring(0, output.lastIndexOf("?"));
+			}
+			if (output.endsWith("&")) {
+				output = output.substring(0, output.lastIndexOf("&"));
+			}
+
+			return output;
+		}
+		return string;
+
 	}
 
 	/**
