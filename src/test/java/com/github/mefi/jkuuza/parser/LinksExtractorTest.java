@@ -52,58 +52,59 @@ public class LinksExtractorTest {
 		String expectedUrl = "";
 
 
-		html = "<a href=\"http://example.cz\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz";
+		html = "<a href=\"http://example.com\">link</a>";
+		host = "example.com";
+		expectedUrl = "http://example.com";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
-		html = "<a href=\"http://example.cz\"></a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz";
+		html = "<a href=\"http://example.com\"></a>";
+		host = "example.com";
+		expectedUrl = "http://example.com";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
 		html = "<a href=\"/foo\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz/foo";
+		host = "example.com";
+		expectedUrl = "http://example.com/foo";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
 		html = "<a href=\"\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz";
+		host = "example.com";
+		expectedUrl = "http://example.com";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
 		html = "<a href=\"foo/\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz/foo/";
+		host = "example.com";
+		expectedUrl = "http://example.com/foo/";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
-/**
-		html = "<a href=\"../baz\">link</a>";
-		host = "example.cz/foo/bar";
-		expectedUrl = "http://example.cz/foo/baz";
-		setDoc(html, host);
-		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
-**/
+
 		html = "<a href=\"foo.php?bar=baz\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz/foo.php?bar=baz";
+		host = "example.com";
+		expectedUrl = "http://example.com/foo.php?bar=baz";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
 		html = "<a href=\"foo.htm#bar\">link</a>";
-		host = "example.cz";
-		expectedUrl = "http://example.cz/foo.htm";
+		host = "example.com";
+		expectedUrl = "http://example.com/foo.htm";
 		setDoc(html, host);
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 
 		html = "<a href=\"foo\">link";
-		host = "example.cz";
-		expectedUrl = "http://example.cz/foo";
+		host = "example.com";
+		expectedUrl = "http://example.com/foo";
 		setDoc(html, host);
+		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
+
+		html = "<a href=\"../baz\">link</a>";
+		host = "example.com/";
+		expectedUrl = "http://example.com/baz";
+		setDoc(html, host);
+		String d = extractor.getDoc().html();
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 	}
 
@@ -119,9 +120,9 @@ public class LinksExtractorTest {
 		assertEquals("example.com", extractor.canonizeHost("http://example.com"));
 		assertEquals("example.com", extractor.canonizeHost("https://example.com"));
 		assertEquals("example.com", extractor.canonizeHost("http://www.example.com"));
-		assertEquals("example.com", extractor.canonizeHost("www.example.com"));
 		assertEquals("foo.example.com", extractor.canonizeHost("foo.example.com"));
 		assertEquals("foo.example.com", extractor.canonizeHost("http://foo.example.com"));
+		assertEquals("example.com/foo/bar", extractor.canonizeHost("www.example.com/foo/bar"));
 	}
 
 	/**
@@ -180,6 +181,10 @@ public class LinksExtractorTest {
 		assertFalse(link + " - " + host, extractor.isInternal(link, host));
 
 		host = "foo.example.com";
+		link = "http://example.com/bar";
+		assertFalse(link + " - " + host, extractor.isInternal(link, host));
+
+		host = "foo.example.com/bar/baz";
 		link = "http://example.com/bar";
 		assertFalse(link + " - " + host, extractor.isInternal(link, host));
 

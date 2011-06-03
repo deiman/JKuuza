@@ -4,8 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jsoup.nodes.Document;
@@ -59,7 +57,7 @@ public class LinksExtractor {
 	 * @return String with url
 	 */
 	public String createLinkUrl(Element link) {
-		
+
 		URI linkUri = null;
 
 		String linkUrl = link.attr("abs:href").toString();
@@ -67,10 +65,14 @@ public class LinksExtractor {
 		if (linkUrl.contains("#")) {
 			linkUrl = linkUrl.substring(0, linkUrl.indexOf("#"));
 		}
+
+		if (linkUrl.contains("/../")) {
+			linkUrl = linkUrl.replace("/../", "/");
+		}
 		try {
 			linkUri = new URI(linkUrl);
 			linkUri = linkUri.normalize();
-			
+
 		} catch (URISyntaxException ex) {
 			//Logger.getLogger(LinksExtractor.class.getName()).log(Level.SEVERE, null, ex);
 			return "";
@@ -94,7 +96,7 @@ public class LinksExtractor {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	/**
@@ -129,5 +131,4 @@ public class LinksExtractor {
 	public void setDoc(Document doc) {
 		this.doc = doc;
 	}
-
 }
