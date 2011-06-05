@@ -21,6 +21,17 @@ public class ContentExtractor {
 	}
 
 	/**
+	 * Gets title from page
+	 *
+	 * @return title of page
+	 */
+	public String getTitle() {
+		String title = doc.title();
+
+		return title;
+	}
+
+	/**
 	 * Returns description from meta tag
 	 *
 	 * @return description value of content attribute

@@ -192,4 +192,26 @@ public class ContentExtractorTest {
 		this.extractor = new ContentExtractor(doc);
 
 	}
+
+	/**
+	 * Test of getTitle method, of class ContentExtractor.
+	 */ @Test
+	public void testGetTitle() {
+		System.out.println("getTitle");
+
+		String html = "";
+
+		html = "<title>foo</title>";
+		setDocHeader(html);
+		assertEquals("foo", extractor.getTitle());
+
+		html = "<title></title>";
+		setDocHeader(html);
+		assertEquals("", extractor.getTitle());
+
+		html = "";
+		setDocHeader(html);
+		String h = doc.html();
+		assertEquals("", extractor.getTitle());
+	}
 }
