@@ -2,8 +2,11 @@ package com.github.mefi.jkuuza.crawler;
 
 import com.github.mefi.jkuuza.app.db.DbConnector;
 import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
-import com.github.mefi.jkuuza.model.HtmlContent;
+import com.github.mefi.jkuuza.model.BodyContent;
 import com.github.mefi.jkuuza.model.Page;
+import com.github.mefi.jkuuza.model.CrawledPageController;
+import com.github.mefi.jkuuza.parser.ContentExtractor;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,7 +14,6 @@ import org.niocchi.core.Crawler;
 import org.niocchi.core.Worker;
 import org.niocchi.core.query.Query;
 import com.github.mefi.jkuuza.parser.LinksExtractor;
-import java.net.URL;
 
 /**
  *
@@ -34,38 +36,83 @@ public class DbSaveWorker extends Worker {
 	 * @param query
 	 */
 	public void processResource(Query query) {
-
 		CrawlerConsole.print("[crawled] - " + query.getOriginalURL().toString());
 
-		byte[] bytes = query.getResource().getBytes();
-		String html = new String(bytes);
-		String url = query.getOriginalURL().toString();
+		if (query.getResource().getContentMimeSubType().equals("html")) {
 
-		String host = query.getHost();
+			String html = getCrawledHtml(query);
+			String url = query.getOriginalURL().toString();
+			String host = query.getHost();
 
-		if (url.split("/").length < 4) {
-			//http://example.com <- no slash at the end
-			url = url + "/";
-		} 
+			if (url.split("/").length < 4) {
+				//http://example.com <- no slash at the end
+				url = url + "/";
+			}
+			String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
 
-		String baseUrl = url.substring(0, url.lastIndexOf('/')+1);
-		Document doc = Jsoup.parse(html, baseUrl);
+			Document doc = Jsoup.parse(html, baseUrl);
+			LinksExtractor extractor = new LinksExtractor(doc);
 
-		LinksExtractor extractor = new LinksExtractor(doc);
-		Set<String> links = extractor.getInternalLinks(host);
+			Set<String> links = extractor.getInternalLinks(host);
+			for (String link : links) {
+				pool.addURL(link);
+			}
 
-		for (String link : links) {
-			pool.addURL(link);
-		}
+			ContentExtractor contentExtractor = new ContentExtractor(doc);
 
-		if (!html.isEmpty()) {
-			Page page = new Page(query.getOriginalURL(), host);
-			HtmlContent htmlContent = new HtmlContent(html);
-			page.addContent(htmlContent);
+			Page page = new Page(query.getOriginalURL().toString(), host);
 
-			//just a test
+			if (contentExtractor.hasMetaDescription()) {
+				page.setDescription(contentExtractor.getMetaDescription());
+			}
+			if (contentExtractor.hasMetaKeywords()) {
+				page.setKeywords(contentExtractor.getMetaKeywords());
+			}
+			if (contentExtractor.hasMetaCharset()) {
+				page.setCharset(contentExtractor.getMetaCharset());
+			}
+
+			String bodyText = doc.body().text();
+			String bodyHtml = doc.body().toString();
+
+			BodyContent bodyContent = new BodyContent(page.getUrl(), bodyHtml, bodyText);
+
 			DbConnector conn = new DbConnector();
-			conn.getConnector().create(page);
+			CrawledPageController controller = new CrawledPageController(conn.getConnection());
+			controller.save(page, bodyContent);
 		}
+
+	}
+
+
+	/**
+	 * Extracts html code from Query and returns it as a string.
+	 * Function tries to determine which encoding is used and applies it.
+	 * If it fails or encoding isn`t set, it uses default encoding.
+	 *
+	 * @param query
+	 * @return html - String with html from webpage
+	 */
+	public String getCrawledHtml(Query query) {
+
+		String charset = "";
+		String html = null;
+
+		byte[] bytes = query.getResource().getBytes();
+		charset = query.getResource().getContentEncoding();
+
+		if (charset != null && !charset.equals("")) {
+			try {
+				html = new String(bytes, charset);
+			} catch (UnsupportedEncodingException e) {
+				//TODO: check this exception
+				html = new String(bytes);
+				//Logger.getLogger(DbSaveWorker.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} else {
+			html = new String(bytes);
+		}
+
+		return html;
 	}
 }
