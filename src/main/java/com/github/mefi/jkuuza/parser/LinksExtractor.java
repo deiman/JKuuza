@@ -58,29 +58,9 @@ public class LinksExtractor {
 	 */
 	public String createLinkUrl(Element link) {
 
-		URI linkUri = null;
-
 		String linkUrl = link.attr("abs:href").toString();
-		// remove anchor
-		if (linkUrl.contains("#")) {
-			linkUrl = linkUrl.substring(0, linkUrl.indexOf("#"));
-		}
-
-		if (linkUrl.contains("/../")) {
-			linkUrl = linkUrl.replace("/../", "/");
-		}
-
-		linkUrl = removePhpsessid(linkUrl);
+		return normalizeUrl(linkUrl);
 		
-		try {
-			linkUri = new URI(linkUrl);
-			linkUri = linkUri.normalize();
-
-		} catch (URISyntaxException ex) {
-			//Logger.getLogger(LinksExtractor.class.getName()).log(Level.SEVERE, null, ex);
-			return "";
-		}
-		return linkUri.toString();
 	}
 
 	/**
@@ -128,7 +108,7 @@ public class LinksExtractor {
 			Pattern pattern = Pattern.compile("PHPSESSID=[a-z0-9]{32}[&]?");
 			Matcher matcher = pattern.matcher(string);
 			String output = matcher.replaceAll("");
-			
+
 			if (output.endsWith("?")) {
 				output = output.substring(0, output.lastIndexOf("?"));
 			}
@@ -139,6 +119,37 @@ public class LinksExtractor {
 			return output;
 		}
 		return string;
+
+	}
+
+	public String normalizeUrl(String url) {
+
+		URI uri = null;
+		
+		// remove anchor
+		if (url.contains("#")) {
+			url = url.substring(0, url.indexOf("#"));
+		}
+		
+		// remove /../
+		if (url.contains("/../")) {
+			url = url.replace("/../", "/");
+		}
+
+		// remove PHPSESSID
+		url = removePhpsessid(url);
+
+		// remove . 
+		// remove ..
+		// remove :
+ 		try {
+			uri = new URI(url);
+			uri = uri.normalize();
+
+		} catch (URISyntaxException ex) {
+			return "";
+		}
+		return uri.toString();
 
 	}
 

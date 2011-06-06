@@ -104,7 +104,6 @@ public class LinksExtractorTest {
 		host = "example.com/";
 		expectedUrl = "http://example.com/baz";
 		setDoc(html, host);
-		String d = extractor.getDoc().html();
 		assertThat(extractor.getInternalLinks(host), hasItem(expectedUrl));
 	}
 
@@ -208,5 +207,5 @@ public class LinksExtractorTest {
 		assertEquals("http://example.com?foo=bar", extractor.removePhpsessid("http://example.com?PHPSESSID=37f8b870e53af9a55119f29b9d889783&foo=bar"));
 		assertEquals("http://example.com?foo=bar", extractor.removePhpsessid("http://example.com?foo=bar&PHPSESSID=37f8b870e53af9a55119f29b9d889783"));
 		assertEquals("http://example.com", extractor.removePhpsessid("http://example.com"));
-	}
+	}	
 }
