@@ -14,7 +14,7 @@ public class DbConnector {
 
 	private CouchDbConnector connector;	
 
-	public CouchDbConnector getConnector() {
+	public CouchDbConnector getConnection() {
 		if (connector == null) {
 			init();
 		}
