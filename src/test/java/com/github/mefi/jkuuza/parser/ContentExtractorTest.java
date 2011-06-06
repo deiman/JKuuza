@@ -211,7 +211,6 @@ public class ContentExtractorTest {
 
 		html = "";
 		setDocHeader(html);
-		String h = doc.html();
 		assertEquals("", extractor.getTitle());
 	}
 }
