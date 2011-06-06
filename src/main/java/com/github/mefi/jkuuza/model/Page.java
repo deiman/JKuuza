@@ -1,53 +1,61 @@
 package com.github.mefi.jkuuza.model;
 
-import java.net.URL;
-import java.util.HashSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Set;
-import org.codehaus.jackson.annotate.JsonProperty;
+import java.util.TreeSet;
+import org.ektorp.support.CouchDbDocument;
 
 /**
  *
  * @author Marek Pilecky
  */
-public class Page {
+public class Page extends CouchDbDocument {
 
-	@JsonProperty("_id")
-	private String url;
-	@JsonProperty("_rev")
-	private String revision;
 	private String host;
-	private Set<HtmlContent> contents;
 
+	private String url;
+
+	private String title;
+
+	private String description;
+
+	private String keywords;
+
+	private String charset;
+
+	private String dateCrawled;
+	
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+	
 	public Page() {
-	}
+	}	
 
-	/**
-	 * Creates Page CouchDbDocument
-	 *
-	 * @param url
-	 * @param host
-	 */
 	public Page(String url, String host) {
+		this.host = host;
 		this.url = url;
-		this.host = host;
-		contents = new HashSet<HtmlContent>();
+		this.dateCrawled = getFormatedDateTime();
+		setId(url);
 	}
+	
+	//@DocumentReferences(backReference = "url", fetch = FetchType.EAGER, descendingSortOrder = true, orderBy = "date")
+	private Set<BodyContent> contents;
 
-	public Page(URL url, String host) {
-		this.url = url.toString();
-		this.host = host;
-		contents = new HashSet<HtmlContent>();
-	}
 
-	public Set<HtmlContent> getContents() {
+	public Set<BodyContent> getContents() {
 		return contents;
 	}
 
-	public void setContents(Set<HtmlContent> contents) {
+	public void setContents(Set<BodyContent> contents) {
 		this.contents = contents;
 	}
 
-	public void addContent(HtmlContent content) {
+	public void addContent(BodyContent content) {
+		if (getContents() == null) {
+			contents = new TreeSet<BodyContent>();
+		}
+		content.setUrl(this.getUrl());
 		contents.add(content);
 	}
 
@@ -59,23 +67,66 @@ public class Page {
 		this.host = host;
 	}
 
-	@JsonProperty("_id")
 	public String getUrl() {
 		return url;
 	}
 
-	@JsonProperty("_id")
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-	@JsonProperty("_rev")
-	public String getRevision() {
-		return revision;
+	public String getDateCrawled() {
+		return dateCrawled;
 	}
 
-	@JsonProperty("_rev")
-	public void setRevision(String revision) {
-		this.revision = revision;
+	public void setDateCrawled(String dateCrawled) {
+		this.dateCrawled = dateCrawled;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	
+
+	/**
+	 * Gets current date and time and formates it
+	 *
+	 * @return String with formated date and time
+	 */
+	private static String getFormatedDateTime() {
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+
+		return dateFormat.format(calendar.getTime());
+	}
+
 }
