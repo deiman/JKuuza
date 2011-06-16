@@ -11,6 +11,7 @@ import org.ektorp.support.CouchDbDocument;
  * @author Marek Pilecky
  */
 public class Page extends CouchDbDocument {
+	private String docType;
 
 	private String host;
 
@@ -30,9 +31,11 @@ public class Page extends CouchDbDocument {
 
 	
 	public Page() {
+		docType = "page";
 	}	
 
 	public Page(String url, String host) {
+		docType = "page";
 		this.host = host;
 		this.url = url;
 		this.dateCrawled = getFormatedDateTime();
@@ -115,7 +118,13 @@ public class Page extends CouchDbDocument {
 		this.title = title;
 	}
 
-	
+	public String getDocType() {
+		return docType;
+	}
+
+	public void setDocType(String docType) {
+		this.docType = docType;
+	}
 
 	/**
 	 * Gets current date and time and formates it
