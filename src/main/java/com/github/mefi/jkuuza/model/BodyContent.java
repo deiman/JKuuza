@@ -14,7 +14,7 @@ public class BodyContent extends CouchDbDocument {
 
 	@JsonProperty("_id")
 	private String id;
-	
+	private final String docType = "bodyContent";
 	private String url;
 	private String date;
 	private String bodyHtml;
@@ -25,16 +25,14 @@ public class BodyContent extends CouchDbDocument {
 	public BodyContent() {
 	}
 
-	
-
 	public BodyContent(String url, String bodyHtml, String bodyText) {
-		
+
 		this.hash = DigestUtils.md5Hex(bodyHtml);
 		this.url = url;
 		this.bodyHtml = bodyHtml;
 		this.bodyText = bodyText;
 		this.date = getFormatedDateTime();
-		
+
 		this.id = createId(url, hash);
 	}
 
@@ -76,6 +74,10 @@ public class BodyContent extends CouchDbDocument {
 
 	public void setBodyText(String bodyText) {
 		this.bodyText = bodyText;
+	}
+
+	public String getDocType() {
+		return docType;
 	}
 
 	/**
