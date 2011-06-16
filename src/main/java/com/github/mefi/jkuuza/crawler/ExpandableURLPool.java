@@ -1,10 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.github.mefi.jkuuza.crawler;
 
-import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,8 +50,7 @@ public class ExpandableURLPool implements URLPool {
 			if (cursor >= unprocessedUrls.size()) {
 				return null;
 			} else {
-
-
+				
 				while (processedUrls.contains(unprocessedUrls.get(cursor))) {
 					cursor++;
 				}
