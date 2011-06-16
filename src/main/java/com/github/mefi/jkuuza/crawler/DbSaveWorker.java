@@ -38,52 +38,55 @@ public class DbSaveWorker extends Worker {
 	public void processResource(Query query) {
 		CrawlerConsole.print("[crawled] - " + query.getOriginalURL().toString());
 
-		if (query.getResource().getContentMimeSubType().equals("html")) {
 
-			String html = getCrawledHtml(query);
-			String url = query.getOriginalURL().toString();
-			String host = query.getHost();
+		if (query.getResource().getContentMimeSubType() != null) {
+			if (query.getResource().getContentMimeSubType().contains("html")) {
+				String html = getCrawledHtml(query);
+				String url = query.getOriginalURL().toString();
+				String host = query.getHost();
 
-			if (url.split("/").length < 4) {
-				//http://example.com <- no slash at the end
-				url = url + "/";
+				if (url.split("/").length < 4) {
+					//http://example.com <- no slash at the end
+					url = url + "/";
+				}
+				String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+
+				Document doc = Jsoup.parse(html, baseUrl);
+				LinksExtractor extractor = new LinksExtractor(doc);
+
+				// extract links pointing back to the host and add them into url pool
+				Set<String> links = extractor.getInternalLinks(host);
+				for (String link : links) {
+					pool.addURL(link);
+				}
+
+				ContentExtractor contentExtractor = new ContentExtractor(doc);
+
+				Page page = new Page(query.getOriginalURL().toString(), host);
+
+				if (contentExtractor.hasMetaDescription()) {
+					page.setDescription(contentExtractor.getMetaDescription());
+				}
+				if (contentExtractor.hasMetaKeywords()) {
+					page.setKeywords(contentExtractor.getMetaKeywords());
+				}
+				if (contentExtractor.hasMetaCharset()) {
+					page.setCharset(contentExtractor.getMetaCharset());
+				}
+
+				String bodyText = doc.body().text();
+				String bodyHtml = doc.body().toString();
+
+				BodyContent bodyContent = new BodyContent(page.getUrl(), bodyHtml, bodyText);
+
+				DbConnector conn = new DbConnector();
+				CrawledPageController controller = new CrawledPageController(conn.getConnection());
+				controller.save(page, bodyContent);
+			} else {
+				System.out.println(query.getResource().getContentMimeSubType());
 			}
-			String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-
-			Document doc = Jsoup.parse(html, baseUrl);
-			LinksExtractor extractor = new LinksExtractor(doc);
-
-			Set<String> links = extractor.getInternalLinks(host);
-			for (String link : links) {
-				pool.addURL(link);
-			}
-
-			ContentExtractor contentExtractor = new ContentExtractor(doc);
-
-			Page page = new Page(query.getOriginalURL().toString(), host);
-
-			if (contentExtractor.hasMetaDescription()) {
-				page.setDescription(contentExtractor.getMetaDescription());
-			}
-			if (contentExtractor.hasMetaKeywords()) {
-				page.setKeywords(contentExtractor.getMetaKeywords());
-			}
-			if (contentExtractor.hasMetaCharset()) {
-				page.setCharset(contentExtractor.getMetaCharset());
-			}
-
-			String bodyText = doc.body().text();
-			String bodyHtml = doc.body().toString();
-
-			BodyContent bodyContent = new BodyContent(page.getUrl(), bodyHtml, bodyText);
-
-			DbConnector conn = new DbConnector();
-			CrawledPageController controller = new CrawledPageController(conn.getConnection());
-			controller.save(page, bodyContent);
 		}
-
 	}
-
 
 	/**
 	 * Extracts html code from Query and returns it as a string.
@@ -105,9 +108,8 @@ public class DbSaveWorker extends Worker {
 			try {
 				html = new String(bytes, charset);
 			} catch (UnsupportedEncodingException e) {
-				//TODO: check this exception
+				// try it with default charset
 				html = new String(bytes);
-				//Logger.getLogger(DbSaveWorker.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} else {
 			html = new String(bytes);
