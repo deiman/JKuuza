@@ -3,8 +3,6 @@ package com.github.mefi.jkuuza.analyzer;
 import com.github.mefi.jkuuza.analyzer.anotation.MethodInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encapsulates Java Reflection into static functions to retrieving informations of methods and help to calling them.
@@ -14,36 +12,45 @@ import java.util.List;
 public class Reflector {
 
 	/**
-	 * Gets methods and its parameters from class and retuns it as list
+	 * Gets methods and its parameters from class and retuns it as Methods instance
 	 *
 	 * @param c class
-	 * @return List with instances of Method
+	 * @return instance of Methods class
 	 */
-	public static List<Method> getDeclaredMethodsAndParams(Class c) {
+	public static Methods getDeclaredMethods(Class c) {
 
-		List methods = new ArrayList();
+		Methods methods = new Methods();
 		java.lang.reflect.Method[] rMethods = c.getDeclaredMethods();		
 
 		for (java.lang.reflect.Method rMethod : rMethods) {
-
 			Method method = new Method();
 			MethodInfo annotation = rMethod.getAnnotation(MethodInfo.class);
 			Type[] types = rMethod.getGenericParameterTypes();
+			
 			String returnType = rMethod.getReturnType().toString();
+			returnType = returnType.substring(returnType.toString().lastIndexOf(".") + 1);
 
 			String annotationParameters = annotation.parameters();
-			String[] paramNames = null;
+			String packageName = c.getName().substring(0, c.getName().lastIndexOf("."));
+			String className = c.getName().substring(c.getName().lastIndexOf(".")+1);
+			
+			String[] paramNames;
 			if(annotationParameters.contains(",")) {
 				paramNames = annotationParameters.replaceAll(", ", ",").split(",");
 			} else if(annotationParameters.contains(";")) {
 				paramNames = annotationParameters.replaceAll("; ", ";").split(";");
-			}			
-
+			} else {
+				paramNames = new String[1];
+				paramNames[0] = annotationParameters;
+			}
+			
+			method.setClassName(className);
+			method.setPackageName(packageName);
 			method.setName(rMethod.getName());
-			method.setDescription(annotation.description());
+			method.setDescription(annotation.description());			
 			method.setReturnType(returnType);
 			for (int i = 0; i < paramNames.length; i++) {
-				String type = types[i].toString().substring(types[i].toString().lastIndexOf(".") + 1, types[i].toString().length());
+				String type = types[i].toString().substring(types[i].toString().lastIndexOf(".") + 1);
 				method.addParameter(paramNames[i], type);
 			}
 			methods.add(method);

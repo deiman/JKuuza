@@ -5,9 +5,9 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import java.util.Collection;
-import java.util.List;
 import com.github.mefi.jkuuza.analyzer.anotation.MethodInfo;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,11 +40,13 @@ public class ReflectorTest {
 	 * Test of getDeclaredMethodsAndParams method, of class Reflector.
 	 */
 	@Test
-	public void testGetDeclaredMethodsAndParams() {
-		System.out.println("getDeclaredMethodsAndParams");
+	public void testGetDeclaredMethods() {
+		System.out.println("getDeclaredMethods");
 
-		Collection<Method> expected = new ArrayList<Method>();
+		Methods expected = new Methods();
 		Method method = new Method();
+		method.setPackageName("com.github.mefi.jkuuza.analyzer");
+		method.setClassName("ReflectorTest$TestClass2");
 		method.setName("foo");
 		method.setDescription("bar");
 		method.setReturnType("boolean");
@@ -52,23 +54,31 @@ public class ReflectorTest {
 		method.addParameter("qux", "Integer");
 		expected.add(method);
 
-		Reflector reflector = new Reflector();
+		Method method2 = new Method();
+		method2.setPackageName("com.github.mefi.jkuuza.analyzer");
+		method2.setClassName("ReflectorTest$TestClass2");
+		method2.setName("foo2");
+		method2.setDescription("bar2");
+		method2.setReturnType("String");
+		method2.addParameter("baz2", "String");
+		expected.add(method2);
 
-		Collection<Method> result = reflector.getDeclaredMethodsAndParams(TestClass2.class);
+		Methods result = Reflector.getDeclaredMethods(TestClass2.class);
 
-		for (int i = 0; i < expected.size(); i++) {
-			Method ex = expected.iterator().next();
-			Method res = result.iterator().next();
+		assertEquals(expected.getList().size(), result.getList().size());
 
+		Method ex = null;
+		Method res = null;
+		for (int i = 0; i < expected.getList().size(); i++) {
+			ex = expected.getList().get(i);
+			res = result.getList().get(i);
+			assertEquals(ex.getPackageName(), res.getPackageName());
+			assertEquals(ex.getClassName(), res.getClassName());			
 			assertEquals(ex.getName(), res.getName());
 			assertEquals(ex.getDescription(), res.getDescription());
 			assertEquals(ex.getReturnType(), res.getReturnType());
 			assertEquals(ex.getParameters().size(), res.getParameters().size());
 		}
-
-		//assertEquals(expected, result);
-		//assert(expected, );
-		//assertThat(result, both(hasItems(expected)).and(hasSize(expected.size())));
 	}
 
 	/**
@@ -139,6 +149,11 @@ public class ReflectorTest {
 		@MethodInfo(description="bar", parameters="baz, qux")
 		public boolean foo(String baz, Integer qux) {
 			return true;
+		}
+
+		@MethodInfo(description="bar2", parameters="baz2")
+		public String foo2(String baz) {
+			return "";
 		}
 	}
 
