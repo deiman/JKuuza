@@ -1,5 +1,6 @@
 package com.github.mefi.jkuuza.analyzer;
 
+import com.github.mefi.jkuuza.parser.ContentExtractor;
 import com.github.mefi.jkuuza.parser.annotation.MethodInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -84,7 +85,6 @@ public class Reflector {
 			if (types.length <= params.length) {
 				String sType = "";
 				boolean validParams = true;
-				System.out.println(method.getName() + " - " + types.length);
 				for (int i = 0; i < types.length; i++) {
 					// "java.lang.Integer", "java.lang.String", etc..
 					sType = types[i].toString().substring(types[i].toString().lastIndexOf(" ") + 1, types[i].toString().length());
@@ -238,5 +238,9 @@ public class Reflector {
 	public static Object call(Class c, String methodName, Object param1, Object param2, Object param3) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		Object params[] = {param1, param2, param3};
 		return call(c.newInstance(), methodName, params);
+	}
+
+	static Methods getDeclaredMethods(Class<ContentExtractor> aClass) {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }
