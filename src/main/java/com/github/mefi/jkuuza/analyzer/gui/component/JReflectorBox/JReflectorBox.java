@@ -2,6 +2,7 @@ package com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox;
 
 import com.github.mefi.jkuuza.analyzer.Method;
 import com.github.mefi.jkuuza.analyzer.Methods;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,56 +28,31 @@ public class JReflectorBox extends JPanel implements ActionListener {
 
 	private IReflectorBoxModel model;
 	private ArrayList<JTextField> paramFields;
-
+	private JComboBox jcbMethods;
 	private JPanel topPanel;
 	private JPanel bottomPanel;
-	private JLabel jlbExpectedValue;	
+	private JLabel jlbExpectedValueError;
+	private JLabel jlbExpectedValue;
 	private JLabel jlbParameters;
 	private JLabel jlbMethodDescription;
 	private JTextField jtfExpectedValue;
-	
 	private int paramOrder = 0;
-	private String[] tempDefaultValues = {};
+	private String[] defaultParametersValues = {};
+	private String defaultExpectedValue = null;
 
 	/**
 	 * Create instance of component. Uses default model, another can be set via setter.
 	 *
 	 * @param methods instance of Methods class
 	 */
-	public JReflectorBox(Methods methods) {
+	public JReflectorBox(Methods methods) {		
 		super();
-		initComponent();
 
 		this.model = new DefaultReflectorBoxModel(methods);
 
-		List<Method> methodsList = model.getMethods().getList();
-
-		//setup combobox
-		JComboBox jcbMethods = new JComboBox(createComboBoxArray(methodsList));
-		jcbMethods.addActionListener(this);
-
-		// saves value of expected textfield when they are typed
-		jtfExpectedValue.addKeyListener(new KeyListener() {
-
-			public void keyTyped(KeyEvent e) {
-			}
-
-			public void keyPressed(KeyEvent e) {
-			}
-
-			public void keyReleased(KeyEvent e) {
-				model.setExpected(jtfExpectedValue.getText());
-			}
-		});
-
-		topPanel.add(jcbMethods); // combobox
-		topPanel.add(jlbExpectedValue); // label
-		topPanel.add(jtfExpectedValue); // textField
-		topPanel.add(jlbParameters); // label parameters
-		// prameters textfields will be created in action of combobox
-
+		initComponent();		
+		
 		setBasicComponentsVisibility(false);
-
 	}
 
 	/**
@@ -87,6 +63,8 @@ public class JReflectorBox extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		JComboBox cb = (JComboBox) e.getSource();
+
+		jlbExpectedValueError.setText("");
 
 		// remove all param textfilds from JPanel
 		for (Iterator<JTextField> it = paramFields.iterator(); it.hasNext();) {
@@ -132,11 +110,47 @@ public class JReflectorBox extends JPanel implements ActionListener {
 	protected void repaintBox(Method method) {
 		paramFields.clear();
 
+		jtfExpectedValue.addMouseListener(new MouseListener() {
+
+				public void mouseClicked(MouseEvent e) {
+				}
+
+				public void mousePressed(MouseEvent e) {
+				}
+
+				public void mouseReleased(MouseEvent e) {
+				}
+
+				public void mouseEntered(MouseEvent e) {					
+					if (jtfExpectedValue.getText().equals(defaultExpectedValue)) {
+						jtfExpectedValue.setText("");
+					}
+				}
+
+				public void mouseExited(MouseEvent e) {
+					if (jtfExpectedValue.getText().equals("")) {
+						jtfExpectedValue.setText(defaultExpectedValue);
+					}
+				}
+			});
+			jtfExpectedValue.addKeyListener(new KeyListener() {
+
+				public void keyTyped(KeyEvent e) {
+				}
+
+				public void keyPressed(KeyEvent e) {
+				}
+
+				public void keyReleased(KeyEvent e) {
+					model.setExpected(jtfExpectedValue.getText());
+				}
+			});
+
 		// init param order to zero
 		paramOrder = 0;
 		int paramsCount = method.getParameters().size();
 		// temporary array to hold default values of textfileds, init size to count of parameters
-		tempDefaultValues = new String[paramsCount];
+		defaultParametersValues = new String[paramsCount];
 
 		Iterator it = method.getParameters().entrySet().iterator();
 
@@ -144,8 +158,9 @@ public class JReflectorBox extends JPanel implements ActionListener {
 			Map.Entry<String, String> pairs = (Map.Entry) it.next();
 
 			// save default value to temporary variable
-			tempDefaultValues[paramOrder] = pairs.getValue() + " " + pairs.getKey();
-			JTextField tempTextField = new JTextField(tempDefaultValues[paramOrder]);
+			defaultParametersValues[paramOrder] = pairs.getValue() + " " + pairs.getKey();
+			JTextField tempTextField = new JTextField(defaultParametersValues[paramOrder]);
+			tempTextField.setColumns(15);
 
 			// handles displaying and hiding of default values when mouse over
 			tempTextField.addMouseListener(new MouseListener() {
@@ -162,14 +177,14 @@ public class JReflectorBox extends JPanel implements ActionListener {
 				}
 
 				public void mouseEntered(MouseEvent e) {
-					if (paramFields.get(order).getText().equals(tempDefaultValues[order])) {
+					if (paramFields.get(order).getText().equals(defaultParametersValues[order])) {
 						paramFields.get(order).setText("");
 					}
 				}
 
 				public void mouseExited(MouseEvent e) {
 					if (paramFields.get(order).getText().equals("")) {
-						paramFields.get(order).setText(tempDefaultValues[order]);
+						paramFields.get(order).setText(defaultParametersValues[order]);
 					}
 				}
 			});
@@ -204,6 +219,7 @@ public class JReflectorBox extends JPanel implements ActionListener {
 		bottomPanel.add(jlbMethodDescription);
 
 		jtfExpectedValue.setText(method.getReturnType());
+		defaultExpectedValue = method.getReturnType();
 		jlbMethodDescription.setText(method.getDescription());
 
 		getParent().repaint();
@@ -218,9 +234,24 @@ public class JReflectorBox extends JPanel implements ActionListener {
 		jlbParameters = new JLabel("Param:");
 		jtfExpectedValue = new JTextField(10);
 		jlbExpectedValue = new JLabel("Hodnota:");
+		jlbExpectedValueError = new JLabel("");
+		jlbExpectedValueError.setForeground(Color.red);
 		jlbMethodDescription = new JLabel();
 		topPanel = new JPanel(new FlowLayout());
 		bottomPanel = new JPanel(new FlowLayout());
+
+		List<Method> methodsList = model.getMethods().getList();
+
+		//setup combobox
+		jcbMethods = new JComboBox(createComboBoxArray(methodsList));
+		jcbMethods.addActionListener(this);
+
+		topPanel.add(jcbMethods); // combobox
+		topPanel.add(jlbExpectedValue); // label
+		topPanel.add(jlbExpectedValueError); // error label
+		topPanel.add(jtfExpectedValue); // textField
+		topPanel.add(jlbParameters); // label parameters
+		// prameters textfields will be created in action of combobox
 
 		add(topPanel);
 		add(bottomPanel);
@@ -244,6 +275,38 @@ public class JReflectorBox extends JPanel implements ActionListener {
 			array[i + 1] = className + "." + methodsList.get(i).getName();
 		}
 		return array;
+	}
+
+	/**
+	 * Checks, if component hasn't empty fields
+	 *
+	 * @return true if all fields are filled and if boolean gets "true" or "false"
+	 */
+	public boolean isFilled() {
+		if (jcbMethods.getSelectedIndex() == 0) {
+			return false;
+		}
+
+		if (defaultExpectedValue.equals("boolean")) {
+			String value = jtfExpectedValue.getText().trim().toLowerCase();
+			if (!value.equals("true") && !value.equals("false")) {
+				jlbExpectedValueError.setText(" true/false!! ");
+				return false;
+			}
+		}
+
+		if (jtfExpectedValue.getText().equals(defaultExpectedValue)) {
+			return false;
+		}
+
+		List list = model.getParams();
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i).equals(defaultParametersValues[i])) {
+				return false;
+			}
+		}		
+		
+		return true;
 	}
 
 	/**
