@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.niocchi.core.Query;
 import org.niocchi.core.URLPool;
 import org.niocchi.core.URLPoolException;
-import org.niocchi.core.query.Query;
 
 /**
  *

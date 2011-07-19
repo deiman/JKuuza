@@ -12,8 +12,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.niocchi.core.Crawler;
 import org.niocchi.core.Worker;
-import org.niocchi.core.query.Query;
 import com.github.mefi.jkuuza.parser.LinksExtractor;
+import org.niocchi.core.MemoryResource;
+import org.niocchi.core.Query;
 
 /**
  *
@@ -21,12 +22,10 @@ import com.github.mefi.jkuuza.parser.LinksExtractor;
  */
 public class DbSaveWorker extends Worker {
 
-	Crawler crawler = null;
-	ExpandableURLPool pool = null;
+	TimeoutURLPool pool = null;
 
-	public DbSaveWorker(Crawler crawler, ExpandableURLPool pool) {
+	public DbSaveWorker(Crawler crawler, TimeoutURLPool pool) {
 		super(crawler);
-		this.crawler = crawler;
 		this.pool = pool;
 
 	}
@@ -56,8 +55,9 @@ public class DbSaveWorker extends Worker {
 
 				// extract links pointing back to the host and add them into url pool
 				Set<String> links = extractor.getInternalLinks(host);
-				for (String link : links) {
-					pool.addURL(link);
+				for (String link : links) {					
+					ExpandableURLPool expPool = (ExpandableURLPool) pool.getUrlPool();
+					expPool.addURL(link);
 				}
 
 				ContentExtractor contentExtractor = new ContentExtractor(doc);
@@ -101,7 +101,8 @@ public class DbSaveWorker extends Worker {
 		String charset = "";
 		String html = null;
 
-		byte[] bytes = query.getResource().getBytes();
+		MemoryResource resource = (MemoryResource) query.getResource();
+		byte[] bytes = resource.getBytes();
 		charset = query.getResource().getContentEncoding();
 
 		if (charset != null && !charset.equals("")) {

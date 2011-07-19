@@ -3,6 +3,7 @@ package com.github.mefi.jkuuza.crawler.gui;
 import com.github.mefi.jkuuza.gui.AppView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -19,9 +20,20 @@ public class CrawlerConsole {
 	 * 
 	 * @param text
 	 */
-	public static void print(String text) {
+	public static void print(final String text) {
+		
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				AppView appView = AppView.getInstance();
+				appView.getCrawlerConsole().insert(text + newline, 0);
+			}
+		});
+/*
 		AppView appView = AppView.getInstance();
 		appView.getCrawlerConsole().insert(text + newline, 0);
+ * 
+ */
 	}
 
 	/**

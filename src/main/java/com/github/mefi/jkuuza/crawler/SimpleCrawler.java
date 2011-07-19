@@ -1,20 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.github.mefi.jkuuza.crawler;
 
 import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.io.IOException;
 import java.util.List;
 import org.niocchi.core.Crawler;
+import org.niocchi.core.ResourceException;
 
 import org.niocchi.core.URLPoolException;
 import org.niocchi.core.Worker;
-import org.niocchi.core.resource.ResourceCreator;
-import org.niocchi.core.resource.ResourceException;
-import org.niocchi.core.resource.ResourcePool;
-import org.niocchi.resources.HTMLResourceCreator;
 
 /**
  *
@@ -27,9 +20,8 @@ public class SimpleCrawler {
 	String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.68 Safari/534.24";
 	String seedFile = null;
 	
-	ExpandableURLPool urlPool;
+	TimeoutURLPool urlPool;
 	Crawler crawler;
-	ResourcePool resPool;
 	Worker worker;
 
 
@@ -40,15 +32,16 @@ public class SimpleCrawler {
 	 * @throws IOException
 	 */
 	private void init(List list) throws IOException {
-		ResourceCreator resourceCreator = new HTMLResourceCreator();
-		ResourcePool resourcePool = new ResourcePool(resourceCreator, resourcesCount);
+		//ResourceCreator resourceCreator = new HTMLResourceCreator();
+		
+		//ResourcePool resourcePool = new ResourcePool(resourceCreator, resourcesCount);
 
 		// create the worker
-		crawler = new Crawler(resourcePool);
+		crawler = new Crawler(new HTMLResourceFactory(), resourcesCount);
 		crawler.setUserAgent(userAgent);
 
 		// create the url pool
-		urlPool = new ExpandableURLPool(list);
+		urlPool = new TimeoutURLPool(new ExpandableURLPool(list));
 
 		// create the worker
 		worker = new DbSaveWorker(crawler, urlPool);
