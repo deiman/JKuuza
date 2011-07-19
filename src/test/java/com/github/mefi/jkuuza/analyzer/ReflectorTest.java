@@ -5,7 +5,7 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import java.util.Collection;
-import com.github.mefi.jkuuza.analyzer.anotation.MethodInfo;
+import com.github.mefi.jkuuza.parser.annotation.MethodInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.junit.AfterClass;
@@ -63,7 +63,7 @@ public class ReflectorTest {
 		method2.addParameter("baz2", "String");
 		expected.add(method2);
 
-		Methods result = Reflector.getDeclaredMethods(TestClass2.class);
+		Methods result = Reflector.getDeclaredMethodsWithInfo(TestClass2.class);
 
 		assertEquals(expected.getList().size(), result.getList().size());
 
@@ -92,26 +92,28 @@ public class ReflectorTest {
 		TestClass1 myTestClass = new TestClass1();
 
 		Object params1[] = {new String("foo"), new String("bar")};
-		assertEquals("1", Reflector.call(myTestClass, "methodWithTwoParams", params1).toString());
+		assertEquals("t1", "1", Reflector.call(myTestClass, "methodWithTwoParams", params1).toString());
 
 		Object params2[] = {"foo", "bar"};
-		assertEquals("1", Reflector.call(myTestClass, "methodWithTwoParams", params2).toString());
+		assertEquals("t2", "1", Reflector.call(myTestClass, "methodWithTwoParams", params2).toString());
 
 		Object params3[] = {1, "bar"};
-		assertEquals("2", Reflector.call(myTestClass, "methodWithTwoParams", params3).toString());
+		assertEquals("t3", "2", Reflector.call(myTestClass, "methodWithTwoParams", params3).toString());
 
 		Object params4[] = {"foo", 1};
-		assertEquals("3", Reflector.call(myTestClass, "methodWithTwoParams", params4).toString());
+		assertEquals("t4", "3", Reflector.call(myTestClass, "methodWithTwoParams", params4).toString());
 
 		Object params5[] = {new Integer(1), new Integer(2)};
-		assertEquals("4", Reflector.call(myTestClass, "methodWithTwoParams", params5).toString());
+		assertEquals("t5", "4", Reflector.call(myTestClass, "methodWithTwoParams", params5).toString());
 
 		Object params6[] = {1, 2};
-		assertEquals("4", Reflector.call(myTestClass, "methodWithTwoParams", params6).toString());
+		assertEquals("t6", "4", Reflector.call(myTestClass, "methodWithTwoParams", params6).toString());
 
-		System.out.println("call(Object o, String methodName, Object param1, Object param2)");
+		assertEquals("t7", "5", Reflector.call(myTestClass, "anotherMethod", "foo").toString());
 
-		assertEquals("foo+bar", Reflector.call(myTestClass, "methodWithTwoParamsAndReturnValue", "foo", "bar").toString());
+		System.out.println("call(Object o, String methodName, Object param1, Object param2)");		
+
+		assertEquals("t8", "foo+bar", Reflector.call(myTestClass, "methodWithTwoParamsAndReturnValue", "foo", "bar").toString());		
 
 	}
 
@@ -138,6 +140,10 @@ public class ReflectorTest {
 
 		public String methodWithTwoParamsAndReturnValue(String s1, String s2) {
 			return s1 + "+" + s2;
+		}
+
+		public String anotherMethod(String s) {
+			return "5";
 		}
 	}
 

@@ -1,6 +1,6 @@
 package com.github.mefi.jkuuza.analyzer;
 
-import com.github.mefi.jkuuza.analyzer.anotation.MethodInfo;
+import com.github.mefi.jkuuza.parser.annotation.MethodInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
@@ -17,47 +17,48 @@ public class Reflector {
 	 * @param c class
 	 * @return instance of Methods class
 	 */
-	public static Methods getDeclaredMethods(Class c) {
+	public static Methods getDeclaredMethodsWithInfo(Class c) {
 
 		Methods methods = new Methods();
-		java.lang.reflect.Method[] rMethods = c.getDeclaredMethods();		
+		java.lang.reflect.Method[] dMethods = c.getDeclaredMethods();
 
-		for (java.lang.reflect.Method rMethod : rMethods) {
-			Method method = new Method();
-			MethodInfo annotation = rMethod.getAnnotation(MethodInfo.class);
-			Type[] types = rMethod.getGenericParameterTypes();
-			
-			String returnType = rMethod.getReturnType().toString();
-			returnType = returnType.substring(returnType.toString().lastIndexOf(".") + 1);
+		for (java.lang.reflect.Method dMethod : dMethods) {
+			if (dMethod.getAnnotation(MethodInfo.class) != null) {
+				Method method = new Method();
+				MethodInfo annotation = dMethod.getAnnotation(MethodInfo.class);
+				Type[] types = dMethod.getGenericParameterTypes();
 
-			String annotationParameters = annotation.parameters();
-			String packageName = c.getName().substring(0, c.getName().lastIndexOf("."));
-			String className = c.getName().substring(c.getName().lastIndexOf(".")+1);
-			
-			String[] paramNames;
-			if(annotationParameters.contains(",")) {
-				paramNames = annotationParameters.replaceAll(", ", ",").split(",");
-			} else if(annotationParameters.contains(";")) {
-				paramNames = annotationParameters.replaceAll("; ", ";").split(";");
-			} else {
-				paramNames = new String[1];
-				paramNames[0] = annotationParameters;
+				String returnType = dMethod.getReturnType().toString();
+				returnType = returnType.substring(returnType.toString().lastIndexOf(".") + 1);
+
+				String annotationParameters = annotation.parameters();
+				String packageName = c.getName().substring(0, c.getName().lastIndexOf("."));
+				String className = c.getName().substring(c.getName().lastIndexOf(".") + 1);
+
+				String[] paramNames;
+				if (annotationParameters.contains(",")) {
+					paramNames = annotationParameters.replaceAll(", ", ",").split(",");
+				} else if (annotationParameters.contains(";")) {
+					paramNames = annotationParameters.replaceAll("; ", ";").split(";");
+				} else {
+					paramNames = new String[1];
+					paramNames[0] = annotationParameters;
+				}
+
+				method.setClassName(className);
+				method.setPackageName(packageName);
+				method.setName(dMethod.getName());
+				method.setDescription(annotation.description());
+				method.setReturnType(returnType);
+				for (int i = 0; i < paramNames.length; i++) {
+					String type = types[i].toString().substring(types[i].toString().lastIndexOf(".") + 1);
+					method.addParameter(paramNames[i], type);
+				}
+				methods.add(method);
 			}
-			
-			method.setClassName(className);
-			method.setPackageName(packageName);
-			method.setName(rMethod.getName());
-			method.setDescription(annotation.description());			
-			method.setReturnType(returnType);
-			for (int i = 0; i < paramNames.length; i++) {
-				String type = types[i].toString().substring(types[i].toString().lastIndexOf(".") + 1);
-				method.addParameter(paramNames[i], type);
-			}
-			methods.add(method);
 		}
 		return methods;
 	}
-
 
 	/**
 	 * Run specified method from instance with parameters
@@ -80,19 +81,22 @@ public class Reflector {
 
 		for (java.lang.reflect.Method method : methods) {
 			Type[] types = method.getGenericParameterTypes();
-			String sType = "";
-			boolean validParams = true;
-			for (int i = 0; i < types.length; i++) {
-				// "java.lang.Integer", "java.lang.String", etc..
-				sType = types[i].toString().substring(types[i].toString().lastIndexOf(" ") + 1, types[i].toString().length());
+			if (types.length <= params.length) {
+				String sType = "";
+				boolean validParams = true;
+				System.out.println(method.getName() + " - " + types.length);
+				for (int i = 0; i < types.length; i++) {
+					// "java.lang.Integer", "java.lang.String", etc..
+					sType = types[i].toString().substring(types[i].toString().lastIndexOf(" ") + 1, types[i].toString().length());
 
-				if(!Class.forName(sType).isInstance(params[i])) {					
-					validParams = false;
+					if (!Class.forName(sType).isInstance(params[i])) {
+						validParams = false;
+					}
 				}
-			}
 
-			if (method.getName().equals(methodName) && (validParams)) {
-				object = method.invoke(o, params);
+				if (method.getName().equals(methodName) && (validParams)) {
+					object = method.invoke(o, params);
+				}
 			}
 		}
 		return object;
@@ -174,7 +178,7 @@ public class Reflector {
 	 */
 	public static Object call(Class c, String methodName, Object[] params) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		return call(c.newInstance(), methodName, params);
-	}	
+	}
 
 	/**
 	 * Run specified method from class with one parameter
@@ -193,7 +197,7 @@ public class Reflector {
 	public static Object call(Class c, String methodName, Object param1) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		Object params[] = {param1};
 		return call(c.newInstance(), methodName, params);
-	}	
+	}
 
 	/**
 	 * Run specified method from class with two parameters
@@ -213,7 +217,7 @@ public class Reflector {
 	public static Object call(Class c, String methodName, Object param1, Object param2) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		Object params[] = {param1, param2};
 		return call(c.newInstance(), methodName, params);
-	}	
+	}
 
 	/**
 	 * Run specified method from class with three parameters
@@ -235,5 +239,4 @@ public class Reflector {
 		Object params[] = {param1, param2, param3};
 		return call(c.newInstance(), methodName, params);
 	}
-
 }
