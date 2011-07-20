@@ -5,7 +5,7 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import java.util.Collection;
-import com.github.mefi.jkuuza.parser.annotation.MethodInfo;
+import com.github.mefi.jkuuza.parser.MethodInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.junit.AfterClass;

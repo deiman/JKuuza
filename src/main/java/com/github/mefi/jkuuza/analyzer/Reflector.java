@@ -1,7 +1,7 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import com.github.mefi.jkuuza.parser.ContentExtractor;
-import com.github.mefi.jkuuza.parser.annotation.MethodInfo;
+import com.github.mefi.jkuuza.parser.MethodInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
