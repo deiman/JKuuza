@@ -1,15 +1,18 @@
 package com.github.mefi.jkuuza.parser;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
+ * Holds functions encapsulating JSoup functions, to extracting values from html elements
+ * Annotated functions have some additional informations, which can be used in gui
  *
  * @author Marek Pilecky
  */
-public class ContentExtractor {
-
-	private Document doc;
+public class ContentExtractor extends ContentHelper {	
 
 	/**
 	 * Needs non empty Jsoup Document instance
@@ -115,11 +118,20 @@ public class ContentExtractor {
 		return true;
 	}
 
-	public Document getDoc() {
-		return doc;
+	@MethodInfo(description="Vrať hodnotu tagu", parameters="název_tagu")
+	public String getValueOfTag(String tagName) {
+		return "";
 	}
 
-	public void setDoc(Document doc) {
-		this.doc = doc;
+	@MethodInfo(description="Vrať hodnotu tagu", parameters="název_tagu")
+	public ArrayList<String> getValuesOf(String selectors) {
+		Elements elements = doc.select(selectors);
+		ArrayList<String> list = new ArrayList();
+		for (Iterator<Element> it = elements.iterator(); it.hasNext();) {
+			list.add(it.next().val());
+		}
+		return list;
 	}
+
+	
 }

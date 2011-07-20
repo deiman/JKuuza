@@ -1,4 +1,4 @@
-package com.github.mefi.jkuuza.analyzer.anotation;
+package com.github.mefi.jkuuza.parser;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
