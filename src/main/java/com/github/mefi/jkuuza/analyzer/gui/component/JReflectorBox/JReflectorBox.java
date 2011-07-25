@@ -1,7 +1,9 @@
 package com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox;
 
+import com.github.mefi.jkuuza.analyzer.Condition;
 import com.github.mefi.jkuuza.analyzer.Method;
 import com.github.mefi.jkuuza.analyzer.Methods;
+import com.github.mefi.jkuuza.analyzer.Reflector;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -13,7 +15,10 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -45,14 +50,15 @@ public class JReflectorBox extends JPanel implements ActionListener {
 	 *
 	 * @param methods instance of Methods class
 	 */
-	public JReflectorBox(Methods methods) {		
+	public JReflectorBox(Methods methods) {
 		super();
 
 		this.model = new DefaultReflectorBoxModel(methods);
 
-		initComponent();		
-		
+		initComponent();
+
 		setBasicComponentsVisibility(false);
+
 	}
 
 	/**
@@ -112,39 +118,39 @@ public class JReflectorBox extends JPanel implements ActionListener {
 
 		jtfExpectedValue.addMouseListener(new MouseListener() {
 
-				public void mouseClicked(MouseEvent e) {
-				}
+			public void mouseClicked(MouseEvent e) {
+			}
 
-				public void mousePressed(MouseEvent e) {
-				}
+			public void mousePressed(MouseEvent e) {
+			}
 
-				public void mouseReleased(MouseEvent e) {
-				}
+			public void mouseReleased(MouseEvent e) {
+			}
 
-				public void mouseEntered(MouseEvent e) {					
-					if (jtfExpectedValue.getText().equals(defaultExpectedValue)) {
-						jtfExpectedValue.setText("");
-					}
+			public void mouseEntered(MouseEvent e) {
+				if (jtfExpectedValue.getText().equals(defaultExpectedValue)) {
+					jtfExpectedValue.setText("");
 				}
+			}
 
-				public void mouseExited(MouseEvent e) {
-					if (jtfExpectedValue.getText().equals("")) {
-						jtfExpectedValue.setText(defaultExpectedValue);
-					}
+			public void mouseExited(MouseEvent e) {
+				if (jtfExpectedValue.getText().equals("")) {
+					jtfExpectedValue.setText(defaultExpectedValue);
 				}
-			});
-			jtfExpectedValue.addKeyListener(new KeyListener() {
+			}
+		});
+		jtfExpectedValue.addKeyListener(new KeyListener() {
 
-				public void keyTyped(KeyEvent e) {
-				}
+			public void keyTyped(KeyEvent e) {
+			}
 
-				public void keyPressed(KeyEvent e) {
-				}
+			public void keyPressed(KeyEvent e) {
+			}
 
-				public void keyReleased(KeyEvent e) {
-					model.setExpected(jtfExpectedValue.getText());
-				}
-			});
+			public void keyReleased(KeyEvent e) {
+				model.setExpected(jtfExpectedValue.getText());
+			}
+		});
 
 		// init param order to zero
 		paramOrder = 0;
@@ -222,7 +228,7 @@ public class JReflectorBox extends JPanel implements ActionListener {
 		defaultExpectedValue = method.getReturnType();
 		jlbMethodDescription.setText(method.getDescription());
 
-		getParent().repaint();
+		//getParent().repaint();
 		revalidate();
 	}
 
@@ -304,8 +310,8 @@ public class JReflectorBox extends JPanel implements ActionListener {
 			if (list.get(i).equals(defaultParametersValues[i])) {
 				return false;
 			}
-		}		
-		
+		}
+
 		return true;
 	}
 
@@ -325,5 +331,28 @@ public class JReflectorBox extends JPanel implements ActionListener {
 	 */
 	public void setModel(IReflectorBoxModel model) {
 		this.model = model;
+	}
+
+	public void showValuesFromModel() {
+
+		//Methods methods = Reflector.getDeclaredMethodsWithInfo(Class.forName(model.getClassName()));
+		//Method method = methods.get(model.getMethodName());
+		//repaintBox(method);
+		
+		//jtfExpectedValue.setText(model.getExpected());
+
+
+	}
+
+	public void setDefaultValues(Condition condition) {
+		String className = condition.getConditionObject().getClass().getName();
+		String selectedItem = className.substring(className.lastIndexOf(".") + 1) + "." + condition.getFunctionName();
+
+		jcbMethods.setSelectedItem(selectedItem);
+		jtfExpectedValue.setText(condition.getExpectedValue());
+		for (int i = 0; i < paramFields.size(); i++) {
+			JTextField jTextField = paramFields.get(i);
+			jTextField.setText(condition.getParams().get(i));
+		}
 	}
 }

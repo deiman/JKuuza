@@ -16,7 +16,7 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="jtpTabbedPane" alignment="0" pref="812" max="32767" attributes="1"/>
+                      <Component id="jtpTabbedPane" alignment="0" pref="808" max="32767" attributes="1"/>
                       <Component id="jpHeaderPanel" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -29,7 +29,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jpHeaderPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jtpTabbedPane" pref="603" max="32767" attributes="0"/>
+                  <Component id="jtpTabbedPane" pref="562" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -48,7 +48,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jScrollPane1" pref="783" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="779" max="32767" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jlbClearFlashMessages" min="-2" pref="11" max="-2" attributes="0"/>
                   </Group>
@@ -202,7 +202,7 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <EmptySpace pref="389" max="32767" attributes="0"/>
+                              <EmptySpace pref="348" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jbtCrawlerAddUrlsFromFile" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jbtCrawlerRemoveUrls" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -301,12 +301,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="0" pref="445" max="32767" attributes="0"/>
+                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="0" pref="441" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="1" pref="478" max="32767" attributes="0"/>
+                          <Component id="jsplpCrawlerConsoleSplitPane" alignment="1" pref="437" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -375,18 +375,87 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="445" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="441" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="272" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="231" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
                         </Container>
                       </SubComponents>
                     </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jpAnalyzer">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jpAnalyzer" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Analyzer">
+                    <Property name="tabTitle" type="java.lang.String" resourceKey="jpAnalyzer.TabConstraints.tabTitle"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep" noResource="true"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="First"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Container class="javax.swing.JPanel" name="jpAnalyzerNavigation">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                        <EtchetBorder/>
+                      </Border>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="jpAnalyzerNavigation" noResource="true"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Last"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="1"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JButton" name="jbtAnalyzerStepPrev">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.github.mefi.jkuuza.gui.AppView" id="prevAnalyzerStep" methodName="prevAnalyzerStep"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" resourceKey="jbtAnalyzerStepPrev.text"/>
+                        <Property name="toolTipText" type="java.lang.String" resourceKey="jbtAnalyzerStepPrev.toolTipText"/>
+                        <Property name="name" type="java.lang.String" value="jbtAnalyzerStepPrev" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="jbtAnalyzerStepNext">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                          <action class="com.github.mefi.jkuuza.gui.AppView" id="nextAnalyzerStep" methodName="nextAnalyzerStep"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" resourceKey="jbtAnalyzerStepNext.text"/>
+                        <Property name="toolTipText" type="java.lang.String" resourceKey="jbtAnalyzerStepNext.toolTipText"/>
+                        <Property name="name" type="java.lang.String" value="jbtAnalyzerStepNext" noResource="true"/>
+                      </Properties>
+                    </Component>
                   </SubComponents>
                 </Container>
               </SubComponents>
@@ -462,11 +531,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="836" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="832" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="652" max="32767" attributes="0"/>
+                  <EmptySpace pref="648" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -589,6 +658,427 @@
         </Component>
       </SubComponents>
     </Container>
+    <Container class="javax.swing.JPanel" name="jpAnalyzerStep1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jpAnalyzerStep1" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jTextArea1" alignment="0" pref="492" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlbAnalyzerStep1Sample" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jcbAnalyzerStep1SampleConditions" min="-2" pref="208" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="jTextArea1" min="-2" pref="38" max="-2" attributes="0"/>
+                  <EmptySpace pref="293" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jlbAnalyzerStep1Sample" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jcbAnalyzerStep1SampleConditions" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="jTextArea1">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" resourceKey="jTextArea1.text"/>
+            <Property name="name" type="java.lang.String" value="jTextArea1" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="jcbAnalyzerStep1SampleConditions">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="jcbAnalyzerStep1SampleConditions" noResource="true"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jcbAnalyzerStep1SampleConditionsActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep1Sample">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep1Sample.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep1Sample" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jpAnalyzerStep2">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jpAnalyzerStep2" noResource="true"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[421, 321]"/>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jbtAnalyzerStep2TopAddComponent" pref="237" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jbtAnalyzerStep2RemoveLast" min="-2" pref="154" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jlbAnalyzerStep2Url" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="jtfAnalyzerStep2Url" pref="286" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jlbAnalyzerStep2Preview" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="jtfAnalyzerStep2PreviewDescription" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="12" pref="12" max="12" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jtaAnalyzerStep2TopDescription" alignment="1" max="32767" attributes="2"/>
+                              <Component id="jspAnalyzerStep2Top" alignment="0" pref="397" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="jtaAnalyzerStep2TopDescription" min="-2" pref="39" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jspAnalyzerStep2Top" pref="166" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jbtAnalyzerStep2TopAddComponent" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jbtAnalyzerStep2RemoveLast" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep2Url" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep2Preview" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep2Url" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jtfAnalyzerStep2PreviewDescription" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="jtaAnalyzerStep2TopDescription">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" resourceKey="jtaAnalyzerStep2TopDescription.text"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="name" type="java.lang.String" value="jtaAnalyzerStep2TopDescription" noResource="true"/>
+          </Properties>
+        </Component>
+        <Container class="javax.swing.JScrollPane" name="jspAnalyzerStep2Top">
+          <Properties>
+            <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+            <Property name="name" type="java.lang.String" value="jspAnalyzerStep2Top" noResource="true"/>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jpAnalyzerStep2TopMain">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="jpAnalyzerStep2TopMain" noResource="true"/>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="0"/>
+              </Layout>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Component class="javax.swing.JButton" name="jbtAnalyzerStep2TopAddComponent">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.github.mefi.jkuuza.gui.AppView" id="addNextReflectorComponent" methodName="addNextReflectorComponent"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="jbtAnalyzerStep2TopAddComponent.text"/>
+            <Property name="name" type="java.lang.String" value="jbtAnalyzerStep2TopAddComponent" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jbtAnalyzerStep2RemoveLast">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.github.mefi.jkuuza.gui.AppView" id="removeLastReflectorComponent" methodName="removeLastReflectorComponent"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="jbtAnalyzerStep2RemoveLast.text"/>
+            <Property name="name" type="java.lang.String" value="jbtAnalyzerStep2RemoveLast" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep2Url">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep2Url.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep2Url" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep2Url">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep2Url.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep2Url" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jlbAnalyzerStep2Preview">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="com.github.mefi.jkuuza.gui.AppView" id="previewProductAnalyzing" methodName="previewProductAnalyzing"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep2Preview.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep2Preview" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jtfAnalyzerStep2PreviewDescription">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep2PreviewDescription.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep2PreviewDescription" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jpAnalyzerStep3">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="jpAnalyzerStep3" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jtaAnalyzerStep3Description" alignment="0" pref="717" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jlbAnalyzerStep3Url" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jtfAnalyzerStep3Url" pref="606" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jtfAnalyzerStep3Preview" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="jtfAnalyzerStep3PreviewDescription" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="jlbAnalyzerStep3ProductPrice" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jlbAnalyzerStep3ProductName" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jlbAnalyzerStep3ProductPriceDPH" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                                  <Component id="jlbAnalyzerStep3ProductParameterName" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jlbAnalyzerStep3ProductParameterValue" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jlbAnalyzerStep3ProductDescription" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jtfAnalyzerStep3ProductParameterValue" alignment="0" pref="555" max="32767" attributes="0"/>
+                              <Component id="jtfAnalyzerStep3ProductParameterName" alignment="0" pref="555" max="32767" attributes="0"/>
+                              <Component id="jtfAnalyzerStep3ProductDescription" alignment="1" pref="555" max="32767" attributes="1"/>
+                              <Component id="jtfAnalyzerStep3ProductPrice" pref="555" max="32767" attributes="0"/>
+                              <Component id="jtfAnalyzerStep3ProductName" alignment="0" pref="555" max="32767" attributes="0"/>
+                              <Component id="jtfAnalyzerStep3ProductPriceDPH" alignment="0" pref="555" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="jtaAnalyzerStep3Description" min="-2" pref="38" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductName" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jlbAnalyzerStep3ProductPrice" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfAnalyzerStep3ProductPrice" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jlbAnalyzerStep3ProductPriceDPH" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfAnalyzerStep3ProductPriceDPH" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductDescription" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductDescription" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductParameterName" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductParameterName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductParameterValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductParameterValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="94" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jlbAnalyzerStep3Url" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfAnalyzerStep3Url" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfAnalyzerStep3Preview" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jtfAnalyzerStep3PreviewDescription" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductName">
+          <Properties>
+            <Property name="font" type="java.awt.Font" resourceKey="jlbAnalyzerStep3ProductName.font"/>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductName.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductName" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductName">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductName.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductName" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductPrice">
+          <Properties>
+            <Property name="font" type="java.awt.Font" resourceKey="jlbAnalyzerStep3ProductPrice.font"/>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductPrice.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductPrice" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductPrice">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductPrice.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductPrice" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductDescription">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductDescription.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductDescription" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductDescription">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductDescription.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductDescription" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductParameterName">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductParameterName.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductParameterName" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductParameterName">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductParameterName.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductParameterName" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3Url">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3Url.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3Url" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jtfAnalyzerStep3PreviewDescription">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3PreviewDescription.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3PreviewDescription" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3Url">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3Url.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3Url" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jtfAnalyzerStep3Preview">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3Preview.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3Preview" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductParameterValue">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductParameterValue.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductParameterValue" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductParameterValue">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductParameterValue.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductParameterValue" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductPriceDPH">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductPriceDPH.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductPriceDPH" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductPriceDPH">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductPriceDPH.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductPriceDPH" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JEditorPane" name="jtaAnalyzerStep3Description">
+          <Properties>
+            <Property name="background" type="java.awt.Color" resourceKey="jtaAnalyzerStep3Description.background"/>
+            <Property name="contentType" type="java.lang.String" resourceKey="jtaAnalyzerStep3Description.contentType"/>
+            <Property name="text" type="java.lang.String" resourceKey="jtaAnalyzerStep3Description.text"/>
+            <Property name="name" type="java.lang.String" value="jtaAnalyzerStep3Description" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <Properties>
     <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -611,6 +1101,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-23,0,0,3,68"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-64,0,0,3,64"/>
   </AuxValues>
 </Form>

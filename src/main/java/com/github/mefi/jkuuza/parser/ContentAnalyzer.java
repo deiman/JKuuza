@@ -10,6 +10,9 @@ import org.jsoup.nodes.Document;
  */
 public class ContentAnalyzer extends ContentHelper {
 
+	public ContentAnalyzer() {
+	}
+	
 	public ContentAnalyzer(Document doc) {
 		this.doc = doc;
 	}

@@ -30,7 +30,8 @@ public class ConditionsResolver {
 	 * @throws InvocationTargetException
 	 * @throws NoSuchMethodException
 	 */
-	public boolean isPassing(Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	
+	public boolean resolve(Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 
 		boolean okStatus = true;
 		for (Iterator<Condition> it = conditions.iterator(); it.hasNext();) {
@@ -38,6 +39,7 @@ public class ConditionsResolver {
 			
 			String[] params = new String[condition.getParams().size()];
 			condition.getParams().toArray(params);
+			condition.getConditionObject().setDocument(doc);
 
 			Object result = Reflector.call(condition.getConditionObject(), condition.getFunctionName(), params);
 			if(!result.toString().equals(condition.getExpectedValue())) {

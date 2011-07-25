@@ -1,6 +1,7 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import com.github.mefi.jkuuza.parser.ContentHelper;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class Condition {
 
-	private Object object;
+	private ContentHelper object;
 	private String functionName;
 	private String expectedValue;
 	private List<String> params;
@@ -25,11 +26,28 @@ public class Condition {
 		this.params = params;
 	}
 
-	public Object getConditionObject() {
+	public Condition(ContentHelper conditionObject, String functionName, String expectedValue, String param) {
+		this.object = conditionObject;
+		this.functionName = functionName;
+		this.expectedValue = expectedValue;
+		this.params = new ArrayList<String>();
+		params.add(param);
+	}
+
+	public Condition(ContentHelper conditionObject, String functionName, String expectedValue, String param1, String param2) {
+		this.object = conditionObject;
+		this.functionName = functionName;
+		this.expectedValue = expectedValue;
+		this.params = new ArrayList<String>();
+		params.add(param1);
+		params.add(param2);
+	}
+
+	public ContentHelper getConditionObject() {
 		return object;
 	}
 
-	public void setConditionObject(Object object) {
+	public void setConditionObject(ContentHelper object) {
 		this.object = object;
 	}
 

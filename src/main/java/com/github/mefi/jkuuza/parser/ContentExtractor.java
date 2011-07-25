@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.select.Selector;
 
 /**
  * Holds functions encapsulating JSoup functions, to extracting values from html elements
@@ -12,7 +13,10 @@ import org.jsoup.select.Elements;
  *
  * @author Marek Pilecky
  */
-public class ContentExtractor extends ContentHelper {	
+public class ContentExtractor extends ContentHelper {
+
+	public ContentExtractor() {
+	}
 
 	/**
 	 * Needs non empty Jsoup Document instance
@@ -118,17 +122,16 @@ public class ContentExtractor extends ContentHelper {
 		return true;
 	}
 
-	@MethodInfo(description="Vrať hodnotu tagu", parameters="název_tagu")
-	public String getValueOfTag(String tagName) {
-		return "";
+	
+	public String getValue(String selector) {
+		return doc.select(selector).text();
 	}
 
-	@MethodInfo(description="Vrať hodnotu tagu", parameters="název_tagu")
-	public ArrayList<String> getValuesOf(String selectors) {
-		Elements elements = doc.select(selectors);
+	public ArrayList<String> getValuesOf(String selector) {
+		Elements elements = doc.select(selector);
 		ArrayList<String> list = new ArrayList();
 		for (Iterator<Element> it = elements.iterator(); it.hasNext();) {
-			list.add(it.next().val());
+			list.add(it.next().text());
 		}
 		return list;
 	}
