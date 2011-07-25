@@ -1,5 +1,6 @@
 package com.github.mefi.jkuuza.parser;
 
+import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.AfterClass;
@@ -212,5 +213,53 @@ public class ContentExtractorTest {
 		html = "";
 		setDocHeader(html);
 		assertEquals("", extractor.getTitle());
+	}
+
+	/**
+	 * Test of getValue method, of class ContentExtractor.
+	 */ @Test
+	public void testGetValue() {
+		System.out.println("getValue");
+
+		String html = "";
+		ContentExtractor contentExtractor;
+
+		html = "<div class=\"foo\">bar</div>";
+		contentExtractor = new ContentExtractor(Jsoup.parse(html));
+		assertEquals("bar", contentExtractor.getValue(".foo"));
+
+		html = "<div class=\"foo\">bar<span>baz</span></div>";
+		contentExtractor = new ContentExtractor(Jsoup.parse(html));
+		assertEquals("baz", contentExtractor.getValue(".foo span"));
+/*
+		html = "<div class=\"foo\">bar<span>baz</span></div>";
+		contentExtractor = new ContentExtractor(Jsoup.parse(html));
+		assertEquals("bar", contentExtractor.getValue(".foo"));
+*/
+
+	}
+
+	/**
+	 * Test of getValuesOf method, of class ContentExtractor.
+	 */ @Test
+	public void testGetValuesOf() {
+		System.out.println("getValuesOf");
+
+		String html = "";
+		ContentExtractor contentExtractor;
+
+		html = "<div class=\"foo\">bar</div><div class=\"foo\">baz</div>";
+		ArrayList list1 = new ArrayList();
+		list1.add("bar");
+		list1.add("baz");
+
+		contentExtractor = new ContentExtractor(Jsoup.parse(html));
+		ArrayList result = contentExtractor.getValuesOf(".foo");
+
+		assertEquals(list1.size(), result.size());
+		for (int i = 0; i < result.size(); i++) {
+			assertEquals(list1.get(i), result.get(i));
+		}
+
 	}
 }

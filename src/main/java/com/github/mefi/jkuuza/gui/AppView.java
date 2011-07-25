@@ -3,14 +3,29 @@
  */
 package com.github.mefi.jkuuza.gui;
 
+import com.github.mefi.jkuuza.analyzer.Case;
+import com.github.mefi.jkuuza.analyzer.Condition;
+import com.github.mefi.jkuuza.analyzer.ConditionsResolver;
+import com.github.mefi.jkuuza.analyzer.Rules;
+import com.github.mefi.jkuuza.analyzer.Methods;
+import com.github.mefi.jkuuza.analyzer.Reflector;
+import com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox.JReflectorBox;
+import com.github.mefi.jkuuza.parser.ContentAnalyzer;
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
+import com.github.mefi.jkuuza.app.db.DbConnector;
 import com.github.mefi.jkuuza.crawler.SimpleCrawler;
 import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import com.github.mefi.jkuuza.gui.model.FlashMessage;
 import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
+import com.github.mefi.jkuuza.model.PageRepository;
+import com.github.mefi.jkuuza.utils.ValueComparator;
+import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +33,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,8 +40,13 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.Timer;
 import javax.swing.Icon;
@@ -37,6 +56,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 /**
  * The application's main frame.
@@ -48,11 +71,18 @@ public class AppView extends FrameView {
 		super(app);
 
 		initComponents();
+		initAnalyzerSampleConditions();
 
 		crawlerQueueModel = new DefaultListModel();
 		jlstCrawlerQueue.setModel(crawlerQueueModel);
 		jpHeaderPanel.setVisible(false);
 		flashMessagesList = new ArrayList<JLabel>();
+
+		repaintAnalyzerStep(actualAnalyzerStep);
+
+		//init of Analyzer step2
+		analyzerStep2Components = new ArrayList<JReflectorBox>();
+		analyzerMethods = Reflector.getDeclaredMethodsWithInfo(ContentAnalyzer.class);
 
 		// status bar initialization - message timeout, idle icon and busy animation, etc
 		ResourceMap resourceMap = getResourceMap();
@@ -148,7 +178,7 @@ public class AppView extends FrameView {
 	public void loadCrawlerUrlFromDialog() {
 		String defaultText = "http://";
 		String url = jtfCrawlerAddUrl.getText();
-		
+
 		if (!url.equals(defaultText)) {
 			addUrlToCrawlerQueue(url);
 		}
@@ -235,10 +265,304 @@ public class AppView extends FrameView {
 				crawler.execute(list);
 			}
 
-
-
 		} catch (Exception ex) {
 			Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Action
+	public void nextAnalyzerStep() {
+		if (actualAnalyzerStep <= analyzerStepsCount) {
+			repaintAnalyzerStep(++actualAnalyzerStep);
+		}
+	}
+
+	@Action
+	public void prevAnalyzerStep() {
+		if (actualAnalyzerStep > 1) {
+			repaintAnalyzerStep(--actualAnalyzerStep);
+		}
+	}
+
+	public void repaintAnalyzerStep(int step) {
+
+		if (actualAnalyzerStepPanel != null) {
+			jpAnalyzer.remove(actualAnalyzerStepPanel);
+		}
+
+		switch (actualAnalyzerStep) {
+			case 1:
+				handleAnalyzerStepStatus(1);
+				actualAnalyzerStepPanel = jpAnalyzerStep1;
+				jlbAnalyzerStep.setText("Krok 1/" + analyzerStepsCount);
+				break;
+			case 2:
+				handleAnalyzerStepStatus(2);
+				actualAnalyzerStepPanel = jpAnalyzerStep2;
+				jlbAnalyzerStep.setText("Krok 2/" + analyzerStepsCount);
+				if (!analyzerLoadConditionsLocked) {
+					if (jcbAnalyzerStep1SampleConditions.getSelectedIndex() != 0) {
+						loadSavedConditions(jcbAnalyzerStep1SampleConditions.getSelectedItem().toString());
+						analyzerLoadConditionsLocked = true;
+					} else {
+						addReflectorBoxToPane(jpAnalyzerStep2TopMain, analyzerMethods);
+						analyzerLoadConditionsLocked = true;
+					}
+				}
+				
+				break;
+			case 3:				
+				if (jcbAnalyzerStep1SampleConditions.getSelectedIndex() != 0) {
+					loadSavedRules(jcbAnalyzerStep1SampleConditions.getSelectedItem().toString());
+				}
+				handleAnalyzerStepStatus(3);
+				actualAnalyzerStepPanel = jpAnalyzerStep3;
+				jlbAnalyzerStep.setText("Krok 3/" + analyzerStepsCount);
+				break;
+			case 4:
+				runAnalyzerProcess();
+				break;
+			default:
+		}
+
+		actualAnalyzerStepPanel.setBorder(new EtchedBorder());
+		jpAnalyzer.add(actualAnalyzerStepPanel, BorderLayout.CENTER);
+		actualAnalyzerStepPanel.setVisible(true);
+		jpAnalyzer.repaint();
+	}
+
+	protected void runAnalyzerProcess() {
+		Case c = createCase();
+		System.out.println("ok");
+	}
+
+	protected Case createCase() {
+		if (checkRequiredExtractionRulesFiledsFilled()) {
+			
+			Rules rules = new Rules();
+			rules.setNameSelector(jtfAnalyzerStep3ProductName.getText());
+			rules.setDescriptionSelector(jtfAnalyzerStep3ProductDescription.getText());
+			rules.setPriceSelector(jtfAnalyzerStep3ProductPrice.getText());
+			rules.setPriceDPHSelector(jtfAnalyzerStep3ProductPriceDPH.getText());
+			rules.setParamNamesSelector(jtfAnalyzerStep3ProductParameterName.getText());
+			rules.setParamValuesSelector(jtfAnalyzerStep3ProductParameterValue.getText());
+
+			List<Condition> conditions = new ArrayList<Condition>();			
+			Component[] comps = jpAnalyzerStep2TopMain.getComponents();
+			for (int i = 0; i < comps.length; i++) {
+				if (comps[i] instanceof JReflectorBox) {
+					JReflectorBox reflectorBox = (JReflectorBox) comps[i];
+
+					Condition condition = new Condition(new ContentAnalyzer(), reflectorBox.getModel().getMethodName(), reflectorBox.getModel().getExpected(), reflectorBox.getModel().getParams());
+					conditions.add(condition);
+				}
+			}
+
+			return new Case(conditions, rules);
+		}
+		throw new RuntimeException("chyba");
+	}
+
+
+	private void initAnalyzerSampleConditions() {
+		Map<String, Case> map = AnalyzerCasesLoader.load();
+		ArrayList sampleHosts = new ArrayList();
+		sampleHosts.add("-empty-");
+		for (Map.Entry<String, Case> entry : map.entrySet()) {
+			sampleHosts.add(entry.getKey());
+		}
+		jcbAnalyzerStep1SampleConditions.setModel(new DefaultComboBoxModel(sampleHosts.toArray()));
+	}
+
+	public void handleAnalyzerStepStatus(int step) {
+		jbtAnalyzerStepPrev.setEnabled(step > 1);
+		jbtAnalyzerStepNext.setEnabled(step <= analyzerStepsCount);
+		if (step == analyzerStepsCount) {
+			jbtAnalyzerStepNext.setText("Spustit extrakci");
+		} else {
+			jbtAnalyzerStepNext.setText("DÁLE >");
+		}
+	}
+
+	public void loadSavedConditions(String host) {
+		Map<String, Case> map = AnalyzerCasesLoader.load();
+		loadReflectorBoxes(map.get(host).getConditions());
+		setPreviewUrls(map.get(host));
+	}
+
+	public void loadReflectorBoxes(List<Condition> conditions) {
+
+		for (Iterator<Condition> it = conditions.iterator(); it.hasNext();) {
+			Condition condition = it.next();
+			JReflectorBox box = new JReflectorBox(Reflector.getDeclaredMethodsWithInfo(condition.getConditionObject().getClass()));
+			box.setDefaultValues(condition);
+
+			analyzerStep2Components.add(box);
+			jpAnalyzerStep2TopMain.add(box);
+		}
+	}
+
+	public void loadSavedRules(String host) {
+		Map<String, Case> map = AnalyzerCasesLoader.load();
+		Rules rules = map.get(host).getRules();
+		setRulesFileds(rules);
+	}
+
+	public void setPreviewUrls(Case casex) {
+		jtfAnalyzerStep2Url.setText(casex.getPreviewUrl());
+		jtfAnalyzerStep3Url.setText(casex.getPreviewUrl());
+	}
+
+	public void setRulesFileds(Rules rule) {
+
+		jtfAnalyzerStep3ProductName.setText(rule.getNameSelector());
+		jtfAnalyzerStep3ProductDescription.setText(rule.getDescriptionSelector());
+		jtfAnalyzerStep3ProductPrice.setText(rule.getPriceSelector());
+		jtfAnalyzerStep3ProductPriceDPH.setText(rule.getPriceDPHSelector());
+		jtfAnalyzerStep3ProductParameterName.setText(rule.getParamNamesSelector());
+		jtfAnalyzerStep3ProductParameterValue.setText(rule.getParamValuesSelector());
+	}
+
+	public void addReflectorBoxToPane(JPanel pane, Methods methods) {
+		JReflectorBox box = new JReflectorBox(methods);
+		analyzerStep2Components.add(box);
+		pane.add(box);
+		analyzerStep2countOfComponents++;
+		pane.revalidate();
+		pane.repaint();
+	}
+
+	@Action
+	public void addNextReflectorComponent() {
+		if (checkAllReflectorComponentsFilled()) {
+			addReflectorBoxToPane(jpAnalyzerStep2TopMain, analyzerMethods);
+		} else {
+			displayFlashMessage("Pravidlo není správně vyplněno!", FlashMessageType.ERROR);
+		}
+	}
+
+	public boolean checkRequiredExtractionRulesFiledsFilled() {
+		List<JTextField> requiredFields = new ArrayList<JTextField>();
+		requiredFields.add(jtfAnalyzerStep3ProductName);
+		requiredFields.add(jtfAnalyzerStep3ProductPrice);
+
+		for (Iterator<JTextField> it = requiredFields.iterator(); it.hasNext();) {
+			JTextField jTextField = it.next();
+			if (jTextField.getText().equals("")) {
+				displayFlashMessage("Nejsou vyplněna povinná pravidla pro extrakci!", FlashMessageType.ERROR);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean checkAllReflectorComponentsFilled() {
+		Component[] comps = jpAnalyzerStep2TopMain.getComponents();
+		boolean okStatus = true;
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof JReflectorBox) {
+				JReflectorBox reflectorBox = (JReflectorBox) comps[i];
+				if (!reflectorBox.isFilled()) {
+					okStatus = false;
+				}
+			}
+		}
+		return okStatus;
+	}
+
+	@Action
+	public void removeLastReflectorComponent() {
+		if (analyzerStep2Components.size() > 1) {
+			JReflectorBox box = analyzerStep2Components.get(analyzerStep2Components.size() - 1);
+			analyzerStep2Components.remove(box);
+			jpAnalyzerStep2TopMain.remove(box);
+		} else {
+			displayFlashMessage("Upozornění: musí zůstat alespoň jedno pravidlo!", FlashMessageType.INFO);
+		}
+		jpAnalyzerStep2TopMain.repaint();
+	}
+
+	@Action
+	public void previewProductExtracting() {
+		if (jtfAnalyzerStep2Url.getText().equals("http://") || jtfAnalyzerStep2Url.getText().equals("")) {
+			try {
+				displayFlashMessage("CHYBA: Vyplňte prosím URL!", FlashMessageType.ERROR);
+				URL url = new URL(jtfAnalyzerStep2Url.getText());
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				Document doc = Jsoup.parse(url, 5000);
+
+
+			} catch (MalformedURLException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IOException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} else {
+		}
+	}
+
+	@Action
+	public void previewProductAnalyzing() {
+		if (jtfAnalyzerStep2Url.getText().equals("http://") || jtfAnalyzerStep2Url.getText().equals("")) {
+			displayFlashMessage("CHYBA: Vyplňte prosím URL!", FlashMessageType.ERROR);
+		} else {
+			try {
+				URL url = new URL(jtfAnalyzerStep2Url.getText());
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				Document doc = Jsoup.parse(url, 5000);
+				List<Condition> conditions = createConditionsFromReflectorBoxes(analyzerStep2Components);
+				try {
+					ConditionsResolver resolver = new ConditionsResolver(conditions);
+					if (resolver.resolve(doc)) {
+						displayFlashMessage("test problehl uspesne", FlashMessageType.INFO);
+					} else {
+						displayFlashMessage("fail", FlashMessageType.ERROR);
+					}
+				} catch (InstantiationException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IllegalAccessException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (ClassNotFoundException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IllegalArgumentException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (InvocationTargetException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (NoSuchMethodException ex) {
+					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+				}
+
+
+			} catch (IOException ex) {
+				displayFlashMessage("CHYBA: Nepodařilo se připojit k URL! Zkontrolujte, prosím, zda je adresa platná.", FlashMessageType.ERROR);
+			}
+
+		}
+	}
+
+	public List<Condition> createConditionsFromReflectorBoxes(List<JReflectorBox> boxes) {
+		List<Condition> list = new ArrayList<Condition>();
+		for (Iterator<JReflectorBox> it = boxes.iterator(); it.hasNext();) {
+			JReflectorBox box = it.next();
+			Condition condition = new Condition(new ContentAnalyzer(), box.getModel().getMethodName(), box.getModel().getExpected(), box.getModel().getParams());
+			list.add(condition);
+		}
+		return list;
+	}
+
+	public void getCrawledDomains() {
+		DbConnector conn = new DbConnector();
+		PageRepository pageRepository = new PageRepository(conn.getConnection());
+
+		HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
+		ValueComparator comparator = new ValueComparator(map);
+		TreeMap<String, Integer> sortedMap = new TreeMap(comparator);
+
+		sortedMap.putAll(map);
+
+		System.out.println("results");
+		for (String key : sortedMap.keySet()) {
+			System.out.println("key/value: " + key + "/" + sortedMap.get(key));
 		}
 
 	}
@@ -323,6 +647,11 @@ public class AppView extends FrameView {
                 jspCrawlerConsole = new javax.swing.JScrollPane();
                 jtaCrawlerConsole = new javax.swing.JTextArea();
                 jpCrawlerBodyBottom = new javax.swing.JPanel();
+                jpAnalyzer = new javax.swing.JPanel();
+                jlbAnalyzerStep = new javax.swing.JLabel();
+                jpAnalyzerNavigation = new javax.swing.JPanel();
+                jbtAnalyzerStepPrev = new javax.swing.JButton();
+                jbtAnalyzerStepNext = new javax.swing.JButton();
                 jmbMenuBar = new javax.swing.JMenuBar();
                 javax.swing.JMenu fileMenu = new javax.swing.JMenu();
                 javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -338,6 +667,38 @@ public class AppView extends FrameView {
                 jlbCrawlerAddUrlDialog = new javax.swing.JLabel();
                 jtfCrawlerAddUrl = new javax.swing.JTextField();
                 jbtCrawlerAddUrl = new javax.swing.JButton();
+                jpAnalyzerStep1 = new javax.swing.JPanel();
+                jTextArea1 = new javax.swing.JTextArea();
+                jcbAnalyzerStep1SampleConditions = new javax.swing.JComboBox();
+                jlbAnalyzerStep1Sample = new javax.swing.JLabel();
+                jpAnalyzerStep2 = new javax.swing.JPanel();
+                jtaAnalyzerStep2TopDescription = new javax.swing.JTextArea();
+                jspAnalyzerStep2Top = new javax.swing.JScrollPane();
+                jpAnalyzerStep2TopMain = new javax.swing.JPanel();
+                jbtAnalyzerStep2TopAddComponent = new javax.swing.JButton();
+                jbtAnalyzerStep2RemoveLast = new javax.swing.JButton();
+                jlbAnalyzerStep2Url = new javax.swing.JLabel();
+                jtfAnalyzerStep2Url = new javax.swing.JTextField();
+                jlbAnalyzerStep2Preview = new javax.swing.JButton();
+                jtfAnalyzerStep2PreviewDescription = new javax.swing.JLabel();
+                jpAnalyzerStep3 = new javax.swing.JPanel();
+                jlbAnalyzerStep3ProductName = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductName = new javax.swing.JTextField();
+                jlbAnalyzerStep3ProductPrice = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductPrice = new javax.swing.JTextField();
+                jtfAnalyzerStep3ProductDescription = new javax.swing.JTextField();
+                jlbAnalyzerStep3ProductDescription = new javax.swing.JLabel();
+                jlbAnalyzerStep3ProductParameterName = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductParameterName = new javax.swing.JTextField();
+                jlbAnalyzerStep3Url = new javax.swing.JLabel();
+                jtfAnalyzerStep3PreviewDescription = new javax.swing.JLabel();
+                jtfAnalyzerStep3Url = new javax.swing.JTextField();
+                jtfAnalyzerStep3Preview = new javax.swing.JButton();
+                jlbAnalyzerStep3ProductParameterValue = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductParameterValue = new javax.swing.JTextField();
+                jlbAnalyzerStep3ProductPriceDPH = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductPriceDPH = new javax.swing.JTextField();
+                jtaAnalyzerStep3Description = new javax.swing.JEditorPane();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
                 jpMainPanel.setPreferredSize(new java.awt.Dimension(800, 527));
@@ -369,7 +730,7 @@ public class AppView extends FrameView {
                 jpHeaderPanelLayout.setHorizontalGroup(
                         jpHeaderPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpHeaderPanelLayout.createSequentialGroup()
-                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 779, Short.MAX_VALUE)
                                 .add(18, 18, 18)
                                 .add(jlbClearFlashMessages, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 11, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 );
@@ -450,7 +811,7 @@ public class AppView extends FrameView {
                 jpCrawlerBodyLeftLayout.setVerticalGroup(
                         jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpCrawlerBodyLeftLayout.createSequentialGroup()
-                                .addContainerGap(227, Short.MAX_VALUE)
+                                .addContainerGap(348, Short.MAX_VALUE)
                                 .add(jpCrawlerBodyLeftLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jbtCrawlerAddUrlsFromFile)
                                         .add(jbtCrawlerRemoveUrls)
@@ -499,11 +860,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyBottom.setLayout(jpCrawlerBodyBottomLayout);
                 jpCrawlerBodyBottomLayout.setHorizontalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 409, Short.MAX_VALUE)
+                        .add(0, 441, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyBottomLayout.setVerticalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 110, Short.MAX_VALUE)
+                        .add(0, 231, Short.MAX_VALUE)
                 );
 
                 jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);
@@ -512,11 +873,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyRight.setLayout(jpCrawlerBodyRightLayout);
                 jpCrawlerBodyRightLayout.setHorizontalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                        .add(jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
                 );
                 jpCrawlerBodyRightLayout.setVerticalGroup(
                         jpCrawlerBodyRightLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jsplpCrawlerConsoleSplitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
                 );
 
                 org.jdesktop.layout.GroupLayout jpCrawlerLayout = new org.jdesktop.layout.GroupLayout(jpCrawler);
@@ -547,6 +908,33 @@ public class AppView extends FrameView {
 
                 jtpTabbedPane.addTab(resourceMap.getString("jpCrawler.TabConstraints.tabTitle"), jpCrawler); // NOI18N
 
+                jpAnalyzer.setName("jpAnalyzer"); // NOI18N
+                jpAnalyzer.setLayout(new java.awt.BorderLayout());
+
+                jlbAnalyzerStep.setText(resourceMap.getString("jlbAnalyzerStep.text")); // NOI18N
+                jlbAnalyzerStep.setName("jlbAnalyzerStep"); // NOI18N
+                jpAnalyzer.add(jlbAnalyzerStep, java.awt.BorderLayout.PAGE_START);
+
+                jpAnalyzerNavigation.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                jpAnalyzerNavigation.setName("jpAnalyzerNavigation"); // NOI18N
+                jpAnalyzerNavigation.setLayout(new java.awt.GridLayout(1, 0));
+
+                jbtAnalyzerStepPrev.setAction(actionMap.get("prevAnalyzerStep")); // NOI18N
+                jbtAnalyzerStepPrev.setText(resourceMap.getString("jbtAnalyzerStepPrev.text")); // NOI18N
+                jbtAnalyzerStepPrev.setToolTipText(resourceMap.getString("jbtAnalyzerStepPrev.toolTipText")); // NOI18N
+                jbtAnalyzerStepPrev.setName("jbtAnalyzerStepPrev"); // NOI18N
+                jpAnalyzerNavigation.add(jbtAnalyzerStepPrev);
+
+                jbtAnalyzerStepNext.setAction(actionMap.get("nextAnalyzerStep")); // NOI18N
+                jbtAnalyzerStepNext.setText(resourceMap.getString("jbtAnalyzerStepNext.text")); // NOI18N
+                jbtAnalyzerStepNext.setToolTipText(resourceMap.getString("jbtAnalyzerStepNext.toolTipText")); // NOI18N
+                jbtAnalyzerStepNext.setName("jbtAnalyzerStepNext"); // NOI18N
+                jpAnalyzerNavigation.add(jbtAnalyzerStepNext);
+
+                jpAnalyzer.add(jpAnalyzerNavigation, java.awt.BorderLayout.PAGE_END);
+
+                jtpTabbedPane.addTab(resourceMap.getString("jpAnalyzer.TabConstraints.tabTitle"), jpAnalyzer); // NOI18N
+
                 org.jdesktop.layout.GroupLayout jpMainPanelLayout = new org.jdesktop.layout.GroupLayout(jpMainPanel);
                 jpMainPanel.setLayout(jpMainPanelLayout);
                 jpMainPanelLayout.setHorizontalGroup(
@@ -554,7 +942,7 @@ public class AppView extends FrameView {
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpMainPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jpMainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 808, Short.MAX_VALUE)
                                         .add(org.jdesktop.layout.GroupLayout.LEADING, jpHeaderPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
                 );
@@ -564,7 +952,7 @@ public class AppView extends FrameView {
                                 .addContainerGap()
                                 .add(jpHeaderPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+                                .add(jtpTabbedPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
                                 .addContainerGap())
                 );
 
@@ -603,11 +991,11 @@ public class AppView extends FrameView {
                 jpStatusPanel.setLayout(jpStatusPanelLayout);
                 jpStatusPanelLayout.setHorizontalGroup(
                         jpStatusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 836, Short.MAX_VALUE)
+                        .add(statusPanelSeparator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE)
                         .add(jpStatusPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(statusMessageLabel)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 652, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 648, Short.MAX_VALUE)
                                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(statusAnimationLabel)
@@ -672,6 +1060,268 @@ public class AppView extends FrameView {
                                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 );
 
+                jpAnalyzerStep1.setName("jpAnalyzerStep1"); // NOI18N
+
+                jTextArea1.setColumns(20);
+                jTextArea1.setRows(5);
+                jTextArea1.setText(resourceMap.getString("jTextArea1.text")); // NOI18N
+                jTextArea1.setName("jTextArea1"); // NOI18N
+
+                jcbAnalyzerStep1SampleConditions.setName("jcbAnalyzerStep1SampleConditions"); // NOI18N
+                jcbAnalyzerStep1SampleConditions.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                jcbAnalyzerStep1SampleConditionsActionPerformed(evt);
+                        }
+                });
+
+                jlbAnalyzerStep1Sample.setText(resourceMap.getString("jlbAnalyzerStep1Sample.text")); // NOI18N
+                jlbAnalyzerStep1Sample.setName("jlbAnalyzerStep1Sample"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpAnalyzerStep1Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep1);
+                jpAnalyzerStep1.setLayout(jpAnalyzerStep1Layout);
+                jpAnalyzerStep1Layout.setHorizontalGroup(
+                        jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                                .add(jlbAnalyzerStep1Sample)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
+                );
+                jpAnalyzerStep1Layout.setVerticalGroup(
+                        jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                .add(jTextArea1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 293, Short.MAX_VALUE)
+                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbAnalyzerStep1Sample)
+                                        .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap())
+                );
+
+                jpAnalyzerStep2.setName("jpAnalyzerStep2"); // NOI18N
+                jpAnalyzerStep2.setPreferredSize(new java.awt.Dimension(421, 321));
+
+                jtaAnalyzerStep2TopDescription.setColumns(20);
+                jtaAnalyzerStep2TopDescription.setEditable(false);
+                jtaAnalyzerStep2TopDescription.setLineWrap(true);
+                jtaAnalyzerStep2TopDescription.setRows(5);
+                jtaAnalyzerStep2TopDescription.setText(resourceMap.getString("jtaAnalyzerStep2TopDescription.text")); // NOI18N
+                jtaAnalyzerStep2TopDescription.setWrapStyleWord(true);
+                jtaAnalyzerStep2TopDescription.setName("jtaAnalyzerStep2TopDescription"); // NOI18N
+
+                jspAnalyzerStep2Top.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                jspAnalyzerStep2Top.setName("jspAnalyzerStep2Top"); // NOI18N
+
+                jpAnalyzerStep2TopMain.setBorder(null);
+                jpAnalyzerStep2TopMain.setName("jpAnalyzerStep2TopMain"); // NOI18N
+                jpAnalyzerStep2TopMain.setLayout(new java.awt.GridLayout(0, 1));
+                jspAnalyzerStep2Top.setViewportView(jpAnalyzerStep2TopMain);
+
+                jbtAnalyzerStep2TopAddComponent.setAction(actionMap.get("addNextReflectorComponent")); // NOI18N
+                jbtAnalyzerStep2TopAddComponent.setText(resourceMap.getString("jbtAnalyzerStep2TopAddComponent.text")); // NOI18N
+                jbtAnalyzerStep2TopAddComponent.setName("jbtAnalyzerStep2TopAddComponent"); // NOI18N
+
+                jbtAnalyzerStep2RemoveLast.setAction(actionMap.get("removeLastReflectorComponent")); // NOI18N
+                jbtAnalyzerStep2RemoveLast.setText(resourceMap.getString("jbtAnalyzerStep2RemoveLast.text")); // NOI18N
+                jbtAnalyzerStep2RemoveLast.setName("jbtAnalyzerStep2RemoveLast"); // NOI18N
+
+                jlbAnalyzerStep2Url.setText(resourceMap.getString("jlbAnalyzerStep2Url.text")); // NOI18N
+                jlbAnalyzerStep2Url.setName("jlbAnalyzerStep2Url"); // NOI18N
+
+                jtfAnalyzerStep2Url.setText(resourceMap.getString("jtfAnalyzerStep2Url.text")); // NOI18N
+                jtfAnalyzerStep2Url.setName("jtfAnalyzerStep2Url"); // NOI18N
+
+                jlbAnalyzerStep2Preview.setAction(actionMap.get("previewProductAnalyzing")); // NOI18N
+                jlbAnalyzerStep2Preview.setText(resourceMap.getString("jlbAnalyzerStep2Preview.text")); // NOI18N
+                jlbAnalyzerStep2Preview.setName("jlbAnalyzerStep2Preview"); // NOI18N
+
+                jtfAnalyzerStep2PreviewDescription.setText(resourceMap.getString("jtfAnalyzerStep2PreviewDescription.text")); // NOI18N
+                jtfAnalyzerStep2PreviewDescription.setName("jtfAnalyzerStep2PreviewDescription"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpAnalyzerStep2Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep2);
+                jpAnalyzerStep2.setLayout(jpAnalyzerStep2Layout);
+                jpAnalyzerStep2Layout.setHorizontalGroup(
+                        jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep2Layout.createSequentialGroup()
+                                .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jpAnalyzerStep2Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(jbtAnalyzerStep2TopAddComponent, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jbtAnalyzerStep2RemoveLast, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 154, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jpAnalyzerStep2Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(jlbAnalyzerStep2Url)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jpAnalyzerStep2Layout.createSequentialGroup()
+                                                                .add(jtfAnalyzerStep2Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                .add(jlbAnalyzerStep2Preview))
+                                                        .add(jtfAnalyzerStep2PreviewDescription)))
+                                        .add(jpAnalyzerStep2Layout.createSequentialGroup()
+                                                .add(12, 12, 12)
+                                                .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jtaAnalyzerStep2TopDescription)
+                                                        .add(jspAnalyzerStep2Top, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE))))
+                                .addContainerGap())
+                );
+                jpAnalyzerStep2Layout.setVerticalGroup(
+                        jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep2Layout.createSequentialGroup()
+                                .add(jtaAnalyzerStep2TopDescription, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jspAnalyzerStep2Top, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jbtAnalyzerStep2TopAddComponent)
+                                        .add(jbtAnalyzerStep2RemoveLast))
+                                .add(8, 8, 8)
+                                .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep2Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep2Preview)
+                                        .add(jlbAnalyzerStep2Url))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jtfAnalyzerStep2PreviewDescription)
+                                .addContainerGap())
+                );
+
+                jpAnalyzerStep3.setName("jpAnalyzerStep3"); // NOI18N
+
+                jlbAnalyzerStep3ProductName.setFont(resourceMap.getFont("jlbAnalyzerStep3ProductName.font")); // NOI18N
+                jlbAnalyzerStep3ProductName.setText(resourceMap.getString("jlbAnalyzerStep3ProductName.text")); // NOI18N
+                jlbAnalyzerStep3ProductName.setName("jlbAnalyzerStep3ProductName"); // NOI18N
+
+                jtfAnalyzerStep3ProductName.setText(resourceMap.getString("jtfAnalyzerStep3ProductName.text")); // NOI18N
+                jtfAnalyzerStep3ProductName.setName("jtfAnalyzerStep3ProductName"); // NOI18N
+
+                jlbAnalyzerStep3ProductPrice.setFont(resourceMap.getFont("jlbAnalyzerStep3ProductPrice.font")); // NOI18N
+                jlbAnalyzerStep3ProductPrice.setText(resourceMap.getString("jlbAnalyzerStep3ProductPrice.text")); // NOI18N
+                jlbAnalyzerStep3ProductPrice.setName("jlbAnalyzerStep3ProductPrice"); // NOI18N
+
+                jtfAnalyzerStep3ProductPrice.setText(resourceMap.getString("jtfAnalyzerStep3ProductPrice.text")); // NOI18N
+                jtfAnalyzerStep3ProductPrice.setName("jtfAnalyzerStep3ProductPrice"); // NOI18N
+
+                jtfAnalyzerStep3ProductDescription.setText(resourceMap.getString("jtfAnalyzerStep3ProductDescription.text")); // NOI18N
+                jtfAnalyzerStep3ProductDescription.setName("jtfAnalyzerStep3ProductDescription"); // NOI18N
+
+                jlbAnalyzerStep3ProductDescription.setText(resourceMap.getString("jlbAnalyzerStep3ProductDescription.text")); // NOI18N
+                jlbAnalyzerStep3ProductDescription.setName("jlbAnalyzerStep3ProductDescription"); // NOI18N
+
+                jlbAnalyzerStep3ProductParameterName.setText(resourceMap.getString("jlbAnalyzerStep3ProductParameterName.text")); // NOI18N
+                jlbAnalyzerStep3ProductParameterName.setName("jlbAnalyzerStep3ProductParameterName"); // NOI18N
+
+                jtfAnalyzerStep3ProductParameterName.setText(resourceMap.getString("jtfAnalyzerStep3ProductParameterName.text")); // NOI18N
+                jtfAnalyzerStep3ProductParameterName.setName("jtfAnalyzerStep3ProductParameterName"); // NOI18N
+
+                jlbAnalyzerStep3Url.setText(resourceMap.getString("jlbAnalyzerStep3Url.text")); // NOI18N
+                jlbAnalyzerStep3Url.setName("jlbAnalyzerStep3Url"); // NOI18N
+
+                jtfAnalyzerStep3PreviewDescription.setText(resourceMap.getString("jtfAnalyzerStep3PreviewDescription.text")); // NOI18N
+                jtfAnalyzerStep3PreviewDescription.setName("jtfAnalyzerStep3PreviewDescription"); // NOI18N
+
+                jtfAnalyzerStep3Url.setText(resourceMap.getString("jtfAnalyzerStep3Url.text")); // NOI18N
+                jtfAnalyzerStep3Url.setName("jtfAnalyzerStep3Url"); // NOI18N
+
+                jtfAnalyzerStep3Preview.setText(resourceMap.getString("jtfAnalyzerStep3Preview.text")); // NOI18N
+                jtfAnalyzerStep3Preview.setName("jtfAnalyzerStep3Preview"); // NOI18N
+
+                jlbAnalyzerStep3ProductParameterValue.setText(resourceMap.getString("jlbAnalyzerStep3ProductParameterValue.text")); // NOI18N
+                jlbAnalyzerStep3ProductParameterValue.setName("jlbAnalyzerStep3ProductParameterValue"); // NOI18N
+
+                jtfAnalyzerStep3ProductParameterValue.setText(resourceMap.getString("jtfAnalyzerStep3ProductParameterValue.text")); // NOI18N
+                jtfAnalyzerStep3ProductParameterValue.setName("jtfAnalyzerStep3ProductParameterValue"); // NOI18N
+
+                jlbAnalyzerStep3ProductPriceDPH.setText(resourceMap.getString("jlbAnalyzerStep3ProductPriceDPH.text")); // NOI18N
+                jlbAnalyzerStep3ProductPriceDPH.setName("jlbAnalyzerStep3ProductPriceDPH"); // NOI18N
+
+                jtfAnalyzerStep3ProductPriceDPH.setText(resourceMap.getString("jtfAnalyzerStep3ProductPriceDPH.text")); // NOI18N
+                jtfAnalyzerStep3ProductPriceDPH.setName("jtfAnalyzerStep3ProductPriceDPH"); // NOI18N
+
+                jtaAnalyzerStep3Description.setBackground(resourceMap.getColor("jtaAnalyzerStep3Description.background")); // NOI18N
+                jtaAnalyzerStep3Description.setContentType(resourceMap.getString("jtaAnalyzerStep3Description.contentType")); // NOI18N
+                jtaAnalyzerStep3Description.setText(resourceMap.getString("jtaAnalyzerStep3Description.text")); // NOI18N
+                jtaAnalyzerStep3Description.setName("jtaAnalyzerStep3Description"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpAnalyzerStep3Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep3);
+                jpAnalyzerStep3.setLayout(jpAnalyzerStep3Layout);
+                jpAnalyzerStep3Layout.setHorizontalGroup(
+                        jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                .add(jlbAnalyzerStep3Url)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jtfAnalyzerStep3Preview))
+                                        .add(jtfAnalyzerStep3PreviewDescription)
+                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                                .add(38, 38, 38)
+                                                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                                                        .add(jlbAnalyzerStep3ProductPrice)
+                                                                        .add(jlbAnalyzerStep3ProductName)
+                                                                        .add(jlbAnalyzerStep3ProductPriceDPH)))
+                                                        .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                                                .add(jlbAnalyzerStep3ProductParameterName)
+                                                                .add(jlbAnalyzerStep3ProductParameterValue)
+                                                                .add(jlbAnalyzerStep3ProductDescription)))
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                                                        .add(jtfAnalyzerStep3ProductParameterName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jtfAnalyzerStep3ProductDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                                                        .add(jtfAnalyzerStep3ProductPrice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                                                        .add(jtfAnalyzerStep3ProductName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+                                                        .add(jtfAnalyzerStep3ProductPriceDPH, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))))
+                                .addContainerGap())
+                );
+                jpAnalyzerStep3Layout.setVerticalGroup(
+                        jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductName))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbAnalyzerStep3ProductPrice)
+                                        .add(jtfAnalyzerStep3ProductPrice, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jlbAnalyzerStep3ProductPriceDPH)
+                                        .add(jtfAnalyzerStep3ProductPriceDPH, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductDescription, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductDescription))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductParameterName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductParameterName))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductParameterValue))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 94, Short.MAX_VALUE)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbAnalyzerStep3Url)
+                                        .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jtfAnalyzerStep3Preview))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jtfAnalyzerStep3PreviewDescription)
+                                .addContainerGap())
+                );
+
                 setComponent(jpMainPanel);
                 setMenuBar(jmbMenuBar);
                 setStatusBar(jpStatusPanel);
@@ -706,19 +1356,49 @@ public class AppView extends FrameView {
 	private void jtfCrawlerAddUrlKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtfCrawlerAddUrlKeyReleased
 		// TODO add your handling code here:
 	}//GEN-LAST:event_jtfCrawlerAddUrlKeyReleased
+
+	private void jcbAnalyzerStep1SampleConditionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
+		jpAnalyzerStep2TopMain.removeAll();
+		analyzerStep2Components.clear();
+		analyzerLoadConditionsLocked = false;
+	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JTextArea jTextArea1;
+        private javax.swing.JButton jbtAnalyzerStep2RemoveLast;
+        private javax.swing.JButton jbtAnalyzerStep2TopAddComponent;
+        private javax.swing.JButton jbtAnalyzerStepNext;
+        private javax.swing.JButton jbtAnalyzerStepPrev;
         private javax.swing.JButton jbtCrawlerAddUrl;
         private javax.swing.JButton jbtCrawlerAddUrlsFromFile;
         private javax.swing.JButton jbtCrawlerRemoveUrls;
         private javax.swing.JButton jbtCrawlerRun;
         private javax.swing.JButton jbtShowAddCrawlerUrlDialog;
+        private javax.swing.JComboBox jcbAnalyzerStep1SampleConditions;
         private javax.swing.JDialog jdCrawlerAddUrl;
         private javax.swing.JFileChooser jfchCrawlerUrlsChooser;
+        private javax.swing.JLabel jlbAnalyzerStep;
+        private javax.swing.JLabel jlbAnalyzerStep1Sample;
+        private javax.swing.JButton jlbAnalyzerStep2Preview;
+        private javax.swing.JLabel jlbAnalyzerStep2Url;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductDescription;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductName;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductParameterName;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductParameterValue;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductPrice;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductPriceDPH;
+        private javax.swing.JLabel jlbAnalyzerStep3Url;
         private javax.swing.JLabel jlbClearFlashMessages;
         private javax.swing.JLabel jlbCrawlerAddUrlDialog;
         private javax.swing.JList jlstCrawlerQueue;
         private javax.swing.JMenuBar jmbMenuBar;
+        private javax.swing.JPanel jpAnalyzer;
+        private javax.swing.JPanel jpAnalyzerNavigation;
+        private javax.swing.JPanel jpAnalyzerStep1;
+        private javax.swing.JPanel jpAnalyzerStep2;
+        private javax.swing.JPanel jpAnalyzerStep2TopMain;
+        private javax.swing.JPanel jpAnalyzerStep3;
         private javax.swing.JPanel jpCrawler;
         private javax.swing.JPanel jpCrawlerBodyBottom;
         private javax.swing.JPanel jpCrawlerBodyLeft;
@@ -727,11 +1407,25 @@ public class AppView extends FrameView {
         private javax.swing.JPanel jpHeaderPanel;
         private javax.swing.JPanel jpMainPanel;
         private javax.swing.JPanel jpStatusPanel;
+        private javax.swing.JScrollPane jspAnalyzerStep2Top;
         private javax.swing.JScrollPane jspCrawlerBodyLeft;
         private javax.swing.JScrollPane jspCrawlerConsole;
         private javax.swing.JSplitPane jsplpCrawlerConsoleSplitPane;
+        private javax.swing.JTextArea jtaAnalyzerStep2TopDescription;
+        private javax.swing.JEditorPane jtaAnalyzerStep3Description;
         private javax.swing.JTextArea jtaCrawlerConsole;
         private javax.swing.JTextArea jtaCrawlerFlashMessages;
+        private javax.swing.JLabel jtfAnalyzerStep2PreviewDescription;
+        private javax.swing.JTextField jtfAnalyzerStep2Url;
+        private javax.swing.JButton jtfAnalyzerStep3Preview;
+        private javax.swing.JLabel jtfAnalyzerStep3PreviewDescription;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductDescription;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductName;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductParameterName;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductParameterValue;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductPrice;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductPriceDPH;
+        private javax.swing.JTextField jtfAnalyzerStep3Url;
         private javax.swing.JTextField jtfCrawlerAddUrl;
         private javax.swing.JTabbedPane jtpTabbedPane;
         private javax.swing.JProgressBar progressBar;
@@ -747,4 +1441,12 @@ public class AppView extends FrameView {
 	private DefaultListModel crawlerQueueModel;
 	private List<JLabel> flashMessagesList;
 	private static AppView appView;
+	private int actualAnalyzerStep = 1;
+	private int analyzerStepsCount = 3;
+	private JPanel actualAnalyzerStepPanel;
+	private int analyzerStep2countOfComponents = 0;
+	private List<JReflectorBox> analyzerStep2Components;
+	private Methods analyzerMethods;
+	private String analyzerComponents;
+	private boolean analyzerLoadConditionsLocked = false;
 }
