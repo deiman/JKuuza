@@ -3,6 +3,7 @@ package com.github.mefi.jkuuza.data;
 import com.github.mefi.jkuuza.analyzer.Case;
 import com.github.mefi.jkuuza.analyzer.Condition;
 import com.github.mefi.jkuuza.analyzer.Rules;
+import com.github.mefi.jkuuza.model.BasicProductProperties;
 import com.github.mefi.jkuuza.parser.ContentAnalyzer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,12 +27,12 @@ public class AnalyzerCasesLoader {
 		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "footer"));
 		
 		Rules extractionRule1 = new Rules();
-		extractionRule1.setNameSelector("aaa");
-		extractionRule1.setPriceSelector("bbb");
-		extractionRule1.setPriceDPHSelector("ccc");
-		extractionRule1.setDescriptionSelector("ddd");
-		extractionRule1.setParamNamesSelector("eee");
-		extractionRule1.setParamValuesSelector("fff");
+		extractionRule1.add(BasicProductProperties.NAME, "aaa");
+		extractionRule1.add(BasicProductProperties.DESCRIPTION.toString(), "bbb");
+		extractionRule1.add(BasicProductProperties.PRICE.toString(), "ccc");
+		extractionRule1.add(BasicProductProperties.PRICE_DPH.toString(), "ddd");
+		extractionRule1.add(BasicProductProperties.PARAMETER_NAME.toString(), "eee");
+		extractionRule1.add(BasicProductProperties.PARAMETER_VALUE.toString(), "fff");
 
 		Case case1 = new Case(conditions1, extractionRule1);
 		case1.setPreviewUrl("http://vkfoto.cz/index.php");
@@ -48,12 +49,12 @@ public class AnalyzerCasesLoader {
 		conditions2.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "ddd"));
 
 		Rules extractionRule2 = new Rules();
-		extractionRule2.setNameSelector("bla");
-		extractionRule2.setPriceSelector("ble");
-		extractionRule2.setPriceDPHSelector("bli");
-		extractionRule2.setDescriptionSelector("blo");
-		extractionRule2.setParamNamesSelector("blu");
-		extractionRule2.setParamValuesSelector("blah");
+		extractionRule2.add(BasicProductProperties.NAME.toString(), "aaa");
+		extractionRule2.add(BasicProductProperties.DESCRIPTION.toString(), "bbb");
+		extractionRule2.add(BasicProductProperties.PRICE.toString(), "ccc");
+		extractionRule2.add(BasicProductProperties.PRICE_DPH.toString(), "ddd");
+		extractionRule2.add(BasicProductProperties.PARAMETER_NAME.toString(), "eee");
+		extractionRule2.add(BasicProductProperties.PARAMETER_VALUE.toString(), "fff");
 
 		Case case2 = new Case(conditions2, extractionRule2);
 		case2.setPreviewUrl("http://czc.cz/index.php");

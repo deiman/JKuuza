@@ -1,63 +1,61 @@
 package com.github.mefi.jkuuza.analyzer;
 
+import com.github.mefi.jkuuza.model.BasicProductProperties;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author Marek Pilecky
  */
 public class Rules {
 
-	private String nameSelector;
-	private String priceSelector;
-	private String priceDPHSelector;
-	private String descriptionSelector;
-	private String paramNamesSelector;
-	private String paramValuesSelector;
+	Map<String, String> map;
 
-	public String getDescriptionSelector() {
-		return descriptionSelector;
+	public Rules() {
+		map = new HashMap<String, String>();
 	}
 
-	public void setDescriptionSelector(String descriptionSelector) {
-		this.descriptionSelector = descriptionSelector;
+	/**
+	 * Add property and its selector
+	 *
+	 * @param property
+	 * @param selector
+	 */
+	public void add(String property, String selector) {
+		map.put(property, selector);
 	}
 
-	public String getNameSelector() {
-		return nameSelector;
+	/**
+	 * Add property and its selector
+	 *
+	 * @param property
+	 * @param selector
+	 */
+	public void add(BasicProductProperties property, String selector) {
+		map.put(property.toString(), selector);
 	}
 
-	public void setNameSelector(String nameSelector) {
-		this.nameSelector = nameSelector;
+	/**
+	 * Return selector by property name
+	 *
+	 * @param property
+	 * @return selector or empty string if property dosn't exists
+	 */
+	public String getSelector(String property) {
+		if(map.get(property) == null) {
+			return "";
+		}
+		return map.get(property);
 	}
 
-	public String getParamNamesSelector() {
-		return paramNamesSelector;
-	}
-
-	public void setParamNamesSelector(String paramNamesSelector) {
-		this.paramNamesSelector = paramNamesSelector;
-	}
-
-	public String getParamValuesSelector() {
-		return paramValuesSelector;
-	}
-
-	public void setParamValuesSelector(String paramValuesSelector) {
-		this.paramValuesSelector = paramValuesSelector;
-	}
-
-	public String getPriceDPHSelector() {
-		return priceDPHSelector;
-	}
-
-	public void setPriceDPHSelector(String priceDPHSelector) {
-		this.priceDPHSelector = priceDPHSelector;
-	}
-
-	public String getPriceSelector() {
-		return priceSelector;
-	}
-
-	public void setPriceSelector(String priceSelector) {
-		this.priceSelector = priceSelector;
+	/**
+	 * Return selector by property name
+	 *
+	 * @param property
+	 * @return selector or empty string if property dosn't exists
+	 */
+	public String getSelector(BasicProductProperties property) {
+		return getSelector(property.toString());
 	}
 }

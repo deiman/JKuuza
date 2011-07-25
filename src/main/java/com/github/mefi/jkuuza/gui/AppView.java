@@ -21,6 +21,7 @@ import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import com.github.mefi.jkuuza.model.PageRepository;
 import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
+import com.github.mefi.jkuuza.model.BasicProductProperties;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -340,12 +341,12 @@ public class AppView extends FrameView {
 		if (checkRequiredExtractionRulesFiledsFilled()) {
 			
 			Rules rules = new Rules();
-			rules.setNameSelector(jtfAnalyzerStep3ProductName.getText());
-			rules.setDescriptionSelector(jtfAnalyzerStep3ProductDescription.getText());
-			rules.setPriceSelector(jtfAnalyzerStep3ProductPrice.getText());
-			rules.setPriceDPHSelector(jtfAnalyzerStep3ProductPriceDPH.getText());
-			rules.setParamNamesSelector(jtfAnalyzerStep3ProductParameterName.getText());
-			rules.setParamValuesSelector(jtfAnalyzerStep3ProductParameterValue.getText());
+			rules.add(BasicProductProperties.NAME ,jtfAnalyzerStep3ProductName.getText());
+			rules.add(BasicProductProperties.DESCRIPTION ,jtfAnalyzerStep3ProductDescription.getText());
+			rules.add(BasicProductProperties.PRICE ,jtfAnalyzerStep3ProductPrice.getText());
+			rules.add(BasicProductProperties.PRICE_DPH ,jtfAnalyzerStep3ProductPriceDPH.getText());
+			rules.add(BasicProductProperties.PARAMETER_NAME ,jtfAnalyzerStep3ProductParameterName.getText());
+			rules.add(BasicProductProperties.PARAMETER_VALUE ,jtfAnalyzerStep3ProductParameterValue.getText());
 
 			List<Condition> conditions = new ArrayList<Condition>();			
 			Component[] comps = jpAnalyzerStep2TopMain.getComponents();
@@ -415,12 +416,12 @@ public class AppView extends FrameView {
 
 	public void setRulesFileds(Rules rule) {
 
-		jtfAnalyzerStep3ProductName.setText(rule.getNameSelector());
-		jtfAnalyzerStep3ProductDescription.setText(rule.getDescriptionSelector());
-		jtfAnalyzerStep3ProductPrice.setText(rule.getPriceSelector());
-		jtfAnalyzerStep3ProductPriceDPH.setText(rule.getPriceDPHSelector());
-		jtfAnalyzerStep3ProductParameterName.setText(rule.getParamNamesSelector());
-		jtfAnalyzerStep3ProductParameterValue.setText(rule.getParamValuesSelector());
+		jtfAnalyzerStep3ProductName.setText(rule.getSelector(BasicProductProperties.NAME));
+		jtfAnalyzerStep3ProductDescription.setText(rule.getSelector(BasicProductProperties.DESCRIPTION));
+		jtfAnalyzerStep3ProductPrice.setText(rule.getSelector(BasicProductProperties.PRICE));
+		jtfAnalyzerStep3ProductPriceDPH.setText(rule.getSelector(BasicProductProperties.PRICE_DPH));
+		jtfAnalyzerStep3ProductParameterName.setText(rule.getSelector(BasicProductProperties.PARAMETER_NAME));
+		jtfAnalyzerStep3ProductParameterValue.setText(rule.getSelector(BasicProductProperties.PARAMETER_VALUE));
 	}
 
 	public void addReflectorBoxToPane(JPanel pane, Methods methods) {
@@ -1287,8 +1288,8 @@ public class AppView extends FrameView {
                 jpAnalyzerStep3Layout.setVerticalGroup(
                         jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep3Layout.createSequentialGroup()
-                                .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jtfAnalyzerStep3ProductName, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                         .add(jlbAnalyzerStep3ProductName))
@@ -1312,7 +1313,7 @@ public class AppView extends FrameView {
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                         .add(jlbAnalyzerStep3ProductParameterValue))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 94, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 84, Short.MAX_VALUE)
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jlbAnalyzerStep3Url)
                                         .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
