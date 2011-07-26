@@ -14,7 +14,7 @@ public class BodyContent extends CouchDbDocument {
 
 	@JsonProperty("_id")
 	private String id;
-	private final String docType = "bodyContent";
+	private String docType;
 	private String url;
 	private String date;
 	private String bodyHtml;
@@ -78,6 +78,10 @@ public class BodyContent extends CouchDbDocument {
 
 	public String getDocType() {
 		return docType;
+	}
+
+	public void setDocType(String docType) {
+		this.docType = docType;
 	}
 
 	/**

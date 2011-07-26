@@ -4,8 +4,10 @@
 package com.github.mefi.jkuuza.gui;
 
 import com.github.mefi.jkuuza.analyzer.Case;
+import com.github.mefi.jkuuza.analyzer.CaseResolver;
 import com.github.mefi.jkuuza.analyzer.Condition;
 import com.github.mefi.jkuuza.analyzer.ConditionsResolver;
+import com.github.mefi.jkuuza.analyzer.ExtractionResolver;
 import com.github.mefi.jkuuza.analyzer.Rules;
 import com.github.mefi.jkuuza.analyzer.Methods;
 import com.github.mefi.jkuuza.analyzer.Reflector;
@@ -22,6 +24,7 @@ import com.github.mefi.jkuuza.model.PageRepository;
 import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
 import com.github.mefi.jkuuza.model.BasicProductProperties;
+import com.github.mefi.jkuuza.model.BodyContentRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -73,6 +76,7 @@ public class AppView extends FrameView {
 
 		initComponents();
 		initAnalyzerSampleConditions();
+		initAnalyzerDomainsToAnalyze();
 
 		crawlerQueueModel = new DefaultListModel();
 		jlstCrawlerQueue.setModel(crawlerQueueModel);
@@ -267,7 +271,7 @@ public class AppView extends FrameView {
 			}
 
 		} catch (Exception ex) {
-			Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -298,21 +302,27 @@ public class AppView extends FrameView {
 				jlbAnalyzerStep.setText("Krok 1/" + analyzerStepsCount);
 				break;
 			case 2:
-				handleAnalyzerStepStatus(2);
-				actualAnalyzerStepPanel = jpAnalyzerStep2;
-				jlbAnalyzerStep.setText("Krok 2/" + analyzerStepsCount);
-				if (!analyzerLoadConditionsLocked) {
-					if (jcbAnalyzerStep1SampleConditions.getSelectedIndex() != 0) {
-						loadSavedConditions(jcbAnalyzerStep1SampleConditions.getSelectedItem().toString());
-						analyzerLoadConditionsLocked = true;
-					} else {
-						addReflectorBoxToPane(jpAnalyzerStep2TopMain, analyzerMethods);
-						analyzerLoadConditionsLocked = true;
+				if (jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
+					handleAnalyzerStepStatus(1);
+					actualAnalyzerStepPanel = jpAnalyzerStep1;
+					--actualAnalyzerStep;
+					displayFlashMessage("Není vybrána doména k extrakci!", FlashMessageType.ERROR);
+				} else {
+					handleAnalyzerStepStatus(2);
+					actualAnalyzerStepPanel = jpAnalyzerStep2;
+					jlbAnalyzerStep.setText("Krok 2/" + analyzerStepsCount);
+					if (!analyzerLoadConditionsLocked) {
+						if (jcbAnalyzerStep1SampleConditions.getSelectedIndex() != 0) {
+							loadSavedConditions(jcbAnalyzerStep1SampleConditions.getSelectedItem().toString());
+							analyzerLoadConditionsLocked = true;
+						} else {
+							addReflectorBoxToPane(jpAnalyzerStep2TopMain, analyzerMethods);
+							analyzerLoadConditionsLocked = true;
+						}
 					}
 				}
-				
 				break;
-			case 3:				
+			case 3:
 				if (jcbAnalyzerStep1SampleConditions.getSelectedIndex() != 0) {
 					loadSavedRules(jcbAnalyzerStep1SampleConditions.getSelectedItem().toString());
 				}
@@ -321,7 +331,18 @@ public class AppView extends FrameView {
 				jlbAnalyzerStep.setText("Krok 3/" + analyzerStepsCount);
 				break;
 			case 4:
-				runAnalyzerProcess();
+				if (checkRequiredExtractionRulesFiledsFilled()) {
+					actualAnalyzerStepPanel = jpAnalyzerStep4;
+					jlbAnalyzerStep.setText("Probíhá analýza");
+					jbtAnalyzerStepPrev.setEnabled(false);
+					runAnalyzerProcess();
+					jbtAnalyzerStepPrev.setEnabled(true);
+					
+				} else {
+					handleAnalyzerStepStatus(3);
+					actualAnalyzerStepPanel = jpAnalyzerStep3;
+					--actualAnalyzerStep;
+				}
 				break;
 			default:
 		}
@@ -333,37 +354,57 @@ public class AppView extends FrameView {
 	}
 
 	protected void runAnalyzerProcess() {
-		Case c = createCase();
-		System.out.println("ok");
+		Case casex = createCase();	
+
+		if (!jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
+			try {
+				CaseResolver caseResolver = new CaseResolver(casex);
+				caseResolver.resolve(jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().toString());
+				
+			//TODO: GONNA CATCH EM ALL!
+			} catch (NoSuchMethodException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvocationTargetException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalArgumentException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (ClassNotFoundException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalAccessException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InstantiationException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} else {
+			displayFlashMessage("CHYBA: Není vybrána doména k extrakci!", FlashMessageType.ERROR);
+		}
+		
+
 	}
 
 	protected Case createCase() {
-		if (checkRequiredExtractionRulesFiledsFilled()) {
-			
-			Rules rules = new Rules();
-			rules.add(BasicProductProperties.NAME ,jtfAnalyzerStep3ProductName.getText());
-			rules.add(BasicProductProperties.DESCRIPTION ,jtfAnalyzerStep3ProductDescription.getText());
-			rules.add(BasicProductProperties.PRICE ,jtfAnalyzerStep3ProductPrice.getText());
-			rules.add(BasicProductProperties.PRICE_DPH ,jtfAnalyzerStep3ProductPriceDPH.getText());
-			rules.add(BasicProductProperties.PARAMETER_NAME ,jtfAnalyzerStep3ProductParameterName.getText());
-			rules.add(BasicProductProperties.PARAMETER_VALUE ,jtfAnalyzerStep3ProductParameterValue.getText());
 
-			List<Condition> conditions = new ArrayList<Condition>();			
-			Component[] comps = jpAnalyzerStep2TopMain.getComponents();
-			for (int i = 0; i < comps.length; i++) {
-				if (comps[i] instanceof JReflectorBox) {
-					JReflectorBox reflectorBox = (JReflectorBox) comps[i];
+		Rules rules = new Rules();
+		rules.add(BasicProductProperties.NAME, jtfAnalyzerStep3ProductName.getText());
+		rules.add(BasicProductProperties.DESCRIPTION, jtfAnalyzerStep3ProductDescription.getText());
+		rules.add(BasicProductProperties.PRICE, jtfAnalyzerStep3ProductPrice.getText());
+		rules.add(BasicProductProperties.PRICE_DPH, jtfAnalyzerStep3ProductPriceDPH.getText());
+		rules.add(BasicProductProperties.PARAMETER_NAME, jtfAnalyzerStep3ProductParameterName.getText());
+		rules.add(BasicProductProperties.PARAMETER_VALUE, jtfAnalyzerStep3ProductParameterValue.getText());
 
-					Condition condition = new Condition(new ContentAnalyzer(), reflectorBox.getModel().getMethodName(), reflectorBox.getModel().getExpected(), reflectorBox.getModel().getParams());
-					conditions.add(condition);
-				}
+		List<Condition> conditions = new ArrayList<Condition>();
+		Component[] comps = jpAnalyzerStep2TopMain.getComponents();
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof JReflectorBox) {
+				JReflectorBox reflectorBox = (JReflectorBox) comps[i];
+
+				Condition condition = new Condition(new ContentAnalyzer(), reflectorBox.getModel().getMethodName(), reflectorBox.getModel().getExpected(), reflectorBox.getModel().getParams());
+				conditions.add(condition);
 			}
-
-			return new Case(conditions, rules);
 		}
-		throw new RuntimeException("chyba");
-	}
 
+		return new Case(conditions, rules);
+	}
 
 	private void initAnalyzerSampleConditions() {
 		Map<String, Case> map = AnalyzerCasesLoader.load();
@@ -373,6 +414,17 @@ public class AppView extends FrameView {
 			sampleHosts.add(entry.getKey());
 		}
 		jcbAnalyzerStep1SampleConditions.setModel(new DefaultComboBoxModel(sampleHosts.toArray()));
+	}
+
+	private void initAnalyzerDomainsToAnalyze() {
+
+		TreeMap<String, Integer> map = getCrawledDomains();
+		List<String> hosts = new ArrayList<String>();
+		hosts.add("");
+		for (Map.Entry<String, Integer> en : map.entrySet()) {
+			hosts.add(en.getKey());
+		}
+		jcbAnalyzerStep1DomainsToAnalyze.setModel(new DefaultComboBoxModel(hosts.toArray()));
 	}
 
 	public void handleAnalyzerStepStatus(int step) {
@@ -551,7 +603,7 @@ public class AppView extends FrameView {
 		return list;
 	}
 
-	public void getCrawledDomains() {
+	public TreeMap<String, Integer> getCrawledDomains() {
 		DbConnector conn = new DbConnector();
 		PageRepository pageRepository = new PageRepository(conn.getConnection());
 
@@ -561,10 +613,7 @@ public class AppView extends FrameView {
 
 		sortedMap.putAll(map);
 
-		System.out.println("results");
-		for (String key : sortedMap.keySet()) {
-			System.out.println("key/value: " + key + "/" + sortedMap.get(key));
-		}
+		return sortedMap;
 
 	}
 
@@ -672,6 +721,7 @@ public class AppView extends FrameView {
                 jTextArea1 = new javax.swing.JTextArea();
                 jcbAnalyzerStep1SampleConditions = new javax.swing.JComboBox();
                 jlbAnalyzerStep1Sample = new javax.swing.JLabel();
+                jcbAnalyzerStep1DomainsToAnalyze = new javax.swing.JComboBox();
                 jpAnalyzerStep2 = new javax.swing.JPanel();
                 jtaAnalyzerStep2TopDescription = new javax.swing.JTextArea();
                 jspAnalyzerStep2Top = new javax.swing.JScrollPane();
@@ -700,6 +750,7 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep3ProductPriceDPH = new javax.swing.JLabel();
                 jtfAnalyzerStep3ProductPriceDPH = new javax.swing.JTextField();
                 jtaAnalyzerStep3Description = new javax.swing.JEditorPane();
+                jpAnalyzerStep4 = new javax.swing.JPanel();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
                 jpMainPanel.setPreferredSize(new java.awt.Dimension(800, 527));
@@ -1078,25 +1129,35 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep1Sample.setText(resourceMap.getString("jlbAnalyzerStep1Sample.text")); // NOI18N
                 jlbAnalyzerStep1Sample.setName("jlbAnalyzerStep1Sample"); // NOI18N
 
+                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+                jcbAnalyzerStep1DomainsToAnalyze.setName("jcbAnalyzerStep1DomainsToAnalyze"); // NOI18N
+
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep1Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep1);
                 jpAnalyzerStep1.setLayout(jpAnalyzerStep1Layout);
                 jpAnalyzerStep1Layout.setHorizontalGroup(
                         jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
-                                .addContainerGap()
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
-                                                .add(jlbAnalyzerStep1Sample)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                                .addContainerGap()
+                                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                                                .add(jlbAnalyzerStep1Sample)
+                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                                .add(73, 73, 73)
+                                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
                 );
                 jpAnalyzerStep1Layout.setVerticalGroup(
                         jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
                                 .add(jTextArea1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 293, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 259, Short.MAX_VALUE)
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jlbAnalyzerStep1Sample)
                                         .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -1323,6 +1384,19 @@ public class AppView extends FrameView {
                                 .addContainerGap())
                 );
 
+                jpAnalyzerStep4.setName("jpAnalyzerStep4"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpAnalyzerStep4Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep4);
+                jpAnalyzerStep4.setLayout(jpAnalyzerStep4Layout);
+                jpAnalyzerStep4Layout.setHorizontalGroup(
+                        jpAnalyzerStep4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 405, Short.MAX_VALUE)
+                );
+                jpAnalyzerStep4Layout.setVerticalGroup(
+                        jpAnalyzerStep4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 254, Short.MAX_VALUE)
+                );
+
                 setComponent(jpMainPanel);
                 setMenuBar(jmbMenuBar);
                 setStatusBar(jpStatusPanel);
@@ -1363,7 +1437,6 @@ public class AppView extends FrameView {
 		analyzerStep2Components.clear();
 		analyzerLoadConditionsLocked = false;
 	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
-
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JTextArea jTextArea1;
@@ -1376,6 +1449,7 @@ public class AppView extends FrameView {
         private javax.swing.JButton jbtCrawlerRemoveUrls;
         private javax.swing.JButton jbtCrawlerRun;
         private javax.swing.JButton jbtShowAddCrawlerUrlDialog;
+        private javax.swing.JComboBox jcbAnalyzerStep1DomainsToAnalyze;
         private javax.swing.JComboBox jcbAnalyzerStep1SampleConditions;
         private javax.swing.JDialog jdCrawlerAddUrl;
         private javax.swing.JFileChooser jfchCrawlerUrlsChooser;
@@ -1400,6 +1474,7 @@ public class AppView extends FrameView {
         private javax.swing.JPanel jpAnalyzerStep2;
         private javax.swing.JPanel jpAnalyzerStep2TopMain;
         private javax.swing.JPanel jpAnalyzerStep3;
+        private javax.swing.JPanel jpAnalyzerStep4;
         private javax.swing.JPanel jpCrawler;
         private javax.swing.JPanel jpCrawlerBodyBottom;
         private javax.swing.JPanel jpCrawlerBodyLeft;
@@ -1450,4 +1525,5 @@ public class AppView extends FrameView {
 	private Methods analyzerMethods;
 	private String analyzerComponents;
 	private boolean analyzerLoadConditionsLocked = false;
+
 }

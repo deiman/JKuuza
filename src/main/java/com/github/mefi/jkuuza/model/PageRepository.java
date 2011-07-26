@@ -1,13 +1,8 @@
 package com.github.mefi.jkuuza.model;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.ViewResult;
@@ -27,6 +22,23 @@ public class PageRepository extends CouchDbRepositorySupport<Page> {
 	@GenerateView
 	public List<Page> findByHost(String host) {
 		return queryView("by_host", host);
+	}
+
+
+	@View(name = "find_urls_by_host", map = "function(doc) { if(doc.docType == \"page\") { emit(doc.host, doc.url) }}")
+	public List<String> findUrlsByHost(String host) {
+		List<String> list = new ArrayList<String>();
+
+		ViewQuery query = new ViewQuery()
+					.designDocId("_design/Page")
+					.viewName("find_urls_by_host")
+					.key(host);
+		ViewResult r = db.queryView(query);
+
+		for (ViewResult.Row row : r.getRows()) {
+			list.add(row.getValue());
+		}
+		return list;
 	}
 
 	/**
