@@ -109,7 +109,9 @@ public class TimeoutURLPool implements URLPool {
 		_max_timeouts = max_;
 	}
 
+	// start of chaged part by Marek Pilecky
 	public URLPool getUrlPool() {
 		return _url_pool;
 	}
+	//end of chaged part
 }
