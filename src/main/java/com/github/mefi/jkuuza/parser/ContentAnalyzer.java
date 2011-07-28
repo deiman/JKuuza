@@ -32,4 +32,6 @@ public class ContentAnalyzer extends ContentHelper {
 		return !doc.getElementsByTag(tagName).val().isEmpty();
 	}
 
+
+
 }

@@ -4,6 +4,7 @@ import com.github.mefi.jkuuza.app.db.DbConnector;
 import com.github.mefi.jkuuza.model.BodyContent;
 import com.github.mefi.jkuuza.model.BodyContentRepository;
 import com.github.mefi.jkuuza.model.PageRepository;
+import com.github.mefi.jkuuza.model.Product;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.jsoup.Jsoup;
@@ -21,6 +22,18 @@ public class CaseResolver {
 		this.casex = casex;
 	}
 
+	/**
+	 * Finds all documents in db having specified host. Firstly applies all conditions from case to
+	 * each of them. If pass, then Rules ale applied
+	 *
+	 * @param host 
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
 	public void resolve(String host) throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
 		DbConnector conn = new DbConnector();
@@ -39,10 +52,11 @@ public class CaseResolver {
 			Document doc = Jsoup.parse(bodyContent.getBodyHtml());
 
 			if (conditionsResolver.resolve(doc)) {
-				//TODO: - implement getting od values
-				extractionResolver.resolve(doc);
+				Product product = extractionResolver.resolve(doc);
+
+				//TODO: implement saving to db
 			}
-		}		
+		}
 	}
 
 	public void setCasex(Case casex) {
@@ -52,5 +66,4 @@ public class CaseResolver {
 	public Case getCasex() {
 		return casex;
 	}
-
 }

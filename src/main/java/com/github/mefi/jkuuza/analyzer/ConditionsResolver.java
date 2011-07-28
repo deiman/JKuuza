@@ -1,6 +1,7 @@
 package com.github.mefi.jkuuza.analyzer;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.jsoup.nodes.Document;
@@ -13,11 +14,13 @@ import org.jsoup.nodes.Document;
 public class ConditionsResolver {
 
 	List<Condition> conditions;
+	List<Condition> failedConditions;
 
 	public ConditionsResolver(List<Condition> conditions) {
 		this.conditions = conditions;
+		failedConditions = new ArrayList();
 	}
-	
+
 	/**
 	 * Apply all conditions on this Document
 	 *
@@ -30,23 +33,26 @@ public class ConditionsResolver {
 	 * @throws InvocationTargetException
 	 * @throws NoSuchMethodException
 	 */
-	
 	public boolean resolve(Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 
 		boolean okStatus = true;
 		for (Iterator<Condition> it = conditions.iterator(); it.hasNext();) {
 			Condition condition = it.next();
-			
+
 			String[] params = new String[condition.getParams().size()];
 			condition.getParams().toArray(params);
 			condition.getConditionObject().setDocument(doc);
 
 			Object result = Reflector.call(condition.getConditionObject(), condition.getFunctionName(), params);
-			if(!result.toString().equals(condition.getExpectedValue())) {
+			if (!result.toString().equals(condition.getExpectedValue())) {
 				okStatus = false;
+				failedConditions.add(condition);
 			}
 		}
 		return okStatus;
 	}
 
+	public List<Condition> getFailedConditions() {
+		return failedConditions;
+	}
 }

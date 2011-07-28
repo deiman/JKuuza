@@ -25,6 +25,7 @@ import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
 import com.github.mefi.jkuuza.model.BasicProductProperties;
 import com.github.mefi.jkuuza.model.BodyContentRepository;
+import com.github.mefi.jkuuza.model.Product;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -55,6 +56,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -175,7 +177,7 @@ public class AppView extends FrameView {
 			File file = jfchCrawlerUrlsChooser.getSelectedFile();
 			setCrawlerQueueFromFile(file);
 		} else {
-			//System.out.println("File access cancelled by user.");
+			//jtaAnalyzerStep3Preview.append("File access cancelled by user.");
 		}
 	}
 
@@ -337,7 +339,7 @@ public class AppView extends FrameView {
 					jbtAnalyzerStepPrev.setEnabled(false);
 					runAnalyzerProcess();
 					jbtAnalyzerStepPrev.setEnabled(true);
-					
+
 				} else {
 					handleAnalyzerStepStatus(3);
 					actualAnalyzerStepPanel = jpAnalyzerStep3;
@@ -354,14 +356,14 @@ public class AppView extends FrameView {
 	}
 
 	protected void runAnalyzerProcess() {
-		Case casex = createCase();	
+		Case casex = createCase();
 
 		if (!jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
 			try {
 				CaseResolver caseResolver = new CaseResolver(casex);
 				caseResolver.resolve(jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().toString());
-				
-			//TODO: GONNA CATCH EM ALL!
+
+				//TODO: GONNA CATCH EM ALL!
 			} catch (NoSuchMethodException ex) {
 				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (InvocationTargetException ex) {
@@ -378,19 +380,13 @@ public class AppView extends FrameView {
 		} else {
 			displayFlashMessage("CHYBA: Není vybrána doména k extrakci!", FlashMessageType.ERROR);
 		}
-		
+
 
 	}
 
 	protected Case createCase() {
 
-		Rules rules = new Rules();
-		rules.add(BasicProductProperties.NAME, jtfAnalyzerStep3ProductName.getText());
-		rules.add(BasicProductProperties.DESCRIPTION, jtfAnalyzerStep3ProductDescription.getText());
-		rules.add(BasicProductProperties.PRICE, jtfAnalyzerStep3ProductPrice.getText());
-		rules.add(BasicProductProperties.PRICE_DPH, jtfAnalyzerStep3ProductPriceDPH.getText());
-		rules.add(BasicProductProperties.PARAMETER_NAME, jtfAnalyzerStep3ProductParameterName.getText());
-		rules.add(BasicProductProperties.PARAMETER_VALUE, jtfAnalyzerStep3ProductParameterValue.getText());
+		Rules rules = createRulesFromTextFields();
 
 		List<Condition> conditions = new ArrayList<Condition>();
 		Component[] comps = jpAnalyzerStep2TopMain.getComponents();
@@ -537,20 +533,41 @@ public class AppView extends FrameView {
 
 	@Action
 	public void previewProductExtracting() {
-		if (jtfAnalyzerStep2Url.getText().equals("http://") || jtfAnalyzerStep2Url.getText().equals("")) {
-			try {
-				displayFlashMessage("CHYBA: Vyplňte prosím URL!", FlashMessageType.ERROR);
-				URL url = new URL(jtfAnalyzerStep2Url.getText());
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		if (jtfAnalyzerStep3Url.getText().equals("http://") || jtfAnalyzerStep3Url.getText().equals("")) {
+			displayFlashMessage("CHYBA: Vyplňte prosím URL!", FlashMessageType.ERROR);
+		} else {
+			try {				
+				URL url = new URL(jtfAnalyzerStep3Url.getText());
 				Document doc = Jsoup.parse(url, 5000);
+				Rules rules = createRulesFromTextFields();
+				ExtractionResolver extractionResolver = new ExtractionResolver(rules);
 
+				//TODO:
+				Product product = extractionResolver.resolve(doc);
+
+				clearFlashMessages();
+				jepAnalyzerStep3Preview.setText("");
+
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.append(stringBuilder);
+
+				stringBuilder.append("<strong>Název:</strong> ").append(product.getName()).append("<br>");
+				stringBuilder.append("<strong>Popis:</strong> ").append(product.getDescription()).append("<br>");
+				stringBuilder.append("<strong>Cena:</strong> ").append(product.getPrice()).append("<br>");
+				stringBuilder.append("<strong>Cena s DPH:</strong> ").append(product.getPriceDPH()).append("<br>");
+				stringBuilder.append("<br>");
+				stringBuilder.append("<strong> --- PARAMETRY --- </strong><br>");
+				for (Map.Entry<String, String> en : product.getParams().entrySet()) {
+					stringBuilder.append("<strong>").append(en.getKey()).append("</strong>" + " - ").append(en.getValue()).append("<br>");
+				}
+
+				jepAnalyzerStep3Preview.setText(stringBuilder.toString());
 
 			} catch (MalformedURLException ex) {
 				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IOException ex) {
 				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} else {
 		}
 	}
 
@@ -561,15 +578,29 @@ public class AppView extends FrameView {
 		} else {
 			try {
 				URL url = new URL(jtfAnalyzerStep2Url.getText());
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				Document doc = Jsoup.parse(url, 5000);
+				Document doc = Jsoup.parse(url, 10000);
 				List<Condition> conditions = createConditionsFromReflectorBoxes(analyzerStep2Components);
 				try {
 					ConditionsResolver resolver = new ConditionsResolver(conditions);
 					if (resolver.resolve(doc)) {
-						displayFlashMessage("test problehl uspesne", FlashMessageType.INFO);
+						clearFlashMessages();
+						displayFlashMessage("Všechny podmínky byly splněny.", FlashMessageType.INFO);
 					} else {
-						displayFlashMessage("fail", FlashMessageType.ERROR);
+						clearFlashMessages();
+						List<Condition> failedConditions = resolver.getFailedConditions();
+						for (int i = 0; i < failedConditions.size(); i++) {
+							Condition condition = failedConditions.get(i);
+							String parameters = "";
+							for (int j = 0; j < condition.getParams().size(); j++) {
+								parameters += condition.getParams().get(j);
+								if (j < condition.getParams().size() - 1) {
+									parameters += ", ";
+								}
+							}
+							String message = condition.getFunctionName() + "( " + parameters + " ) " + "- [ " + condition.getExpectedValue() + " ]";
+							displayFlashMessage("Nesplněna podmínka: " + message, FlashMessageType.INFO);
+						}
+
 					}
 				} catch (InstantiationException ex) {
 					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
@@ -602,6 +633,19 @@ public class AppView extends FrameView {
 		}
 		return list;
 	}
+
+	public Rules createRulesFromTextFields() {
+		Rules rules = new Rules();
+		rules.add(BasicProductProperties.NAME, jtfAnalyzerStep3ProductName.getText());
+		rules.add(BasicProductProperties.DESCRIPTION, jtfAnalyzerStep3ProductDescription.getText());
+		rules.add(BasicProductProperties.PRICE, jtfAnalyzerStep3ProductPrice.getText());
+		rules.add(BasicProductProperties.PRICE_DPH, jtfAnalyzerStep3ProductPriceDPH.getText());
+		rules.add(BasicProductProperties.PARAMETER_NAME, jtfAnalyzerStep3ProductParameterName.getText());
+		rules.add(BasicProductProperties.PARAMETER_VALUE, jtfAnalyzerStep3ProductParameterValue.getText());
+
+		return rules;
+	}
+
 
 	public TreeMap<String, Integer> getCrawledDomains() {
 		DbConnector conn = new DbConnector();
@@ -750,6 +794,9 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep3ProductPriceDPH = new javax.swing.JLabel();
                 jtfAnalyzerStep3ProductPriceDPH = new javax.swing.JTextField();
                 jtaAnalyzerStep3Description = new javax.swing.JEditorPane();
+                jlbAnalyzerStep3Preview = new javax.swing.JLabel();
+                jspAnalyzerStep3Preview = new javax.swing.JScrollPane();
+                jepAnalyzerStep3Preview = new javax.swing.JEditorPane();
                 jpAnalyzerStep4 = new javax.swing.JPanel();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
@@ -1289,6 +1336,7 @@ public class AppView extends FrameView {
                 jtfAnalyzerStep3Url.setText(resourceMap.getString("jtfAnalyzerStep3Url.text")); // NOI18N
                 jtfAnalyzerStep3Url.setName("jtfAnalyzerStep3Url"); // NOI18N
 
+                jtfAnalyzerStep3Preview.setAction(actionMap.get("previewProductExtracting")); // NOI18N
                 jtfAnalyzerStep3Preview.setText(resourceMap.getString("jtfAnalyzerStep3Preview.text")); // NOI18N
                 jtfAnalyzerStep3Preview.setName("jtfAnalyzerStep3Preview"); // NOI18N
 
@@ -1308,6 +1356,16 @@ public class AppView extends FrameView {
                 jtaAnalyzerStep3Description.setContentType(resourceMap.getString("jtaAnalyzerStep3Description.contentType")); // NOI18N
                 jtaAnalyzerStep3Description.setText(resourceMap.getString("jtaAnalyzerStep3Description.text")); // NOI18N
                 jtaAnalyzerStep3Description.setName("jtaAnalyzerStep3Description"); // NOI18N
+
+                jlbAnalyzerStep3Preview.setText(resourceMap.getString("jlbAnalyzerStep3Preview.text")); // NOI18N
+                jlbAnalyzerStep3Preview.setName("jlbAnalyzerStep3Preview"); // NOI18N
+
+                jspAnalyzerStep3Preview.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                jspAnalyzerStep3Preview.setName("jspAnalyzerStep3Preview"); // NOI18N
+
+                jepAnalyzerStep3Preview.setContentType(resourceMap.getString("jepAnalyzerStep3Preview.contentType")); // NOI18N
+                jepAnalyzerStep3Preview.setName("jepAnalyzerStep3Preview"); // NOI18N
+                jspAnalyzerStep3Preview.setViewportView(jepAnalyzerStep3Preview);
 
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep3Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep3);
                 jpAnalyzerStep3.setLayout(jpAnalyzerStep3Layout);
@@ -1335,9 +1393,11 @@ public class AppView extends FrameView {
                                                         .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                                                                 .add(jlbAnalyzerStep3ProductParameterName)
                                                                 .add(jlbAnalyzerStep3ProductParameterValue)
-                                                                .add(jlbAnalyzerStep3ProductDescription)))
+                                                                .add(jlbAnalyzerStep3ProductDescription)
+                                                                .add(jlbAnalyzerStep3Preview)))
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                                                         .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                                                         .add(jtfAnalyzerStep3ProductParameterName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jtfAnalyzerStep3ProductDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
@@ -1374,7 +1434,11 @@ public class AppView extends FrameView {
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                         .add(jlbAnalyzerStep3ProductParameterValue))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 84, Short.MAX_VALUE)
+                                .add(18, 18, 18)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                                        .add(jlbAnalyzerStep3Preview))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jlbAnalyzerStep3Url)
                                         .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1452,11 +1516,13 @@ public class AppView extends FrameView {
         private javax.swing.JComboBox jcbAnalyzerStep1DomainsToAnalyze;
         private javax.swing.JComboBox jcbAnalyzerStep1SampleConditions;
         private javax.swing.JDialog jdCrawlerAddUrl;
+        private javax.swing.JEditorPane jepAnalyzerStep3Preview;
         private javax.swing.JFileChooser jfchCrawlerUrlsChooser;
         private javax.swing.JLabel jlbAnalyzerStep;
         private javax.swing.JLabel jlbAnalyzerStep1Sample;
         private javax.swing.JButton jlbAnalyzerStep2Preview;
         private javax.swing.JLabel jlbAnalyzerStep2Url;
+        private javax.swing.JLabel jlbAnalyzerStep3Preview;
         private javax.swing.JLabel jlbAnalyzerStep3ProductDescription;
         private javax.swing.JLabel jlbAnalyzerStep3ProductName;
         private javax.swing.JLabel jlbAnalyzerStep3ProductParameterName;
@@ -1484,6 +1550,7 @@ public class AppView extends FrameView {
         private javax.swing.JPanel jpMainPanel;
         private javax.swing.JPanel jpStatusPanel;
         private javax.swing.JScrollPane jspAnalyzerStep2Top;
+        private javax.swing.JScrollPane jspAnalyzerStep3Preview;
         private javax.swing.JScrollPane jspCrawlerBodyLeft;
         private javax.swing.JScrollPane jspCrawlerConsole;
         private javax.swing.JSplitPane jsplpCrawlerConsoleSplitPane;
@@ -1525,5 +1592,4 @@ public class AppView extends FrameView {
 	private Methods analyzerMethods;
 	private String analyzerComponents;
 	private boolean analyzerLoadConditionsLocked = false;
-
 }

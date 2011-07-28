@@ -43,7 +43,7 @@ public class Rules {
 	 * @return selector or empty string if property dosn't exists
 	 */
 	public String getSelector(String property) {
-		if(map.get(property) == null) {
+		if (map.get(property) == null) {
 			return "";
 		}
 		return map.get(property);
@@ -57,5 +57,14 @@ public class Rules {
 	 */
 	public String getSelector(BasicProductProperties property) {
 		return getSelector(property.toString());
+	}
+
+	/**
+	 * Returns map with rules values
+	 *
+	 * @return map where key is property name and value is selector
+	 */
+	public Map<String, String> getValues() {
+		return map;
 	}
 }

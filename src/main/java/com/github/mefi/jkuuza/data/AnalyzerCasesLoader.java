@@ -22,20 +22,20 @@ public class AnalyzerCasesLoader {
 		Map<String, Case> map = new HashMap<String, Case>();
 		
 		List<Condition> conditions1 = new ArrayList<Condition>();
-		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "banner"));
-		conditions1.add(new Condition(new ContentAnalyzer(), "docHasTag", "true", "h1"));
-		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "footer"));
+		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "rezervace"));
+		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "true", "upc"));
+		conditions1.add(new Condition(new ContentAnalyzer(), "docHasClass", "false", "foobarbaz"));
 		
 		Rules extractionRule1 = new Rules();
-		extractionRule1.add(BasicProductProperties.NAME, "aaa");
-		extractionRule1.add(BasicProductProperties.DESCRIPTION.toString(), "bbb");
-		extractionRule1.add(BasicProductProperties.PRICE.toString(), "ccc");
-		extractionRule1.add(BasicProductProperties.PRICE_DPH.toString(), "ddd");
-		extractionRule1.add(BasicProductProperties.PARAMETER_NAME.toString(), "eee");
-		extractionRule1.add(BasicProductProperties.PARAMETER_VALUE.toString(), "fff");
+		extractionRule1.add(BasicProductProperties.NAME, ".detail h1");
+		extractionRule1.add(BasicProductProperties.DESCRIPTION.toString(), ".text-content p[align=justify]");
+		extractionRule1.add(BasicProductProperties.PRICE.toString(), ".cenabez span");
+		extractionRule1.add(BasicProductProperties.PRICE_DPH.toString(), ".cenas span");
+		extractionRule1.add(BasicProductProperties.PARAMETER_NAME.toString(), "#tParametry span.label");
+		extractionRule1.add(BasicProductProperties.PARAMETER_VALUE.toString(), "#tParametry span.value");
 
 		Case case1 = new Case(conditions1, extractionRule1);
-		case1.setPreviewUrl("http://vkfoto.cz/index.php");
+		case1.setPreviewUrl("http://www.vkfoto.cz/nikon-28-300-mm-f-3-5-5-6g-ed-af-s-vr/");
 
 		map.put("vkfoto.cz", case1);
 
