@@ -3,7 +3,6 @@ package com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox;
 import com.github.mefi.jkuuza.analyzer.Condition;
 import com.github.mefi.jkuuza.analyzer.Method;
 import com.github.mefi.jkuuza.analyzer.Methods;
-import com.github.mefi.jkuuza.analyzer.Reflector;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -15,10 +14,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -350,9 +346,13 @@ public class JReflectorBox extends JPanel implements ActionListener {
 
 		jcbMethods.setSelectedItem(selectedItem);
 		jtfExpectedValue.setText(condition.getExpectedValue());
+		model.setExpected(jtfExpectedValue.getText());
+		model.setParams(condition.getParams());
+		
 		for (int i = 0; i < paramFields.size(); i++) {
 			JTextField jTextField = paramFields.get(i);
 			jTextField.setText(condition.getParams().get(i));
+
 		}
 	}
 }
