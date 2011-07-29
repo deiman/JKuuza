@@ -88,7 +88,7 @@ public class LinksExtractor {
 	 * @param host
 	 * @return host in form example.com; foo.example.com; ...
 	 */
-	protected String canonizeHost(String host) {
+	public String canonizeHost(String host) {
 		host = host.trim();
 		host = host.replace("https://", "");
 		host = host.replace("http://", "");
@@ -105,7 +105,7 @@ public class LinksExtractor {
 	 */
 	protected String removePhpsessid(String string) {
 		if (string.contains("PHPSESSID")) {
-			Pattern pattern = Pattern.compile("PHPSESSID=[a-z0-9]{32}[&]?");
+			Pattern pattern = Pattern.compile("PHPSESSID=[a-z0-9]*[&]?");
 			Matcher matcher = pattern.matcher(string);
 			String output = matcher.replaceAll("");
 

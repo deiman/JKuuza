@@ -62,7 +62,7 @@ public class DbSaveWorker extends Worker {
 
 				ContentExtractor contentExtractor = new ContentExtractor(doc);
 
-				Page page = new Page(query.getOriginalURL().toString(), host);
+				Page page = new Page(query.getOriginalURL().toString(), extractor.canonizeHost(host));
 
 				if (contentExtractor.hasMetaDescription()) {
 					page.setDescription(contentExtractor.getMetaDescription());
@@ -105,14 +105,20 @@ public class DbSaveWorker extends Worker {
 		byte[] bytes = resource.getBytes();
 		charset = query.getResource().getContentEncoding();
 
-		if (charset != null && !charset.equals("")) {
-			try {
-				html = new String(bytes, charset);
-			} catch (UnsupportedEncodingException e) {
-				// try it with default charset
-				html = new String(bytes);
-			}
-		} else {
+		if (charset == null || charset.equals("")) {
+			String tempHtml = new String(bytes);
+			Document doc = Jsoup.parse(tempHtml);
+			ContentExtractor contentExtractor = new ContentExtractor(doc);
+			// extract charset from meta
+			if (contentExtractor.hasMetaCharset()) {
+				charset = contentExtractor.getMetaCharset();
+			} 
+		} 
+
+		try {
+			html = new String(bytes, charset);
+		} catch (UnsupportedEncodingException e) {
+			// try it with default charset
 			html = new String(bytes);
 		}
 
