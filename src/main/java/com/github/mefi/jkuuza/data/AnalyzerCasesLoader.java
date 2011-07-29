@@ -31,6 +31,8 @@ public class AnalyzerCasesLoader {
 		extractionRule1.add(BasicProductProperties.DESCRIPTION.toString(), ".text-content p[align=justify]");
 		extractionRule1.add(BasicProductProperties.PRICE.toString(), ".cenabez span");
 		extractionRule1.add(BasicProductProperties.PRICE_DPH.toString(), ".cenas span");
+		extractionRule1.add(BasicProductProperties.TYPE.toString(), ".seznam > .selected > a");
+		extractionRule1.add(BasicProductProperties.PRODUCER.toString(), ".content .vyrobce a");
 		extractionRule1.add(BasicProductProperties.PARAMETER_NAME.toString(), "#tParametry span.label");
 		extractionRule1.add(BasicProductProperties.PARAMETER_VALUE.toString(), "#tParametry span.value");
 

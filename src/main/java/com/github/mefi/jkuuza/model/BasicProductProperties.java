@@ -30,6 +30,18 @@ public enum BasicProductProperties {
 			return "price_dph";
 		}
 	},
+	TYPE {
+		@Override
+		 public String toString() {
+			return "type";
+		}
+	},
+	PRODUCER {
+		@Override
+		 public String toString() {
+			return "producer";
+		}
+	},
 	PARAMETER_NAME {
 		@Override
 		 public String toString() {

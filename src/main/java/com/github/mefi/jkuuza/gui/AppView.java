@@ -468,6 +468,8 @@ public class AppView extends FrameView {
 		jtfAnalyzerStep3ProductDescription.setText(rule.getSelector(BasicProductProperties.DESCRIPTION));
 		jtfAnalyzerStep3ProductPrice.setText(rule.getSelector(BasicProductProperties.PRICE));
 		jtfAnalyzerStep3ProductPriceDPH.setText(rule.getSelector(BasicProductProperties.PRICE_DPH));
+		jtfAnalyzerStep3ProductType.setText(rule.getSelector(BasicProductProperties.TYPE));
+		jtfAnalyzerStep3ProductProducer.setText(rule.getSelector(BasicProductProperties.PRODUCER));
 		jtfAnalyzerStep3ProductParameterName.setText(rule.getSelector(BasicProductProperties.PARAMETER_NAME));
 		jtfAnalyzerStep3ProductParameterValue.setText(rule.getSelector(BasicProductProperties.PARAMETER_VALUE));
 	}
@@ -536,7 +538,7 @@ public class AppView extends FrameView {
 		if (jtfAnalyzerStep3Url.getText().equals("http://") || jtfAnalyzerStep3Url.getText().equals("")) {
 			displayFlashMessage("CHYBA: Vyplňte prosím URL!", FlashMessageType.ERROR);
 		} else {
-			try {				
+			try {
 				URL url = new URL(jtfAnalyzerStep3Url.getText());
 				Document doc = Jsoup.parse(url, 5000);
 				Rules rules = createRulesFromTextFields();
@@ -555,6 +557,8 @@ public class AppView extends FrameView {
 				stringBuilder.append("<strong>Popis:</strong> ").append(product.getDescription()).append("<br>");
 				stringBuilder.append("<strong>Cena:</strong> ").append(product.getPrice()).append("<br>");
 				stringBuilder.append("<strong>Cena s DPH:</strong> ").append(product.getPriceDPH()).append("<br>");
+				stringBuilder.append("<strong>Typ:</strong> ").append(product.getType()).append("<br>");
+				stringBuilder.append("<strong>Výrobce:</strong> ").append(product.getProducer()).append("<br>");				
 				stringBuilder.append("<br>");
 				stringBuilder.append("<strong> --- PARAMETRY --- </strong><br>");
 				for (Map.Entry<String, String> en : product.getParams().entrySet()) {
@@ -640,12 +644,13 @@ public class AppView extends FrameView {
 		rules.add(BasicProductProperties.DESCRIPTION, jtfAnalyzerStep3ProductDescription.getText());
 		rules.add(BasicProductProperties.PRICE, jtfAnalyzerStep3ProductPrice.getText());
 		rules.add(BasicProductProperties.PRICE_DPH, jtfAnalyzerStep3ProductPriceDPH.getText());
+		rules.add(BasicProductProperties.TYPE, jtfAnalyzerStep3ProductType.getText());
+		rules.add(BasicProductProperties.PRODUCER, jtfAnalyzerStep3ProductProducer.getText());
 		rules.add(BasicProductProperties.PARAMETER_NAME, jtfAnalyzerStep3ProductParameterName.getText());
 		rules.add(BasicProductProperties.PARAMETER_VALUE, jtfAnalyzerStep3ProductParameterValue.getText());
 
 		return rules;
 	}
-
 
 	public TreeMap<String, Integer> getCrawledDomains() {
 		DbConnector conn = new DbConnector();
@@ -658,7 +663,6 @@ public class AppView extends FrameView {
 		sortedMap.putAll(map);
 
 		return sortedMap;
-
 	}
 
 	/**
@@ -795,6 +799,10 @@ public class AppView extends FrameView {
                 jtfAnalyzerStep3ProductPriceDPH = new javax.swing.JTextField();
                 jtaAnalyzerStep3Description = new javax.swing.JEditorPane();
                 jlbAnalyzerStep3Preview = new javax.swing.JLabel();
+                jlbAnalyzerStep3ProductType = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductType = new javax.swing.JTextField();
+                jlbAnalyzerStep3ProductProducer = new javax.swing.JLabel();
+                jtfAnalyzerStep3ProductProducer = new javax.swing.JTextField();
                 jspAnalyzerStep3Preview = new javax.swing.JScrollPane();
                 jepAnalyzerStep3Preview = new javax.swing.JEditorPane();
                 jpAnalyzerStep4 = new javax.swing.JPanel();
@@ -1360,6 +1368,18 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep3Preview.setText(resourceMap.getString("jlbAnalyzerStep3Preview.text")); // NOI18N
                 jlbAnalyzerStep3Preview.setName("jlbAnalyzerStep3Preview"); // NOI18N
 
+                jlbAnalyzerStep3ProductType.setText(resourceMap.getString("jlbAnalyzerStep3ProductType.text")); // NOI18N
+                jlbAnalyzerStep3ProductType.setName("jlbAnalyzerStep3ProductType"); // NOI18N
+
+                jtfAnalyzerStep3ProductType.setText(resourceMap.getString("jtfAnalyzerStep3ProductType.text")); // NOI18N
+                jtfAnalyzerStep3ProductType.setName("jtfAnalyzerStep3ProductType"); // NOI18N
+
+                jlbAnalyzerStep3ProductProducer.setText(resourceMap.getString("jlbAnalyzerStep3ProductProducer.text")); // NOI18N
+                jlbAnalyzerStep3ProductProducer.setName("jlbAnalyzerStep3ProductProducer"); // NOI18N
+
+                jtfAnalyzerStep3ProductProducer.setText(resourceMap.getString("jtfAnalyzerStep3ProductProducer.text")); // NOI18N
+                jtfAnalyzerStep3ProductProducer.setName("jtfAnalyzerStep3ProductProducer"); // NOI18N
+
                 jspAnalyzerStep3Preview.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 jspAnalyzerStep3Preview.setName("jspAnalyzerStep3Preview"); // NOI18N
 
@@ -1372,38 +1392,52 @@ public class AppView extends FrameView {
                 jpAnalyzerStep3Layout.setHorizontalGroup(
                         jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep3Layout.createSequentialGroup()
-                                .addContainerGap()
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
                                         .add(jpAnalyzerStep3Layout.createSequentialGroup()
-                                                .add(jlbAnalyzerStep3Url)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jtfAnalyzerStep3Preview))
-                                        .add(jtfAnalyzerStep3PreviewDescription)
-                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                .addContainerGap()
                                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jtaAnalyzerStep3Description, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
                                                         .add(jpAnalyzerStep3Layout.createSequentialGroup()
-                                                                .add(38, 38, 38)
                                                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                                                        .add(jlbAnalyzerStep3ProductPrice)
-                                                                        .add(jlbAnalyzerStep3ProductName)
-                                                                        .add(jlbAnalyzerStep3ProductPriceDPH)))
-                                                        .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                                                .add(jlbAnalyzerStep3ProductParameterName)
-                                                                .add(jlbAnalyzerStep3ProductParameterValue)
-                                                                .add(jlbAnalyzerStep3ProductDescription)
-                                                                .add(jlbAnalyzerStep3Preview)))
+                                                                        .add(jlbAnalyzerStep3ProductProducer)
+                                                                        .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                                                .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                                        .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                                                                                .add(jlbAnalyzerStep3ProductPrice)
+                                                                                                .add(jlbAnalyzerStep3ProductName)
+                                                                                                .add(jlbAnalyzerStep3ProductPriceDPH)
+                                                                                                .add(jlbAnalyzerStep3ProductParameterValue)))
+                                                                                .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                                                        .add(20, 20, 20)
+                                                                                        .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                                                                                .add(jlbAnalyzerStep3ProductParameterName)
+                                                                                                .add(jlbAnalyzerStep3ProductDescription)
+                                                                                                .add(jlbAnalyzerStep3ProductType)))))
+                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                                        .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductParameterName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jtfAnalyzerStep3ProductDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductPrice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductPriceDPH, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductType, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
+                                                                        .add(jtfAnalyzerStep3ProductProducer, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)))
+                                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                                .add(jlbAnalyzerStep3Url)
+                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
+                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                                .add(jtfAnalyzerStep3Preview))))
+                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                .add(100, 100, 100)
+                                                .add(jlbAnalyzerStep3Preview)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(jtfAnalyzerStep3ProductParameterName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jtfAnalyzerStep3ProductDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(jtfAnalyzerStep3ProductPrice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(jtfAnalyzerStep3ProductName, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-                                                        .add(jtfAnalyzerStep3ProductPriceDPH, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))))
+                                                .add(jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE))
+                                        .add(jpAnalyzerStep3Layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(jtfAnalyzerStep3PreviewDescription)))
                                 .addContainerGap())
                 );
                 jpAnalyzerStep3Layout.setVerticalGroup(
@@ -1434,15 +1468,23 @@ public class AppView extends FrameView {
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jtfAnalyzerStep3ProductParameterValue, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                         .add(jlbAnalyzerStep3ProductParameterValue))
-                                .add(18, 18, 18)
-                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                                        .add(jlbAnalyzerStep3Preview))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductType, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductType))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jtfAnalyzerStep3ProductProducer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep3ProductProducer))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jspAnalyzerStep3Preview, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                        .add(jlbAnalyzerStep3Preview))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jpAnalyzerStep3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jlbAnalyzerStep3Url)
-                                        .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(jtfAnalyzerStep3Preview))
+                                        .add(jtfAnalyzerStep3Preview)
+                                        .add(jtfAnalyzerStep3Url, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jtfAnalyzerStep3PreviewDescription)
                                 .addContainerGap())
@@ -1529,6 +1571,8 @@ public class AppView extends FrameView {
         private javax.swing.JLabel jlbAnalyzerStep3ProductParameterValue;
         private javax.swing.JLabel jlbAnalyzerStep3ProductPrice;
         private javax.swing.JLabel jlbAnalyzerStep3ProductPriceDPH;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductProducer;
+        private javax.swing.JLabel jlbAnalyzerStep3ProductType;
         private javax.swing.JLabel jlbAnalyzerStep3Url;
         private javax.swing.JLabel jlbClearFlashMessages;
         private javax.swing.JLabel jlbCrawlerAddUrlDialog;
@@ -1568,6 +1612,8 @@ public class AppView extends FrameView {
         private javax.swing.JTextField jtfAnalyzerStep3ProductParameterValue;
         private javax.swing.JTextField jtfAnalyzerStep3ProductPrice;
         private javax.swing.JTextField jtfAnalyzerStep3ProductPriceDPH;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductProducer;
+        private javax.swing.JTextField jtfAnalyzerStep3ProductType;
         private javax.swing.JTextField jtfAnalyzerStep3Url;
         private javax.swing.JTextField jtfCrawlerAddUrl;
         private javax.swing.JTabbedPane jtpTabbedPane;

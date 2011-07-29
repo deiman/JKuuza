@@ -16,6 +16,10 @@ public class Product extends CouchDbDocument {
 
 	private String description;
 
+	private String type;
+
+	private String producer;
+
 	private String price;
 
 	private String priceDPH;
@@ -72,6 +76,30 @@ public class Product extends CouchDbDocument {
 
 	public void setPriceDPH(String priceDPH) {
 		this.priceDPH = priceDPH;
+	}
+
+	public String getProducer() {
+		return producer;
+	}
+
+	public void setProducer(String producer) {
+		this.producer = producer;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 }

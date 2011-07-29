@@ -903,45 +903,65 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
+              <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jtaAnalyzerStep3Description" alignment="0" pref="717" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jlbAnalyzerStep3Url" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfAnalyzerStep3Url" pref="606" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfAnalyzerStep3Preview" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="jtfAnalyzerStep3PreviewDescription" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jtaAnalyzerStep3Description" alignment="0" pref="717" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="jlbAnalyzerStep3ProductPrice" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jlbAnalyzerStep3ProductName" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jlbAnalyzerStep3ProductPriceDPH" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jlbAnalyzerStep3ProductProducer" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="1" attributes="0">
+                                                  <Component id="jlbAnalyzerStep3ProductPrice" alignment="1" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jlbAnalyzerStep3ProductName" alignment="1" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jlbAnalyzerStep3ProductPriceDPH" alignment="1" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jlbAnalyzerStep3ProductParameterValue" alignment="1" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="1" attributes="0">
+                                                  <Component id="jlbAnalyzerStep3ProductParameterName" alignment="1" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jlbAnalyzerStep3ProductDescription" alignment="1" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jlbAnalyzerStep3ProductType" alignment="1" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jtfAnalyzerStep3ProductParameterValue" alignment="0" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductParameterName" alignment="0" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductDescription" alignment="1" pref="563" max="32767" attributes="1"/>
+                                      <Component id="jtfAnalyzerStep3ProductPrice" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductName" alignment="0" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductPriceDPH" alignment="0" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductType" alignment="0" pref="563" max="32767" attributes="0"/>
+                                      <Component id="jtfAnalyzerStep3ProductProducer" alignment="0" pref="563" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                                  <Component id="jlbAnalyzerStep3ProductParameterName" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jlbAnalyzerStep3ProductParameterValue" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jlbAnalyzerStep3ProductDescription" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jlbAnalyzerStep3Preview" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jlbAnalyzerStep3Url" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jtfAnalyzerStep3Url" pref="606" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jtfAnalyzerStep3Preview" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
+                          <Component id="jlbAnalyzerStep3Preview" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jspAnalyzerStep3Preview" alignment="1" pref="555" max="32767" attributes="0"/>
-                              <Component id="jtfAnalyzerStep3ProductParameterValue" alignment="0" pref="555" max="32767" attributes="0"/>
-                              <Component id="jtfAnalyzerStep3ProductParameterName" alignment="0" pref="555" max="32767" attributes="0"/>
-                              <Component id="jtfAnalyzerStep3ProductDescription" alignment="1" pref="555" max="32767" attributes="1"/>
-                              <Component id="jtfAnalyzerStep3ProductPrice" pref="555" max="32767" attributes="0"/>
-                              <Component id="jtfAnalyzerStep3ProductName" alignment="0" pref="555" max="32767" attributes="0"/>
-                              <Component id="jtfAnalyzerStep3ProductPriceDPH" alignment="0" pref="555" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="jspAnalyzerStep3Preview" pref="563" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jtfAnalyzerStep3PreviewDescription" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -952,50 +972,60 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jtaAnalyzerStep3Description" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jtfAnalyzerStep3ProductName" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jlbAnalyzerStep3ProductName" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jlbAnalyzerStep3ProductPrice" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jtfAnalyzerStep3ProductPrice" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jlbAnalyzerStep3ProductPriceDPH" min="-2" max="-2" attributes="0"/>
                       <Component id="jtfAnalyzerStep3ProductPriceDPH" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jtfAnalyzerStep3ProductDescription" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jlbAnalyzerStep3ProductDescription" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jtfAnalyzerStep3ProductParameterName" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jlbAnalyzerStep3ProductParameterName" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jtfAnalyzerStep3ProductParameterValue" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jlbAnalyzerStep3ProductParameterValue" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductType" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductType" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jtfAnalyzerStep3ProductProducer" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep3ProductProducer" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jspAnalyzerStep3Preview" pref="126" max="32767" attributes="0"/>
+                      <Component id="jspAnalyzerStep3Preview" pref="150" max="32767" attributes="0"/>
                       <Component id="jlbAnalyzerStep3Preview" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jlbAnalyzerStep3Url" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jtfAnalyzerStep3Url" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jtfAnalyzerStep3Preview" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jtfAnalyzerStep3Url" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="jtfAnalyzerStep3PreviewDescription" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1114,6 +1144,30 @@
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3Preview.text"/>
             <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3Preview" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductType">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductType.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductType" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductType">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductType.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductType" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep3ProductProducer">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep3ProductProducer.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep3ProductProducer" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="jtfAnalyzerStep3ProductProducer">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jtfAnalyzerStep3ProductProducer.text"/>
+            <Property name="name" type="java.lang.String" value="jtfAnalyzerStep3ProductProducer" noResource="true"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jspAnalyzerStep3Preview">

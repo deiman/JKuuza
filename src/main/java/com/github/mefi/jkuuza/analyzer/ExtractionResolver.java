@@ -6,6 +6,7 @@ import com.github.mefi.jkuuza.parser.ContentExtractor;
 import java.util.ArrayList;
 import java.util.Map;
 import org.codehaus.jackson.sym.Name1;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 /**
@@ -47,7 +48,13 @@ public class ExtractionResolver {
 				paramValues = extractor.getValuesOf(selector);
 			} else {
 				String name = propertyName;
-				String value = extractor.getValue(selector);
+				String value = "";
+				try {
+					value = extractor.getValue(selector);
+				} catch (RuntimeException ex){
+					ex.printStackTrace();
+				}
+				
 
 				//TODO: refactore this
 				if (name.equals(BasicProductProperties.NAME.toString())) {
@@ -61,6 +68,12 @@ public class ExtractionResolver {
 				}
 				if (name.equals(BasicProductProperties.PRICE_DPH.toString())) {
 					product.setPriceDPH(value);
+				}
+				if (name.equals(BasicProductProperties.PRODUCER.toString())) {
+					product.setProducer(value);
+				}
+				if (name.equals(BasicProductProperties.TYPE.toString())) {
+					product.setType(value);
 				}
 			}
 		}
