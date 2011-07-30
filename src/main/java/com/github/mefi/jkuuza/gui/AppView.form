@@ -460,6 +460,198 @@
                 </Container>
               </SubComponents>
             </Container>
+            <Container class="javax.swing.JPanel" name="jpSettings">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jpSettings" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Nastaven&#xed;">
+                    <Property name="tabTitle" type="java.lang.String" resourceKey="jpSettings.TabConstraints.tabTitle"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jPanel1" max="32767" attributes="0"/>
+                              <Component id="jButton1" alignment="1" min="-2" pref="179" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="231" max="32767" attributes="0"/>
+                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel1">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Datab&#xe1;ze">
+                          <Property name="titleX" resourceKey="jPanel1.border.title"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+                  </Properties>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jlbSettingsHost" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jlbSettingsPort" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jlbSettingsDatabase" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jtfSettingsDatabase" alignment="0" pref="599" max="32767" attributes="0"/>
+                                          <Component id="jtfSettingsPort" alignment="0" pref="599" max="32767" attributes="0"/>
+                                          <Component id="jtfSettingsHost" alignment="0" pref="599" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jlbSettingsUsername" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jlbSettingsPassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jpfSettingsPassword" pref="599" max="32767" attributes="0"/>
+                                          <Component id="jtfSettingsUsername" alignment="0" pref="599" max="32767" attributes="1"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jlbSettingsHost" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jtfSettingsHost" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jlbSettingsPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jtfSettingsPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jlbSettingsDatabase" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jtfSettingsDatabase" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jlbSettingsUsername" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jtfSettingsUsername" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jlbSettingsPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jpfSettingsPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jlbSettingsHost">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jlbSettingsHost.text"/>
+                        <Property name="name" type="java.lang.String" value="jlbSettingsHost" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jlbSettingsPort">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jlbSettingsPort.text"/>
+                        <Property name="name" type="java.lang.String" value="jlbSettingsPort" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jlbSettingsDatabase">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jlbSettingsDatabase.text"/>
+                        <Property name="name" type="java.lang.String" value="jlbSettingsDatabase" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jlbSettingsUsername">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jlbSettingsUsername.text"/>
+                        <Property name="name" type="java.lang.String" value="jlbSettingsUsername" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jlbSettingsPassword">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jlbSettingsPassword.text"/>
+                        <Property name="name" type="java.lang.String" value="jlbSettingsPassword" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JTextField" name="jtfSettingsHost">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jtfSettingsHost.text"/>
+                        <Property name="name" type="java.lang.String" value="jtfSettingsHost" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JTextField" name="jtfSettingsPort">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jtfSettingsPort.text"/>
+                        <Property name="name" type="java.lang.String" value="jtfSettingsPort" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JTextField" name="jtfSettingsUsername">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jtfSettingsUsername.text"/>
+                        <Property name="name" type="java.lang.String" value="jtfSettingsUsername" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JTextField" name="jtfSettingsDatabase">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jtfSettingsDatabase.text"/>
+                        <Property name="name" type="java.lang.String" value="jtfSettingsDatabase" noResource="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JPasswordField" name="jpfSettingsPassword">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" resourceKey="jpfSettingsPassword.text"/>
+                        <Property name="name" type="java.lang.String" value="jpfSettingsPassword" noResource="true"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Component class="javax.swing.JButton" name="jButton1">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="com.github.mefi.jkuuza.gui.AppView" id="saveSettingsToProperties" methodName="saveSettingsToProperties"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
+                    <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
       </SubComponents>
@@ -681,7 +873,7 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
-                          <Component id="jcbAnalyzerStep1DomainsToAnalyze" min="-2" max="-2" attributes="0"/>
+                          <Component id="jcbAnalyzerStep1DomainsToAnalyze" min="-2" pref="208" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -733,15 +925,15 @@
         <Component class="javax.swing.JComboBox" name="jcbAnalyzerStep1DomainsToAnalyze">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
+              <StringArray count="1">
+                <StringItem index="0" value="vyberte dom&#xe9;nu"/>
               </StringArray>
             </Property>
             <Property name="name" type="java.lang.String" value="jcbAnalyzerStep1DomainsToAnalyze" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jcbAnalyzerStep1DomainsToAnalyzeMousePressed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

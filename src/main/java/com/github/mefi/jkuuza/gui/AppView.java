@@ -42,6 +42,8 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeMap;
 import javax.swing.DefaultComboBoxModel;
@@ -77,8 +80,10 @@ public class AppView extends FrameView {
 		super(app);
 
 		initComponents();
+		settingProperties = new Properties();
+		loadSettingsFromProperties();
+
 		initAnalyzerSampleConditions();
-		initAnalyzerDomainsToAnalyze();
 
 		crawlerQueueModel = new DefaultListModel();
 		jlstCrawlerQueue.setModel(crawlerQueueModel);
@@ -421,6 +426,7 @@ public class AppView extends FrameView {
 			hosts.add(en.getKey());
 		}
 		jcbAnalyzerStep1DomainsToAnalyze.setModel(new DefaultComboBoxModel(hosts.toArray()));
+		jcbAnalyzerStep1DomainsToAnalyze.revalidate();
 	}
 
 	public void handleAnalyzerStepStatus(int step) {
@@ -653,7 +659,9 @@ public class AppView extends FrameView {
 	}
 
 	public TreeMap<String, Integer> getCrawledDomains() {
-		DbConnector conn = new DbConnector();
+
+		DbConnector conn = new DbConnector(settingProperties);
+
 		PageRepository pageRepository = new PageRepository(conn.getConnection());
 
 		HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
@@ -663,6 +671,51 @@ public class AppView extends FrameView {
 		sortedMap.putAll(map);
 
 		return sortedMap;
+	}
+
+	public void loadSettingsFromProperties() {
+		FileInputStream in = null;
+		try {			
+			in = new FileInputStream("src/main/resources/com/github/mefi/jkuuza/settings.properties");
+			settingProperties.load(in);
+		} catch (IOException ex) {
+			try {
+				in = new FileInputStream("src/main/resources/com/github/mefi/jkuuza/dafaultSettings.properties");
+				settingProperties.load(in);
+			} catch (IOException ex1) {
+				displayFlashMessage("Nepodařilo se načíst nastavení", FlashMessageType.ERROR);
+			}
+		}
+
+		jtfSettingsHost.setText(settingProperties.getProperty("db_host"));
+		jtfSettingsPort.setText(settingProperties.getProperty("db_port"));
+		jtfSettingsDatabase.setText(settingProperties.getProperty("db_database"));
+		jtfSettingsUsername.setText(settingProperties.getProperty("db_username"));
+		jpfSettingsPassword.setText(settingProperties.getProperty("db_password"));
+	}
+
+	@Action
+	public void saveSettingsToProperties() {
+		FileOutputStream out = null;
+		try {
+			settingProperties.put("db_host", jtfSettingsHost.getText());
+			settingProperties.put("db_port", jtfSettingsPort.getText());
+			settingProperties.put("db_database", jtfSettingsDatabase.getText());
+			settingProperties.put("db_username", jtfSettingsUsername.getText());
+			settingProperties.put("db_password", String.valueOf(jpfSettingsPassword.getPassword()));
+			out = new FileOutputStream("src/main/resources/com/github/mefi/jkuuza/settings.properties");
+			settingProperties.store(out, "No comment.");
+			displayFlashMessage("Nastavení bylo uloženo.", FlashMessageType.SUCCESS);
+		} catch (IOException ex) {
+			displayFlashMessage("Nepodařilo se uložit nastavení", FlashMessageType.ERROR);
+		} finally {
+			try {
+				out.close();
+			} catch (IOException ex) {
+				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		loadSettingsFromProperties();
 	}
 
 	/**
@@ -716,6 +769,15 @@ public class AppView extends FrameView {
 		return jpHeaderPanel;
 	}
 
+	/**
+	 * get settingProperties
+	 *
+	 * @return
+	 */
+	public Properties getSettingProperties() {
+		return settingProperties;
+	}
+
 	/** This method is called from within the constructor to
 	 * initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is
@@ -750,6 +812,19 @@ public class AppView extends FrameView {
                 jpAnalyzerNavigation = new javax.swing.JPanel();
                 jbtAnalyzerStepPrev = new javax.swing.JButton();
                 jbtAnalyzerStepNext = new javax.swing.JButton();
+                jpSettings = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
+                jlbSettingsHost = new javax.swing.JLabel();
+                jlbSettingsPort = new javax.swing.JLabel();
+                jlbSettingsDatabase = new javax.swing.JLabel();
+                jlbSettingsUsername = new javax.swing.JLabel();
+                jlbSettingsPassword = new javax.swing.JLabel();
+                jtfSettingsHost = new javax.swing.JTextField();
+                jtfSettingsPort = new javax.swing.JTextField();
+                jtfSettingsUsername = new javax.swing.JTextField();
+                jtfSettingsDatabase = new javax.swing.JTextField();
+                jpfSettingsPassword = new javax.swing.JPasswordField();
+                jButton1 = new javax.swing.JButton();
                 jmbMenuBar = new javax.swing.JMenuBar();
                 javax.swing.JMenu fileMenu = new javax.swing.JMenu();
                 javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -1042,6 +1117,121 @@ public class AppView extends FrameView {
 
                 jtpTabbedPane.addTab(resourceMap.getString("jpAnalyzer.TabConstraints.tabTitle"), jpAnalyzer); // NOI18N
 
+                jpSettings.setName("jpSettings"); // NOI18N
+
+                jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
+                jPanel1.setName("jPanel1"); // NOI18N
+
+                jlbSettingsHost.setText(resourceMap.getString("jlbSettingsHost.text")); // NOI18N
+                jlbSettingsHost.setName("jlbSettingsHost"); // NOI18N
+
+                jlbSettingsPort.setText(resourceMap.getString("jlbSettingsPort.text")); // NOI18N
+                jlbSettingsPort.setName("jlbSettingsPort"); // NOI18N
+
+                jlbSettingsDatabase.setText(resourceMap.getString("jlbSettingsDatabase.text")); // NOI18N
+                jlbSettingsDatabase.setName("jlbSettingsDatabase"); // NOI18N
+
+                jlbSettingsUsername.setText(resourceMap.getString("jlbSettingsUsername.text")); // NOI18N
+                jlbSettingsUsername.setName("jlbSettingsUsername"); // NOI18N
+
+                jlbSettingsPassword.setText(resourceMap.getString("jlbSettingsPassword.text")); // NOI18N
+                jlbSettingsPassword.setName("jlbSettingsPassword"); // NOI18N
+
+                jtfSettingsHost.setText(resourceMap.getString("jtfSettingsHost.text")); // NOI18N
+                jtfSettingsHost.setName("jtfSettingsHost"); // NOI18N
+
+                jtfSettingsPort.setText(resourceMap.getString("jtfSettingsPort.text")); // NOI18N
+                jtfSettingsPort.setName("jtfSettingsPort"); // NOI18N
+
+                jtfSettingsUsername.setText(resourceMap.getString("jtfSettingsUsername.text")); // NOI18N
+                jtfSettingsUsername.setName("jtfSettingsUsername"); // NOI18N
+
+                jtfSettingsDatabase.setText(resourceMap.getString("jtfSettingsDatabase.text")); // NOI18N
+                jtfSettingsDatabase.setName("jtfSettingsDatabase"); // NOI18N
+
+                jpfSettingsPassword.setText(resourceMap.getString("jpfSettingsPassword.text")); // NOI18N
+                jpfSettingsPassword.setName("jpfSettingsPassword"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+                jPanel1.setLayout(jPanel1Layout);
+                jPanel1Layout.setHorizontalGroup(
+                        jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jPanel1Layout.createSequentialGroup()
+                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jlbSettingsHost)
+                                                        .add(jlbSettingsPort)
+                                                        .add(jlbSettingsDatabase))
+                                                .add(71, 71, 71)
+                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jtfSettingsDatabase, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
+                                                        .add(jtfSettingsPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
+                                                        .add(jtfSettingsHost, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)))
+                                        .add(jPanel1Layout.createSequentialGroup()
+                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jlbSettingsUsername)
+                                                        .add(jlbSettingsPassword))
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jpfSettingsPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
+                                                        .add(jtfSettingsUsername, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE))))
+                                .addContainerGap())
+                );
+                jPanel1Layout.setVerticalGroup(
+                        jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbSettingsHost)
+                                        .add(jtfSettingsHost, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbSettingsPort)
+                                        .add(jtfSettingsPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbSettingsDatabase)
+                                        .add(jtfSettingsDatabase, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbSettingsUsername)
+                                        .add(jtfSettingsUsername, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jlbSettingsPassword)
+                                        .add(jpfSettingsPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                );
+
+                jButton1.setAction(actionMap.get("saveSettingsToProperties")); // NOI18N
+                jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+                jButton1.setName("jButton1"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jpSettingsLayout = new org.jdesktop.layout.GroupLayout(jpSettings);
+                jpSettings.setLayout(jpSettingsLayout);
+                jpSettingsLayout.setHorizontalGroup(
+                        jpSettingsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpSettingsLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jpSettingsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 179, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap())
+                );
+                jpSettingsLayout.setVerticalGroup(
+                        jpSettingsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jpSettingsLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 231, Short.MAX_VALUE)
+                                .add(jButton1)
+                                .addContainerGap())
+                );
+
+                jtpTabbedPane.addTab(resourceMap.getString("jpSettings.TabConstraints.tabTitle"), jpSettings); // NOI18N
+
                 org.jdesktop.layout.GroupLayout jpMainPanelLayout = new org.jdesktop.layout.GroupLayout(jpMainPanel);
                 jpMainPanel.setLayout(jpMainPanelLayout);
                 jpMainPanelLayout.setHorizontalGroup(
@@ -1184,8 +1374,13 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep1Sample.setText(resourceMap.getString("jlbAnalyzerStep1Sample.text")); // NOI18N
                 jlbAnalyzerStep1Sample.setName("jlbAnalyzerStep1Sample"); // NOI18N
 
-                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "vyberte doménu" }));
                 jcbAnalyzerStep1DomainsToAnalyze.setName("jcbAnalyzerStep1DomainsToAnalyze"); // NOI18N
+                jcbAnalyzerStep1DomainsToAnalyze.addMouseListener(new java.awt.event.MouseAdapter() {
+                        public void mousePressed(java.awt.event.MouseEvent evt) {
+                                jcbAnalyzerStep1DomainsToAnalyzeMousePressed(evt);
+                        }
+                });
 
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep1Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep1);
                 jpAnalyzerStep1.setLayout(jpAnalyzerStep1Layout);
@@ -1203,7 +1398,7 @@ public class AppView extends FrameView {
                                                                 .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
                                                 .add(73, 73, 73)
-                                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
                 );
                 jpAnalyzerStep1Layout.setVerticalGroup(
@@ -1543,7 +1738,14 @@ public class AppView extends FrameView {
 		analyzerStep2Components.clear();
 		analyzerLoadConditionsLocked = false;
 	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
+
+	private void jcbAnalyzerStep1DomainsToAnalyzeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
+		initAnalyzerDomainsToAnalyze();
+	}//GEN-LAST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JButton jButton1;
+        private javax.swing.JPanel jPanel1;
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JTextArea jTextArea1;
         private javax.swing.JButton jbtAnalyzerStep2RemoveLast;
@@ -1576,6 +1778,11 @@ public class AppView extends FrameView {
         private javax.swing.JLabel jlbAnalyzerStep3Url;
         private javax.swing.JLabel jlbClearFlashMessages;
         private javax.swing.JLabel jlbCrawlerAddUrlDialog;
+        private javax.swing.JLabel jlbSettingsDatabase;
+        private javax.swing.JLabel jlbSettingsHost;
+        private javax.swing.JLabel jlbSettingsPassword;
+        private javax.swing.JLabel jlbSettingsPort;
+        private javax.swing.JLabel jlbSettingsUsername;
         private javax.swing.JList jlstCrawlerQueue;
         private javax.swing.JMenuBar jmbMenuBar;
         private javax.swing.JPanel jpAnalyzer;
@@ -1592,7 +1799,9 @@ public class AppView extends FrameView {
         private javax.swing.JPanel jpFlashMessages;
         private javax.swing.JPanel jpHeaderPanel;
         private javax.swing.JPanel jpMainPanel;
+        private javax.swing.JPanel jpSettings;
         private javax.swing.JPanel jpStatusPanel;
+        private javax.swing.JPasswordField jpfSettingsPassword;
         private javax.swing.JScrollPane jspAnalyzerStep2Top;
         private javax.swing.JScrollPane jspAnalyzerStep3Preview;
         private javax.swing.JScrollPane jspCrawlerBodyLeft;
@@ -1616,6 +1825,10 @@ public class AppView extends FrameView {
         private javax.swing.JTextField jtfAnalyzerStep3ProductType;
         private javax.swing.JTextField jtfAnalyzerStep3Url;
         private javax.swing.JTextField jtfCrawlerAddUrl;
+        private javax.swing.JTextField jtfSettingsDatabase;
+        private javax.swing.JTextField jtfSettingsHost;
+        private javax.swing.JTextField jtfSettingsPort;
+        private javax.swing.JTextField jtfSettingsUsername;
         private javax.swing.JTabbedPane jtpTabbedPane;
         private javax.swing.JProgressBar progressBar;
         private javax.swing.JLabel statusAnimationLabel;
@@ -1638,4 +1851,5 @@ public class AppView extends FrameView {
 	private Methods analyzerMethods;
 	private String analyzerComponents;
 	private boolean analyzerLoadConditionsLocked = false;
+	private Properties settingProperties;
 }
