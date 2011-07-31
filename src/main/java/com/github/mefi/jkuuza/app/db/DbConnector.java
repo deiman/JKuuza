@@ -17,12 +17,40 @@ public class DbConnector {
 
 	private CouchDbConnector connector;
 
-	public DbConnector() {
-		HttpClient httpClient = new StdHttpClient.Builder().build();
-		String dbName = "jkuuza";
-		init(httpClient, dbName);
+	/**
+	 * Use default values to create connection to db
+	 *
+	 * @throws CouchDbConnectionException
+	 */
+	public DbConnector() throws CouchDbConnectionException {
+
+		String host = DefaultDbParams.HOST.toString();
+		Integer port = Integer.parseInt(DefaultDbParams.PORT.toString());
+		String database = DefaultDbParams.DATABASE.toString();
+		String username = DefaultDbParams.USERNAME.toString();
+		String password = DefaultDbParams.PASSWORD.toString();
+
+		try {
+			HttpClient httpClient = null;
+			httpClient = new StdHttpClient.Builder()
+						.host(host)
+						.port(port)
+						.username(username)
+						.password(password)
+						.build();
+			init(httpClient, database);
+		} catch (Exception e) {
+			throw new CouchDbConnectionException();
+		}
 	}
 
+	/**
+	 * Load connection values from properties and create connection to db
+	 *
+	 * @param configLoader
+	 * @throws IOException
+	 * @throws CouchDbConnectionException
+	 */
 	public DbConnector(ConfigLoader configLoader) throws IOException, CouchDbConnectionException {
 
 		Properties properties = configLoader.load();
@@ -48,19 +76,37 @@ public class DbConnector {
 
 	}
 
-	public DbConnector(String host, Integer port, String dbName) throws CouchDbConnectionException {
+	/**
+	 * Use host, port and database to create connection to db
+	 *
+	 * @param host
+	 * @param port
+	 * @param database
+	 * @throws CouchDbConnectionException
+	 */
+	public DbConnector(String host, Integer port, String database) throws CouchDbConnectionException {
 
 		try {
 			HttpClient httpClient = new StdHttpClient.Builder()
 						.host(host)
 						.port(port)
 						.build();
-			init(httpClient, dbName);
+			init(httpClient, database);
 		} catch (Exception e) {
 			throw new CouchDbConnectionException();
 		}
 	}
 
+	/**
+	 * Use host, port, database, username and password to create connection to db
+	 *
+	 * @param host
+	 * @param port
+	 * @param username
+	 * @param password
+	 * @param dbName
+	 * @throws CouchDbConnectionException
+	 */
 	public DbConnector(String host, Integer port, String username, String password, String dbName) throws CouchDbConnectionException {
 		try {
 			HttpClient httpClient = new StdHttpClient.Builder()
@@ -75,6 +121,11 @@ public class DbConnector {
 		}
 	}
 
+	/**
+	 * Get connection to db
+	 *
+	 * @return connection
+	 */
 	public CouchDbConnector getConnection() {
 		return connector;
 	}
@@ -85,11 +136,5 @@ public class DbConnector {
 		// if the second parameter is true, the database will be created if it doesn't exists
 		this.connector = dbInstance.createConnector(dbName, true);
  		System.setProperty("org.ektorp.support.AutoUpdateViewOnChange", "true");
-	}
-
-
-
-
-
-	
+	}	
 }
