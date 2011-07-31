@@ -12,6 +12,7 @@ import com.github.mefi.jkuuza.analyzer.Rules;
 import com.github.mefi.jkuuza.analyzer.Methods;
 import com.github.mefi.jkuuza.analyzer.Reflector;
 import com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox.JReflectorBox;
+import com.github.mefi.jkuuza.app.db.CouchDbConnectionException;
 import com.github.mefi.jkuuza.parser.ContentAnalyzer;
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
@@ -668,7 +669,7 @@ public class AppView extends FrameView {
 		TreeMap<String, Integer> sortedMap = new TreeMap(comparator);
 
 		sortedMap.putAll(map);
-
+			
 		return sortedMap;
 	}
 
@@ -703,6 +704,13 @@ public class AppView extends FrameView {
 		String host = jtfSettingsHost.getText().equals("") ? DefaultDbParams.HOST.toString() : jtfSettingsHost.getText();
 		String port = jtfSettingsPort.getText().isEmpty() ? DefaultDbParams.PORT.toString() : jtfSettingsPort.getText();
 		String database = jtfSettingsDatabase.getText().isEmpty() ? DefaultDbParams.DATABASE.toString() : jtfSettingsDatabase.getText();
+
+		try {
+			Integer.parseInt(port);
+		} catch( Exception e) {
+			displayFlashMessage("Port musí být číslo! Byl nastaven výchozí.", FlashMessageType.ERROR);
+			port = DefaultDbParams.PORT.toString();
+		}
 
 		jtfSettingsHost.setText(host);
 		jtfSettingsPort.setText(port);
