@@ -417,7 +417,8 @@ public class AppView extends FrameView {
 		jcbAnalyzerStep1SampleConditions.setModel(new DefaultComboBoxModel(sampleHosts.toArray()));
 	}
 
-	private void initAnalyzerDomainsToAnalyze() {
+	@Action
+	public void initAnalyzerDomainsToAnalyze() {
 
 		TreeMap<String, Integer> map = getCrawledDomains();
 		List<String> hosts = new ArrayList<String>();
@@ -427,6 +428,11 @@ public class AppView extends FrameView {
 		}
 		jcbAnalyzerStep1DomainsToAnalyze.setModel(new DefaultComboBoxModel(hosts.toArray()));
 		jcbAnalyzerStep1DomainsToAnalyze.revalidate();
+		if (hosts.size() > 0) {
+			displayFlashMessage("Domény byly načteny", FlashMessageType.INFO);
+		} else {
+			displayFlashMessage("Žádné záznamy nebyly nalezeny.", FlashMessageType.INFO);
+		}		
 	}
 
 	public void handleAnalyzerStepStatus(int step) {
@@ -659,17 +665,21 @@ public class AppView extends FrameView {
 	}
 
 	public TreeMap<String, Integer> getCrawledDomains() {
+		TreeMap<String, Integer> sortedMap = new TreeMap<String, Integer>();
+		try {
+			DbConnector conn = new DbConnector(new ConfigLoader());
+			PageRepository pageRepository = new PageRepository(conn.getConnection());
 
-		DbConnector conn = new DbConnector(settingProperties);
-
-		PageRepository pageRepository = new PageRepository(conn.getConnection());
-
-		HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
-		ValueComparator comparator = new ValueComparator(map);
-		TreeMap<String, Integer> sortedMap = new TreeMap(comparator);
-
-		sortedMap.putAll(map);
+			HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
+			ValueComparator comparator = new ValueComparator(map);
+			sortedMap = new TreeMap(comparator);
+			sortedMap.putAll(map);			
 			
+		} catch (IOException ex) {
+			displayFlashMessage("Nepodařilo se načíst nastavení dazabáze.", FlashMessageType.ERROR);
+		} catch (CouchDbConnectionException ex) {
+			displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
+		}
 		return sortedMap;
 	}
 
@@ -859,6 +869,8 @@ public class AppView extends FrameView {
                 jcbAnalyzerStep1SampleConditions = new javax.swing.JComboBox();
                 jlbAnalyzerStep1Sample = new javax.swing.JLabel();
                 jcbAnalyzerStep1DomainsToAnalyze = new javax.swing.JComboBox();
+                jLabel1 = new javax.swing.JLabel();
+                jButton2 = new javax.swing.JButton();
                 jpAnalyzerStep2 = new javax.swing.JPanel();
                 jtaAnalyzerStep2TopDescription = new javax.swing.JTextArea();
                 jspAnalyzerStep2Top = new javax.swing.JScrollPane();
@@ -1388,44 +1400,50 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep1Sample.setText(resourceMap.getString("jlbAnalyzerStep1Sample.text")); // NOI18N
                 jlbAnalyzerStep1Sample.setName("jlbAnalyzerStep1Sample"); // NOI18N
 
-                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "vyberte doménu" }));
+                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "prázdné" }));
                 jcbAnalyzerStep1DomainsToAnalyze.setName("jcbAnalyzerStep1DomainsToAnalyze"); // NOI18N
-                jcbAnalyzerStep1DomainsToAnalyze.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mousePressed(java.awt.event.MouseEvent evt) {
-                                jcbAnalyzerStep1DomainsToAnalyzeMousePressed(evt);
-                        }
-                });
+
+                jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+                jLabel1.setName("jLabel1"); // NOI18N
+
+                jButton2.setAction(actionMap.get("initAnalyzerDomainsToAnalyze")); // NOI18N
+                jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
+                jButton2.setName("jButton2"); // NOI18N
 
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep1Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep1);
                 jpAnalyzerStep1.setLayout(jpAnalyzerStep1Layout);
                 jpAnalyzerStep1Layout.setHorizontalGroup(
                         jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
+                                .addContainerGap()
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
-                                                .addContainerGap()
+                                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                                        .add(jlbAnalyzerStep1Sample)
+                                                        .add(jLabel1))
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
-                                                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
-                                                                .add(jlbAnalyzerStep1Sample)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                                        .add(jpAnalyzerStep1Layout.createSequentialGroup()
-                                                .add(73, 73, 73)
-                                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                                .addContainerGap())
+                                                        .add(jcbAnalyzerStep1SampleConditions, 0, 276, Short.MAX_VALUE)
+                                                        .add(jcbAnalyzerStep1DomainsToAnalyze, 0, 276, Short.MAX_VALUE))))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jButton2)
+                                .add(25, 25, 25))
                 );
                 jpAnalyzerStep1Layout.setVerticalGroup(
                         jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
                                 .add(jTextArea1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 259, Short.MAX_VALUE)
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                        .add(jlbAnalyzerStep1Sample)
-                                        .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap())
+                                        .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jButton2)
+                                        .add(jLabel1))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jlbAnalyzerStep1Sample))
+                                .addContainerGap(257, Short.MAX_VALUE))
                 );
 
                 jpAnalyzerStep2.setName("jpAnalyzerStep2"); // NOI18N
@@ -1753,11 +1771,10 @@ public class AppView extends FrameView {
 		analyzerLoadConditionsLocked = false;
 	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
 
-	private void jcbAnalyzerStep1DomainsToAnalyzeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
-		initAnalyzerDomainsToAnalyze();
-	}//GEN-LAST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
+        private javax.swing.JButton jButton2;
+        private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JTextArea jTextArea1;
