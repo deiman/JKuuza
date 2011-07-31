@@ -67,6 +67,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import org.ektorp.DbAccessException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -264,22 +265,28 @@ public class AppView extends FrameView {
 
 	@Action
 	public void runCrawler() {
-		CrawlerConsole.print("running..");
-		try {
-			SimpleCrawler crawler = new SimpleCrawler();
+		CrawlerConsole.print("Spuštěn crawler", true);
+		try {			
+			DbConnector dbConnector = new DbConnector(new ConfigLoader());
+			SimpleCrawler crawler = new SimpleCrawler(dbConnector);
 			if (crawlerQueueModel.isEmpty()) {
 				displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
 			} else {
 				List list = new ArrayList();
 				for (int i = 0; i < crawlerQueueModel.size(); i++) {
 					list.add(crawlerQueueModel.get(i).toString());
-				}
+				}				
 				crawler.execute(list);
 			}
-
+		} catch (IOException ex) {
+			displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
+		} catch (CouchDbConnectionException ex) {
+			displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			displayFlashMessage("Při běhu crawleru došlo k blíže nespecifikované chybě.", FlashMessageType.ERROR);
 		}
+
+		
 	}
 
 	@Action
@@ -676,7 +683,7 @@ public class AppView extends FrameView {
 			sortedMap.putAll(map);			
 			
 		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se načíst nastavení dazabáze.", FlashMessageType.ERROR);
+			displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
 		} catch (CouchDbConnectionException ex) {
 			displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
 		}

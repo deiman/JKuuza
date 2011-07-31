@@ -23,10 +23,12 @@ import org.niocchi.core.Query;
 public class DbSaveWorker extends Worker {
 
 	TimeoutURLPool pool = null;
+	private DbConnector connector;
 
-	public DbSaveWorker(Crawler crawler, TimeoutURLPool pool) {
+	public DbSaveWorker(Crawler crawler, TimeoutURLPool pool, DbConnector connector) {
 		super(crawler);
 		this.pool = pool;
+		this.connector = connector;
 
 	}
 
@@ -79,8 +81,7 @@ public class DbSaveWorker extends Worker {
 
 				BodyContent bodyContent = new BodyContent(page.getUrl(), bodyHtml, bodyText);
 
-				DbConnector conn = new DbConnector();
-				CrawledPageController controller = new CrawledPageController(conn.getConnection());
+				CrawledPageController controller = new CrawledPageController(connector.getConnection());
 				controller.save(page, bodyContent);
 			} else {
 				System.out.println(query.getResource().getContentMimeSubType());

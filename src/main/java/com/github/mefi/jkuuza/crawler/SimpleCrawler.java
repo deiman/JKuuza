@@ -1,5 +1,6 @@
 package com.github.mefi.jkuuza.crawler;
 
+import com.github.mefi.jkuuza.app.db.DbConnector;
 import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import java.io.IOException;
 import java.util.List;
@@ -19,11 +20,15 @@ public class SimpleCrawler {
 	int monitorPort = 6001;
 	String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.68 Safari/534.24";
 	String seedFile = null;
-	
+
+	DbConnector connector;
 	TimeoutURLPool urlPool;
 	Crawler crawler;
 	Worker worker;
 
+	public SimpleCrawler(DbConnector connector) {
+		this.connector = connector;
+	}
 
 	/**
 	 * Creates crawler and sets its dependencies
@@ -32,9 +37,6 @@ public class SimpleCrawler {
 	 * @throws IOException
 	 */
 	private void init(List list) throws IOException {
-		//ResourceCreator resourceCreator = new HTMLResourceCreator();
-		
-		//ResourcePool resourcePool = new ResourcePool(resourceCreator, resourcesCount);
 
 		// create the worker
 		crawler = new Crawler(new HTMLResourceFactory(), resourcesCount);
@@ -44,7 +46,7 @@ public class SimpleCrawler {
 		urlPool = new TimeoutURLPool(new ExpandableURLPool(list));
 
 		// create the worker
-		worker = new DbSaveWorker(crawler, urlPool);
+		worker = new DbSaveWorker(crawler, urlPool, connector);
 		// print info
 		CrawlerConsole.print("Crawler initialized.", true);
 	}
