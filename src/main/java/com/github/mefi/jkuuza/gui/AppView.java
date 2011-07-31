@@ -16,6 +16,7 @@ import com.github.mefi.jkuuza.parser.ContentAnalyzer;
 import com.github.mefi.jkuuza.gui.model.FlashMessageType;
 import com.github.mefi.jkuuza.app.App;
 import com.github.mefi.jkuuza.app.db.DbConnector;
+import com.github.mefi.jkuuza.app.db.DefaultDbParams;
 import com.github.mefi.jkuuza.crawler.SimpleCrawler;
 import com.github.mefi.jkuuza.crawler.gui.CrawlerConsole;
 import com.github.mefi.jkuuza.gui.model.FlashMessage;
@@ -23,8 +24,9 @@ import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import com.github.mefi.jkuuza.model.PageRepository;
 import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
+import com.github.mefi.jkuuza.data.ConfigLoader;
+import com.github.mefi.jkuuza.data.ConfigSaver;
 import com.github.mefi.jkuuza.model.BasicProductProperties;
-import com.github.mefi.jkuuza.model.BodyContentRepository;
 import com.github.mefi.jkuuza.model.Product;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -42,8 +44,6 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,7 +59,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -564,7 +563,7 @@ public class AppView extends FrameView {
 				stringBuilder.append("<strong>Cena:</strong> ").append(product.getPrice()).append("<br>");
 				stringBuilder.append("<strong>Cena s DPH:</strong> ").append(product.getPriceDPH()).append("<br>");
 				stringBuilder.append("<strong>Typ:</strong> ").append(product.getType()).append("<br>");
-				stringBuilder.append("<strong>Výrobce:</strong> ").append(product.getProducer()).append("<br>");				
+				stringBuilder.append("<strong>Výrobce:</strong> ").append(product.getProducer()).append("<br>");
 				stringBuilder.append("<br>");
 				stringBuilder.append("<strong> --- PARAMETRY --- </strong><br>");
 				for (Map.Entry<String, String> en : product.getParams().entrySet()) {
@@ -673,49 +672,56 @@ public class AppView extends FrameView {
 		return sortedMap;
 	}
 
+	/**
+	 * Load values from properties and set them into setting fields
+	 */
 	public void loadSettingsFromProperties() {
-		FileInputStream in = null;
-		try {			
-			in = new FileInputStream("src/main/resources/com/github/mefi/jkuuza/settings.properties");
-			settingProperties.load(in);
+		ConfigLoader configLoader = new ConfigLoader();
+		try {
+			settingProperties = configLoader.load();
+			jtfSettingsHost.setText(settingProperties.getProperty("db_host"));
+			jtfSettingsPort.setText(settingProperties.getProperty("db_port"));
+			jtfSettingsDatabase.setText(settingProperties.getProperty("db_database"));
+			jtfSettingsUsername.setText(settingProperties.getProperty("db_username"));
+			jpfSettingsPassword.setText(settingProperties.getProperty("db_password"));
 		} catch (IOException ex) {
-			try {
-				in = new FileInputStream("src/main/resources/com/github/mefi/jkuuza/dafaultSettings.properties");
-				settingProperties.load(in);
-			} catch (IOException ex1) {
-				displayFlashMessage("Nepodařilo se načíst nastavení", FlashMessageType.ERROR);
-			}
+			displayFlashMessage("Nepodařilo se načíst nastavení.", FlashMessageType.ERROR);
 		}
 
-		jtfSettingsHost.setText(settingProperties.getProperty("db_host"));
-		jtfSettingsPort.setText(settingProperties.getProperty("db_port"));
-		jtfSettingsDatabase.setText(settingProperties.getProperty("db_database"));
-		jtfSettingsUsername.setText(settingProperties.getProperty("db_username"));
-		jpfSettingsPassword.setText(settingProperties.getProperty("db_password"));
 	}
 
+	/**
+	 *  Get values from setting fields and save them into properties
+	 */
 	@Action
 	public void saveSettingsToProperties() {
-		FileOutputStream out = null;
+		clearFlashMessages();
+		if (jtfSettingsHost.getText().equals("") || jtfSettingsPort.getText().equals("") || jtfSettingsDatabase.getText().equals("")) {
+			displayFlashMessage("Nejsou nastaveny některé povinné údaje, budou použity výchozí!", FlashMessageType.INFO);
+		}
+
+		String host = jtfSettingsHost.getText().equals("") ? DefaultDbParams.HOST.toString() : jtfSettingsHost.getText();
+		String port = jtfSettingsPort.getText().isEmpty() ? DefaultDbParams.PORT.toString() : jtfSettingsPort.getText();
+		String database = jtfSettingsDatabase.getText().isEmpty() ? DefaultDbParams.DATABASE.toString() : jtfSettingsDatabase.getText();
+
+		jtfSettingsHost.setText(host);
+		jtfSettingsPort.setText(port);
+		jtfSettingsDatabase.setText(database);
+
+		settingProperties.put("db_host", host);
+		settingProperties.put("db_port", port);
+		settingProperties.put("db_database", database);
+
+		settingProperties.put("db_username", jtfSettingsUsername.getText());
+		settingProperties.put("db_password", String.valueOf(jpfSettingsPassword.getPassword()));
+
+		ConfigSaver configSaver = new ConfigSaver();
 		try {
-			settingProperties.put("db_host", jtfSettingsHost.getText());
-			settingProperties.put("db_port", jtfSettingsPort.getText());
-			settingProperties.put("db_database", jtfSettingsDatabase.getText());
-			settingProperties.put("db_username", jtfSettingsUsername.getText());
-			settingProperties.put("db_password", String.valueOf(jpfSettingsPassword.getPassword()));
-			out = new FileOutputStream("src/main/resources/com/github/mefi/jkuuza/settings.properties");
-			settingProperties.store(out, "No comment.");
+			configSaver.save(settingProperties);
 			displayFlashMessage("Nastavení bylo uloženo.", FlashMessageType.SUCCESS);
 		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se uložit nastavení", FlashMessageType.ERROR);
-		} finally {
-			try {
-				out.close();
-			} catch (IOException ex) {
-				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			displayFlashMessage("Nepodařilo se uložit nastavení.", FlashMessageType.ERROR);
 		}
-		loadSettingsFromProperties();
 	}
 
 	/**
@@ -1742,7 +1748,6 @@ public class AppView extends FrameView {
 	private void jcbAnalyzerStep1DomainsToAnalyzeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
 		initAnalyzerDomainsToAnalyze();
 	}//GEN-LAST:event_jcbAnalyzerStep1DomainsToAnalyzeMousePressed
-
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
         private javax.swing.JPanel jPanel1;
