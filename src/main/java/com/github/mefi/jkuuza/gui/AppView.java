@@ -66,6 +66,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 import org.ektorp.DbAccessException;
 import org.jsoup.Jsoup;
@@ -265,28 +266,37 @@ public class AppView extends FrameView {
 
 	@Action
 	public void runCrawler() {
-		CrawlerConsole.print("Spuštěn crawler", true);
-		try {			
-			DbConnector dbConnector = new DbConnector(new ConfigLoader());
-			SimpleCrawler crawler = new SimpleCrawler(dbConnector);
-			if (crawlerQueueModel.isEmpty()) {
-				displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
-			} else {
-				List list = new ArrayList();
-				for (int i = 0; i < crawlerQueueModel.size(); i++) {
-					list.add(crawlerQueueModel.get(i).toString());
-				}				
-				crawler.execute(list);
-			}
-		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
-		} catch (CouchDbConnectionException ex) {
-			displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
-		} catch (Exception ex) {
-			displayFlashMessage("Při běhu crawleru došlo k blíže nespecifikované chybě.", FlashMessageType.ERROR);
-		}
+		SwingWorker swingWorker = new SwingWorker() {
 
-		
+			@Override
+			protected Object doInBackground() throws Exception {
+				CrawlerConsole.print("Spuštěn crawler", true);
+				try {
+					DbConnector dbConnector = new DbConnector(new ConfigLoader());
+					SimpleCrawler crawler = new SimpleCrawler(dbConnector);
+					if (crawlerQueueModel.isEmpty()) {
+						displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
+					} else {
+						List list = new ArrayList();
+						for (int i = 0; i < crawlerQueueModel.size(); i++) {
+							list.add(crawlerQueueModel.get(i).toString());
+						}
+						crawler.execute(list);
+					}
+				} catch (IOException ex) {
+					displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
+				} catch (CouchDbConnectionException ex) {
+					displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
+				} catch (Exception ex) {
+					displayFlashMessage("Při běhu crawleru došlo k blíže nespecifikované chybě.", FlashMessageType.ERROR);
+				}
+				return null;
+			}
+
+			@Override
+			protected void done() {}
+		};
+		swingWorker.execute();
 	}
 
 	@Action
@@ -439,7 +449,7 @@ public class AppView extends FrameView {
 			displayFlashMessage("Domény byly načteny", FlashMessageType.INFO);
 		} else {
 			displayFlashMessage("Žádné záznamy nebyly nalezeny.", FlashMessageType.INFO);
-		}		
+		}
 	}
 
 	public void handleAnalyzerStepStatus(int step) {
@@ -680,8 +690,8 @@ public class AppView extends FrameView {
 			HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
 			ValueComparator comparator = new ValueComparator(map);
 			sortedMap = new TreeMap(comparator);
-			sortedMap.putAll(map);			
-			
+			sortedMap.putAll(map);
+
 		} catch (IOException ex) {
 			displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
 		} catch (CouchDbConnectionException ex) {
@@ -724,7 +734,7 @@ public class AppView extends FrameView {
 
 		try {
 			Integer.parseInt(port);
-		} catch( Exception e) {
+		} catch (Exception e) {
 			displayFlashMessage("Port musí být číslo! Byl nastaven výchozí.", FlashMessageType.ERROR);
 			port = DefaultDbParams.PORT.toString();
 		}
@@ -1777,7 +1787,6 @@ public class AppView extends FrameView {
 		analyzerStep2Components.clear();
 		analyzerLoadConditionsLocked = false;
 	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
-
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
         private javax.swing.JButton jButton2;
