@@ -1,8 +1,7 @@
 package com.github.mefi.jkuuza.app.db;
 
-import com.github.mefi.jkuuza.data.ConfigLoader;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.prefs.Preferences;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
@@ -51,15 +50,13 @@ public class DbConnector {
 	 * @throws IOException
 	 * @throws CouchDbConnectionException
 	 */
-	public DbConnector(ConfigLoader configLoader) throws IOException, CouchDbConnectionException {
+	public DbConnector(Preferences preferences) throws CouchDbConnectionException {
 
-		Properties properties = configLoader.load();
-
-		String host = !properties.getProperty("db_host").isEmpty() ? properties.getProperty("db_host") : DefaultDbParams.HOST.toString();
-		Integer port = !properties.getProperty("db_port").isEmpty() ? Integer.parseInt(properties.getProperty("db_port")) : Integer.parseInt(DefaultDbParams.PORT.toString());
-		String database = !properties.getProperty("db_database").isEmpty() ? properties.getProperty("db_database") : DefaultDbParams.DATABASE.toString();
-		String username = !properties.getProperty("db_username").isEmpty() ? properties.getProperty("db_username") : DefaultDbParams.USERNAME.toString();
-		String password = !properties.getProperty("db_password").isEmpty() ? properties.getProperty("db_password") : DefaultDbParams.PASSWORD.toString();
+		String host = preferences.get("db_host", DefaultDbParams.HOST.toString());
+		Integer port = Integer.parseInt(preferences.get("db_port", DefaultDbParams.PORT.toString()));
+		String database = preferences.get("db_database", DefaultDbParams.DATABASE.toString());
+		String username = preferences.get("db_username", DefaultDbParams.USERNAME.toString());
+		String password = preferences.get("db_password", DefaultDbParams.PASSWORD.toString());
 
 		try {
 			HttpClient httpClient = null;
@@ -73,7 +70,6 @@ public class DbConnector {
 		} catch (Exception e) {
 			throw new CouchDbConnectionException();
 		}
-
 	}
 
 	/**

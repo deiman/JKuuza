@@ -25,8 +25,6 @@ import com.github.mefi.jkuuza.gui.model.FlashMessagesDisplayer;
 import com.github.mefi.jkuuza.model.PageRepository;
 import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
-import com.github.mefi.jkuuza.data.ConfigLoader;
-import com.github.mefi.jkuuza.data.ConfigSaver;
 import com.github.mefi.jkuuza.model.BasicProductProperties;
 import com.github.mefi.jkuuza.model.Product;
 import java.awt.BorderLayout;
@@ -55,6 +53,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.prefs.Preferences;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.Timer;
@@ -82,8 +81,15 @@ public class AppView extends FrameView {
 		super(app);
 
 		initComponents();
-		settingProperties = new Properties();
-		loadSettingsFromProperties();
+		
+		try {
+			preferences = Preferences.userRoot().node(this.getClass().getName());
+		} catch (RuntimeException e) {
+			System.out.println("nastal problém");
+		}
+		
+		
+		loadSettings();
 
 		initAnalyzerSampleConditions();
 
@@ -272,7 +278,7 @@ public class AppView extends FrameView {
 			protected Object doInBackground() throws Exception {
 				CrawlerConsole.print("Spuštěn crawler", true);
 				try {
-					DbConnector dbConnector = new DbConnector(new ConfigLoader());
+					DbConnector dbConnector = new DbConnector(preferences);
 					SimpleCrawler crawler = new SimpleCrawler(dbConnector);
 					if (crawlerQueueModel.isEmpty()) {
 						displayFlashMessage("CHYBA: žádné url ke stahování.", FlashMessageType.ERROR);
@@ -684,7 +690,7 @@ public class AppView extends FrameView {
 	public TreeMap<String, Integer> getCrawledDomains() {
 		TreeMap<String, Integer> sortedMap = new TreeMap<String, Integer>();
 		try {
-			DbConnector conn = new DbConnector(new ConfigLoader());
+			DbConnector conn = new DbConnector(preferences);
 			PageRepository pageRepository = new PageRepository(conn.getConnection());
 
 			HashMap<String, Integer> map = pageRepository.getCountOfRecordsPerHost();
@@ -692,8 +698,6 @@ public class AppView extends FrameView {
 			sortedMap = new TreeMap(comparator);
 			sortedMap.putAll(map);
 
-		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);
 		} catch (CouchDbConnectionException ex) {
 			displayFlashMessage("Nepodařilo se připojit k databázi.", FlashMessageType.ERROR);
 		}
@@ -703,26 +707,19 @@ public class AppView extends FrameView {
 	/**
 	 * Load values from properties and set them into setting fields
 	 */
-	public void loadSettingsFromProperties() {
-		ConfigLoader configLoader = new ConfigLoader();
-		try {
-			settingProperties = configLoader.load();
-			jtfSettingsHost.setText(settingProperties.getProperty("db_host"));
-			jtfSettingsPort.setText(settingProperties.getProperty("db_port"));
-			jtfSettingsDatabase.setText(settingProperties.getProperty("db_database"));
-			jtfSettingsUsername.setText(settingProperties.getProperty("db_username"));
-			jpfSettingsPassword.setText(settingProperties.getProperty("db_password"));
-		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se načíst nastavení.", FlashMessageType.ERROR);
-		}
-
+	public void loadSettings() {	
+		jtfSettingsHost.setText(preferences.get("db_host", DefaultDbParams.HOST.toString()));
+		jtfSettingsPort.setText(preferences.get("db_port", DefaultDbParams.PORT.toString()));
+		jtfSettingsDatabase.setText(preferences.get("db_database", DefaultDbParams.DATABASE.toString()));
+		jtfSettingsUsername.setText(preferences.get("db_username", DefaultDbParams.USERNAME.toString()));
+		jpfSettingsPassword.setText(preferences.get("db_password", DefaultDbParams.PASSWORD.toString()));
 	}
 
 	/**
 	 *  Get values from setting fields and save them into properties
 	 */
 	@Action
-	public void saveSettingsToProperties() {
+	public void saveSettings() {
 		clearFlashMessages();
 		if (jtfSettingsHost.getText().equals("") || jtfSettingsPort.getText().equals("") || jtfSettingsDatabase.getText().equals("")) {
 			displayFlashMessage("Nejsou nastaveny některé povinné údaje, budou použity výchozí!", FlashMessageType.INFO);
@@ -743,20 +740,13 @@ public class AppView extends FrameView {
 		jtfSettingsPort.setText(port);
 		jtfSettingsDatabase.setText(database);
 
-		settingProperties.put("db_host", host);
-		settingProperties.put("db_port", port);
-		settingProperties.put("db_database", database);
+		preferences.put("db_host", host);
+		preferences.put("db_port", port);
+		preferences.put("db_database", database);
+		preferences.put("db_username", jtfSettingsUsername.getText());
+		preferences.put("db_password", String.valueOf(jpfSettingsPassword.getPassword()));
 
-		settingProperties.put("db_username", jtfSettingsUsername.getText());
-		settingProperties.put("db_password", String.valueOf(jpfSettingsPassword.getPassword()));
-
-		ConfigSaver configSaver = new ConfigSaver();
-		try {
-			configSaver.save(settingProperties);
-			displayFlashMessage("Nastavení bylo uloženo.", FlashMessageType.SUCCESS);
-		} catch (IOException ex) {
-			displayFlashMessage("Nepodařilo se uložit nastavení.", FlashMessageType.ERROR);
-		}
+		displayFlashMessage("Nastavení bylo uloženo.", FlashMessageType.SUCCESS);
 	}
 
 	/**
@@ -810,13 +800,8 @@ public class AppView extends FrameView {
 		return jpHeaderPanel;
 	}
 
-	/**
-	 * get settingProperties
-	 *
-	 * @return
-	 */
-	public Properties getSettingProperties() {
-		return settingProperties;
+	public Preferences getPreferences() {
+		return preferences;
 	}
 
 	/** This method is called from within the constructor to
@@ -1248,7 +1233,7 @@ public class AppView extends FrameView {
                                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 );
 
-                jButton1.setAction(actionMap.get("saveSettingsToProperties")); // NOI18N
+                jButton1.setAction(actionMap.get("saveSettings")); // NOI18N
                 jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
                 jButton1.setName("jButton1"); // NOI18N
 
@@ -1897,5 +1882,5 @@ public class AppView extends FrameView {
 	private Methods analyzerMethods;
 	private String analyzerComponents;
 	private boolean analyzerLoadConditionsLocked = false;
-	private Properties settingProperties;
+	private Preferences preferences;
 }
