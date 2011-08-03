@@ -11,6 +11,7 @@ import com.github.mefi.jkuuza.analyzer.ExtractionResolver;
 import com.github.mefi.jkuuza.analyzer.Rules;
 import com.github.mefi.jkuuza.analyzer.Methods;
 import com.github.mefi.jkuuza.analyzer.Reflector;
+import com.github.mefi.jkuuza.analyzer.gui.AnalyzerConsole;
 import com.github.mefi.jkuuza.analyzer.gui.component.JReflectorBox.JReflectorBox;
 import com.github.mefi.jkuuza.app.db.CouchDbConnectionException;
 import com.github.mefi.jkuuza.parser.ContentAnalyzer;
@@ -50,7 +51,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
@@ -67,7 +67,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
-import org.ektorp.DbAccessException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -332,7 +331,7 @@ public class AppView extends FrameView {
 				jlbAnalyzerStep.setText("Krok 1/" + analyzerStepsCount);
 				break;
 			case 2:
-				if (jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
+				if (jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("-") || jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
 					handleAnalyzerStepStatus(1);
 					actualAnalyzerStepPanel = jpAnalyzerStep1;
 					--actualAnalyzerStep;
@@ -386,6 +385,9 @@ public class AppView extends FrameView {
 	protected void runAnalyzerProcess() {
 		Case casex = createCase();
 
+		AnalyzerConsole.print("Spuštěna analýza.", true);
+		AnalyzerConsole.printNewLine();
+
 		if (!jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
 			try {
 				CaseResolver caseResolver = new CaseResolver(casex);
@@ -433,7 +435,7 @@ public class AppView extends FrameView {
 	private void initAnalyzerSampleConditions() {
 		Map<String, Case> map = AnalyzerCasesLoader.load();
 		ArrayList sampleHosts = new ArrayList();
-		sampleHosts.add("-empty-");
+		sampleHosts.add("-");
 		for (Map.Entry<String, Case> entry : map.entrySet()) {
 			sampleHosts.add(entry.getKey());
 		}
@@ -783,6 +785,15 @@ public class AppView extends FrameView {
 	}
 
 	/**
+	 * Returns instance of JTextArea for analyzer Console
+	 *
+	 * @return JTextArea
+	 */
+	public JTextArea getAnalyzerConsole() {
+		return jtaAnalyzerConsole;
+	}
+
+	/**
 	 * Returns instance of JPanel for FlashMessages
 	 *
 	 * @return JPanel
@@ -872,7 +883,7 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep1Sample = new javax.swing.JLabel();
                 jcbAnalyzerStep1DomainsToAnalyze = new javax.swing.JComboBox();
                 jLabel1 = new javax.swing.JLabel();
-                jButton2 = new javax.swing.JButton();
+                jbtAnalyzerStep1LoadDomains = new javax.swing.JButton();
                 jpAnalyzerStep2 = new javax.swing.JPanel();
                 jtaAnalyzerStep2TopDescription = new javax.swing.JTextArea();
                 jspAnalyzerStep2Top = new javax.swing.JScrollPane();
@@ -909,6 +920,11 @@ public class AppView extends FrameView {
                 jspAnalyzerStep3Preview = new javax.swing.JScrollPane();
                 jepAnalyzerStep3Preview = new javax.swing.JEditorPane();
                 jpAnalyzerStep4 = new javax.swing.JPanel();
+                jspAnalyzerStep4 = new javax.swing.JSplitPane();
+                jPanel2 = new javax.swing.JPanel();
+                jScrollPane2 = new javax.swing.JScrollPane();
+                jtaAnalyzerConsole = new javax.swing.JTextArea();
+                jPanel3 = new javax.swing.JPanel();
 
                 jpMainPanel.setName("jpMainPanel"); // NOI18N
                 jpMainPanel.setPreferredSize(new java.awt.Dimension(800, 527));
@@ -1402,15 +1418,15 @@ public class AppView extends FrameView {
                 jlbAnalyzerStep1Sample.setText(resourceMap.getString("jlbAnalyzerStep1Sample.text")); // NOI18N
                 jlbAnalyzerStep1Sample.setName("jlbAnalyzerStep1Sample"); // NOI18N
 
-                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "prázdné" }));
+                jcbAnalyzerStep1DomainsToAnalyze.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-" }));
                 jcbAnalyzerStep1DomainsToAnalyze.setName("jcbAnalyzerStep1DomainsToAnalyze"); // NOI18N
 
                 jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
                 jLabel1.setName("jLabel1"); // NOI18N
 
-                jButton2.setAction(actionMap.get("initAnalyzerDomainsToAnalyze")); // NOI18N
-                jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-                jButton2.setName("jButton2"); // NOI18N
+                jbtAnalyzerStep1LoadDomains.setAction(actionMap.get("initAnalyzerDomainsToAnalyze")); // NOI18N
+                jbtAnalyzerStep1LoadDomains.setText(resourceMap.getString("jbtAnalyzerStep1LoadDomains.text")); // NOI18N
+                jbtAnalyzerStep1LoadDomains.setName("jbtAnalyzerStep1LoadDomains"); // NOI18N
 
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep1Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep1);
                 jpAnalyzerStep1.setLayout(jpAnalyzerStep1Layout);
@@ -1419,18 +1435,18 @@ public class AppView extends FrameView {
                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                                        .add(jTextArea1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                                         .add(jpAnalyzerStep1Layout.createSequentialGroup()
                                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                                                         .add(jlbAnalyzerStep1Sample)
                                                         .add(jLabel1))
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(jcbAnalyzerStep1SampleConditions, 0, 276, Short.MAX_VALUE)
-                                                        .add(jcbAnalyzerStep1DomainsToAnalyze, 0, 276, Short.MAX_VALUE))))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jButton2)
-                                .add(25, 25, 25))
+                                                .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                                        .add(jcbAnalyzerStep1SampleConditions, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .add(jcbAnalyzerStep1DomainsToAnalyze, 0, 235, Short.MAX_VALUE))
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jbtAnalyzerStep1LoadDomains)))
+                                .addContainerGap())
                 );
                 jpAnalyzerStep1Layout.setVerticalGroup(
                         jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1439,8 +1455,8 @@ public class AppView extends FrameView {
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jcbAnalyzerStep1DomainsToAnalyze, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(jButton2)
-                                        .add(jLabel1))
+                                        .add(jLabel1)
+                                        .add(jbtAnalyzerStep1LoadDomains))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                                 .add(jpAnalyzerStep1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                         .add(jcbAnalyzerStep1SampleConditions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -1721,15 +1737,67 @@ public class AppView extends FrameView {
 
                 jpAnalyzerStep4.setName("jpAnalyzerStep4"); // NOI18N
 
+                jspAnalyzerStep4.setDividerLocation(200);
+                jspAnalyzerStep4.setDividerSize(10);
+                jspAnalyzerStep4.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+                jspAnalyzerStep4.setName("jspAnalyzerStep4"); // NOI18N
+
+                jPanel2.setName("jPanel2"); // NOI18N
+
+                jScrollPane2.setName("jScrollPane2"); // NOI18N
+
+                jtaAnalyzerConsole.setBackground(resourceMap.getColor("jtaAnalyzerConsole.background")); // NOI18N
+                jtaAnalyzerConsole.setColumns(20);
+                jtaAnalyzerConsole.setEditable(false);
+                jtaAnalyzerConsole.setFont(resourceMap.getFont("jtaAnalyzerConsole.font")); // NOI18N
+                jtaAnalyzerConsole.setForeground(resourceMap.getColor("jtaAnalyzerConsole.foreground")); // NOI18N
+                jtaAnalyzerConsole.setRows(5);
+                jtaAnalyzerConsole.setName("jtaAnalyzerConsole"); // NOI18N
+                jScrollPane2.setViewportView(jtaAnalyzerConsole);
+
+                org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+                jPanel2.setLayout(jPanel2Layout);
+                jPanel2Layout.setHorizontalGroup(
+                        jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+                );
+                jPanel2Layout.setVerticalGroup(
+                        jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                );
+
+                jspAnalyzerStep4.setTopComponent(jPanel2);
+
+                jPanel3.setName("jPanel3"); // NOI18N
+
+                org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
+                jPanel3.setLayout(jPanel3Layout);
+                jPanel3Layout.setHorizontalGroup(
+                        jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 538, Short.MAX_VALUE)
+                );
+                jPanel3Layout.setVerticalGroup(
+                        jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(0, 79, Short.MAX_VALUE)
+                );
+
+                jspAnalyzerStep4.setRightComponent(jPanel3);
+
                 org.jdesktop.layout.GroupLayout jpAnalyzerStep4Layout = new org.jdesktop.layout.GroupLayout(jpAnalyzerStep4);
                 jpAnalyzerStep4.setLayout(jpAnalyzerStep4Layout);
                 jpAnalyzerStep4Layout.setHorizontalGroup(
                         jpAnalyzerStep4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 405, Short.MAX_VALUE)
+                        .add(jpAnalyzerStep4Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jspAnalyzerStep4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+                                .addContainerGap())
                 );
                 jpAnalyzerStep4Layout.setVerticalGroup(
                         jpAnalyzerStep4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(0, 254, Short.MAX_VALUE)
+                        .add(jpAnalyzerStep4Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jspAnalyzerStep4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
+                                .addContainerGap())
                 );
 
                 setComponent(jpMainPanel);
@@ -1774,11 +1842,14 @@ public class AppView extends FrameView {
 	}//GEN-LAST:event_jcbAnalyzerStep1SampleConditionsActionPerformed
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
-        private javax.swing.JButton jButton2;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
+        private javax.swing.JPanel jPanel3;
         private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JScrollPane jScrollPane2;
         private javax.swing.JTextArea jTextArea1;
+        private javax.swing.JButton jbtAnalyzerStep1LoadDomains;
         private javax.swing.JButton jbtAnalyzerStep2RemoveLast;
         private javax.swing.JButton jbtAnalyzerStep2TopAddComponent;
         private javax.swing.JButton jbtAnalyzerStepNext;
@@ -1835,9 +1906,11 @@ public class AppView extends FrameView {
         private javax.swing.JPasswordField jpfSettingsPassword;
         private javax.swing.JScrollPane jspAnalyzerStep2Top;
         private javax.swing.JScrollPane jspAnalyzerStep3Preview;
+        private javax.swing.JSplitPane jspAnalyzerStep4;
         private javax.swing.JScrollPane jspCrawlerBodyLeft;
         private javax.swing.JScrollPane jspCrawlerConsole;
         private javax.swing.JSplitPane jsplpCrawlerConsoleSplitPane;
+        private javax.swing.JTextArea jtaAnalyzerConsole;
         private javax.swing.JTextArea jtaAnalyzerStep2TopDescription;
         private javax.swing.JEditorPane jtaAnalyzerStep3Description;
         private javax.swing.JTextArea jtaCrawlerConsole;
