@@ -453,7 +453,7 @@ public class AppView extends FrameView {
 		}
 		jcbAnalyzerStep1DomainsToAnalyze.setModel(new DefaultComboBoxModel(hosts.toArray()));
 		jcbAnalyzerStep1DomainsToAnalyze.revalidate();
-		if (hosts.size() > 0) {
+		if (hosts.size() > 1) {
 			displayFlashMessage("Domény byly načteny", FlashMessageType.INFO);
 		} else {
 			displayFlashMessage("Žádné záznamy nebyly nalezeny.", FlashMessageType.INFO);
