@@ -369,18 +369,19 @@ public class AppView extends FrameView {
 				}
 				break;
 			case 4:
+				jbtAnalyzerStepNext.setEnabled(false);
 				if (checkRequiredExtractionRulesFiledsFilled()) {
 					actualAnalyzerStepPanel = jpAnalyzerStep4;
 					jlbAnalyzerStep.setText("Probíhá analýza");
-					jbtAnalyzerStepPrev.setEnabled(false);
-					runAnalyzerProcess();
-					jbtAnalyzerStepPrev.setEnabled(true);
+
+					runAnalyzerProcess();					
 
 				} else {
 					handleAnalyzerStepStatus(3);
 					actualAnalyzerStepPanel = jpAnalyzerStep3;
 					--actualAnalyzerStep;
 				}
+				
 				break;
 			default:
 		}
@@ -408,8 +409,10 @@ public class AppView extends FrameView {
 
 					if (!jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().equals("")) {
 						try {
+							jbtAnalyzerStepPrev.setEnabled(false);
 							CaseResolver caseResolver = new CaseResolver(casex, dbConnector);
 							caseResolver.resolve(jcbAnalyzerStep1DomainsToAnalyze.getSelectedItem().toString());
+							jbtAnalyzerStepPrev.setEnabled(true);
 
 							//TODO: GONNA CATCH EM ALL!
 						} catch (NoSuchMethodException ex) {
@@ -494,6 +497,8 @@ public class AppView extends FrameView {
 		jbtAnalyzerStepNext.setEnabled(step <= analyzerStepsCount);
 		if (step == analyzerStepsCount) {
 			jbtAnalyzerStepNext.setText("Spustit extrakci");
+		} else if(step == analyzerStepsCount+1) {
+			jbtAnalyzerStepNext.setEnabled(false);
 		} else {
 			jbtAnalyzerStepNext.setText("DÁLE >");
 		}
