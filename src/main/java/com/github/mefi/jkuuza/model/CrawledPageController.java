@@ -1,5 +1,6 @@
 package com.github.mefi.jkuuza.model;
 
+import java.net.SocketTimeoutException;
 import org.ektorp.CouchDbConnector;
 
 /**
@@ -23,15 +24,19 @@ public class CrawledPageController {
 	 *
 	 * @param page
 	 */
-	public void save(Page page) {
-		if (pageRepository.contains(page.getId())) {
-			page.setRevision(pageRepository.get(page.getId()).getRevision());
-			pageRepository.update(page);
-			 
-		} else {
-			page.setId(createId(page));
-			pageRepository.add(page);
-		}		
+	public void save(Page page) throws SocketTimeoutException {
+		try {
+			if (pageRepository.contains(page.getId())) {
+				page.setRevision(pageRepository.get(page.getId()).getRevision());
+				pageRepository.update(page);
+
+			} else {
+				page.setId(createId(page));
+				pageRepository.add(page);
+			}
+		} catch (Exception ex) {
+			throw new SocketTimeoutException();
+		}
 	}
 
 
@@ -42,17 +47,22 @@ public class CrawledPageController {
 	 * @param page
 	 * @param content
 	 */
-	public void save(Page page, BodyContent content) {
+	public void save(Page page, BodyContent content) throws SocketTimeoutException {
 
 		save(page);
 		String contentId = BodyContent.createId(content.getUrl(), content.getHash());
-		
-		if (!contentRepository.contains(contentId)) {
-			content.setId(contentId);
-			contentRepository.add(content);
-		}
-	}
 
+		try {
+			if (!contentRepository.contains(contentId)) {
+				content.setId(contentId);
+				contentRepository.add(content);
+			}
+		} catch (Exception ex) {
+			throw new SocketTimeoutException();
+		}
+		
+	}
+	
 	public void delete(Page page) {
 	}
 

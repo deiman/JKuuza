@@ -7,7 +7,10 @@ import com.github.mefi.jkuuza.model.Page;
 import com.github.mefi.jkuuza.model.CrawledPageController;
 import com.github.mefi.jkuuza.parser.ContentExtractor;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.niocchi.core.Crawler;
@@ -36,8 +39,7 @@ public class DbSaveWorker extends Worker {
 	 * Saves crawled content into db
 	 * @param query
 	 */
-	public void processResource(Query query) {
-		CrawlerConsole.print("[crawled] - " + query.getOriginalURL().toString());
+	public void processResource(Query query) {		
 
 
 		if (query.getResource().getContentMimeSubType() != null) {
@@ -82,7 +84,12 @@ public class DbSaveWorker extends Worker {
 				BodyContent bodyContent = new BodyContent(page.getUrl(), bodyHtml, bodyText);
 
 				CrawledPageController controller = new CrawledPageController(connector.getConnection());
-				controller.save(page, bodyContent);
+				try {
+					controller.save(page, bodyContent);
+					CrawlerConsole.print("[crawled] - " + query.getOriginalURL().toString() + "     [" + query.getStatus() + "]");
+				} catch (SocketTimeoutException ex) {
+					CrawlerConsole.print("[error] - " + query.getOriginalURL().toString() + "     [DB RESPONSE ERROR]");
+				}
 			} else {
 				System.out.println(query.getResource().getContentMimeSubType());
 			}
@@ -117,6 +124,10 @@ public class DbSaveWorker extends Worker {
 		} 
 
 		try {
+			if (charset == null) {
+				charset = "";
+			}
+
 			html = new String(bytes, charset);
 		} catch (UnsupportedEncodingException e) {
 			// try it with default charset

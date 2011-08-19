@@ -9,6 +9,7 @@ import org.ektorp.support.CouchDbDocument;
  * @author Marek Pilecky
  */
 public class Product extends CouchDbDocument {
+	private String docType;
 
 	private String url;
 
@@ -28,9 +29,11 @@ public class Product extends CouchDbDocument {
 
 	public Product() {
 		params = new HashMap<String, String>();
+		docType = "product";
 	}
 
 	public Product(String name, String description, String price, String priceDPH, Map<String, String> params) {
+		docType = "product";
 		this.name = name;
 		this.description = description;
 		this.price = price;
@@ -100,6 +103,14 @@ public class Product extends CouchDbDocument {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getDocType() {
+		return docType;
+	}
+
+	public void setDocType(String docType) {
+		this.docType = docType;
 	}
 
 }

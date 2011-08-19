@@ -375,15 +375,96 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="441" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerResolvedQueriesCountLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerOutstandingQueriesLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerUnprocessedQueriesLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="jlbCrawlerOutstandingQueries" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="jlbCrawlerResolvedQueriesCount" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="jlbCrawlerUnprocessedQueries" alignment="0" min="-2" max="-2" attributes="1"/>
+                                      </Group>
+                                      <EmptySpace pref="302" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="231" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jlbCrawlerResolvedQueriesCount" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerOutstandingQueries" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerUnprocessedQueries" min="-2" pref="23" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jlbCrawlerResolvedQueriesCountLabel" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerOutstandingQueriesLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
+                                              <Component id="jlbCrawlerUnprocessedQueriesLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace pref="101" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
                             </DimensionLayout>
                           </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerResolvedQueriesCount">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerResolvedQueriesCount.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerResolvedQueriesCount" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerOutstandingQueries">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerOutstandingQueries.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerOutstandingQueries" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerUnprocessedQueries">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerUnprocessedQueries.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerUnprocessedQueries" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerResolvedQueriesCountLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerResolvedQueriesCountLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerResolvedQueriesCountLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerOutstandingQueriesLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerOutstandingQueriesLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerOutstandingQueriesLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jlbCrawlerUnprocessedQueriesLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="jlbCrawlerUnprocessedQueriesLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="jlbCrawlerUnprocessedQueriesLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
                         </Container>
                       </SubComponents>
                     </Container>
@@ -858,23 +939,23 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jTextArea1" alignment="0" pref="492" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jlbAnalyzerStep1Sample" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep1SampleConditions" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep1DomainsToAnalyze" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jcbAnalyzerStep1SampleConditions" max="32767" attributes="1"/>
-                              <Component id="jcbAnalyzerStep1DomainsToAnalyze" alignment="0" pref="235" max="32767" attributes="1"/>
+                              <Component id="jcbAnalyzerStep1DomainsToAnalyze" alignment="0" min="-2" pref="235" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jbtAnalyzerStep1LoadDomains" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jtaAnalyzerStep1Description" alignment="1" pref="494" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -883,30 +964,32 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="jTextArea1" min="-2" pref="38" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jtaAnalyzerStep1Description" min="-2" pref="39" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jcbAnalyzerStep1DomainsToAnalyze" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep1DomainsToAnalyze" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jbtAnalyzerStep1LoadDomains" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jcbAnalyzerStep1SampleConditions" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jlbAnalyzerStep1Sample" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jlbAnalyzerStep1SampleConditions" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="257" max="32767" attributes="0"/>
+                  <EmptySpace pref="250" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JTextArea" name="jTextArea1">
+        <Component class="javax.swing.JTextArea" name="jtaAnalyzerStep1Description">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" resourceKey="jTextArea1.text"/>
-            <Property name="name" type="java.lang.String" value="jTextArea1" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="jtaAnalyzerStep1Description.text"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="name" type="java.lang.String" value="jtaAnalyzerStep1Description" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="jcbAnalyzerStep1SampleConditions">
@@ -920,10 +1003,10 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jcbAnalyzerStep1SampleConditionsActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep1Sample">
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep1SampleConditions">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep1Sample.text"/>
-            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep1Sample" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep1SampleConditions.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep1SampleConditions" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="jcbAnalyzerStep1DomainsToAnalyze">
@@ -936,10 +1019,10 @@
             <Property name="name" type="java.lang.String" value="jcbAnalyzerStep1DomainsToAnalyze" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel1">
+        <Component class="javax.swing.JLabel" name="jlbAnalyzerStep1DomainsToAnalyze">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
-            <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep1DomainsToAnalyze.text"/>
+            <Property name="name" type="java.lang.String" value="jlbAnalyzerStep1DomainsToAnalyze" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jbtAnalyzerStep1LoadDomains">
@@ -968,7 +1051,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jbtAnalyzerStep2TopAddComponent" pref="237" max="32767" attributes="0"/>
+                          <Component id="jbtAnalyzerStep2TopAddComponent" pref="387" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jbtAnalyzerStep2RemoveLast" min="-2" pref="154" max="-2" attributes="0"/>
                       </Group>
@@ -978,7 +1061,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Component id="jtfAnalyzerStep2Url" pref="286" max="32767" attributes="0"/>
+                                  <Component id="jtfAnalyzerStep2Url" pref="436" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jlbAnalyzerStep2Preview" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -989,7 +1072,7 @@
                           <EmptySpace min="12" pref="12" max="12" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jtaAnalyzerStep2TopDescription" alignment="1" max="32767" attributes="2"/>
-                              <Component id="jspAnalyzerStep2Top" alignment="0" pref="397" max="32767" attributes="0"/>
+                              <Component id="jspAnalyzerStep2Top" alignment="0" pref="547" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -1406,7 +1489,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jspAnalyzerStep4" pref="538" max="32767" attributes="0"/>
+                  <Component id="jspAnalyzerStep4" pref="610" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -1432,9 +1515,9 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="jPanel2">
+            <Container class="javax.swing.JPanel" name="jpAnalyzerStep4Top">
               <Properties>
-                <Property name="name" type="java.lang.String" value="jPanel2" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="jpAnalyzerStep4Top" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -1445,19 +1528,19 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane2" alignment="0" pref="538" max="32767" attributes="0"/>
+                      <Component id="jspAnalyzerStep4Top" alignment="0" pref="610" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane2" alignment="0" pref="200" max="32767" attributes="0"/>
+                      <Component id="jspAnalyzerStep4Top" alignment="0" pref="200" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+                <Container class="javax.swing.JScrollPane" name="jspAnalyzerStep4Top">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="jScrollPane2" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="jspAnalyzerStep4Top" noResource="true"/>
                   </Properties>
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -1480,9 +1563,9 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel3">
+            <Container class="javax.swing.JPanel" name="jpAnalyzerStep4Bottom">
               <Properties>
-                <Property name="name" type="java.lang.String" value="jPanel3" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="jpAnalyzerStep4Bottom" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -1493,15 +1576,86 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="538" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="jlbAnalyzerStep4CountOfProcessedLabel" pref="166" max="32767" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jlbAnalyzerStep4CountOfExtractedLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="jlbAnalyzerStep4CountOfExtractedValue" alignment="0" max="32767" attributes="1"/>
+                              <Component id="jlbAnalyzerStep4CountOfProcessedValue" alignment="0" max="32767" attributes="1"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jlbAnalyzerStep4Slash" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jlbAnalyzerStep4CountOfTotal" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="390" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="79" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jlbAnalyzerStep4CountOfProcessedLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep4CountOfProcessedValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep4Slash" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep4CountOfTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jlbAnalyzerStep4CountOfExtractedLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jlbAnalyzerStep4CountOfExtractedValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="31" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4CountOfExtractedLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4CountOfExtractedLabel.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4CountOfExtractedLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4CountOfExtractedValue">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4CountOfExtractedValue.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4CountOfExtractedValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4CountOfProcessedLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4CountOfProcessedLabel.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4CountOfProcessedLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4CountOfProcessedValue">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4CountOfProcessedValue.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4CountOfProcessedValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4Slash">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4Slash.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4Slash" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jlbAnalyzerStep4CountOfTotal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jlbAnalyzerStep4CountOfTotal.text"/>
+                    <Property name="name" type="java.lang.String" value="jlbAnalyzerStep4CountOfTotal" noResource="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
             </Container>
           </SubComponents>
         </Container>

@@ -16,10 +16,8 @@ import org.niocchi.core.Worker;
  */
 public class SimpleCrawler {
 
-	int resourcesCount = 10; // number of url that can be crawled simultaneously
-	int monitorPort = 6001;
+	int resourcesCount = 30; // number of url that can be crawled simultaneously
 	String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.68 Safari/534.24";
-	String seedFile = null;
 
 	DbConnector connector;
 	TimeoutURLPool urlPool;
@@ -59,13 +57,22 @@ public class SimpleCrawler {
 		// start workers
 		worker.start();
 		CrawlerConsole.print("Crawler started.", true);
+		CrawlerConsole.printNewLine();
 
 		// start crawler
 		crawler.run(urlPool);
 
 		// wait for workers to finish
 		worker.join();
+		CrawlerConsole.printNewLine();
 		CrawlerConsole.print("Crawler finished.", true);
+
+		CrawlerConsole.print("Doba crawlování: " + this.crawler.select_total_time/60 + "vteřin");
+		CrawlerConsole.print(this.crawler.processed_count + " URL processed");
+		CrawlerConsole.print(this.crawler.status_200 + " with status 200");
+		CrawlerConsole.print(this.crawler.redirected_count + " redirections");
+		CrawlerConsole.print(this.crawler.status_other + " other status");
+		CrawlerConsole.print(this.crawler.incomplete_count + " incomplete");
 	}
 
 	public void execute(List list) throws Exception {

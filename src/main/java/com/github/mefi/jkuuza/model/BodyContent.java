@@ -23,10 +23,12 @@ public class BodyContent extends CouchDbDocument {
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	public BodyContent() {
+		this.docType = "bodyContent";
 	}
 
 	public BodyContent(String url, String bodyHtml, String bodyText) {
 
+		this.docType = "bodyContent";
 		this.hash = DigestUtils.md5Hex(bodyHtml);
 		this.url = url;
 		this.bodyHtml = bodyHtml;
