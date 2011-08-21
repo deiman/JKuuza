@@ -1043,7 +1043,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jbtAnalyzerStep2TopAddComponent" pref="387" max="32767" attributes="0"/>
+                          <Component id="jbtAnalyzerStep2TopAddComponent" pref="237" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jbtAnalyzerStep2RemoveLast" min="-2" pref="154" max="-2" attributes="0"/>
                       </Group>
@@ -1053,7 +1053,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Component id="jtfAnalyzerStep2Url" pref="436" max="32767" attributes="0"/>
+                                  <Component id="jtfAnalyzerStep2Url" pref="286" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jlbAnalyzerStep2Preview" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -1064,7 +1064,7 @@
                           <EmptySpace min="12" pref="12" max="12" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jtaAnalyzerStep2TopDescription" alignment="1" max="32767" attributes="2"/>
-                              <Component id="jspAnalyzerStep2Top" alignment="0" pref="547" max="32767" attributes="0"/>
+                              <Component id="jspAnalyzerStep2Top" alignment="0" pref="397" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -1110,7 +1110,6 @@
         </Component>
         <Container class="javax.swing.JScrollPane" name="jspAnalyzerStep2Top">
           <Properties>
-            <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
             <Property name="name" type="java.lang.String" value="jspAnalyzerStep2Top" noResource="true"/>
           </Properties>
 

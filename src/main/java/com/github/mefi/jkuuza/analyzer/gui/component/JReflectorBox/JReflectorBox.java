@@ -232,7 +232,7 @@ public class JReflectorBox extends JPanel implements ActionListener {
 	 * Creates and add to panel used components
 	 */
 	protected void initComponent() {
-		paramFields = new ArrayList<JTextField>();
+		paramFields = new ArrayList<JTextField>(10);
 		jlbParameters = new JLabel("Param:");
 		jtfExpectedValue = new JTextField(10);
 		jlbExpectedValue = new JLabel("Hodnota:");

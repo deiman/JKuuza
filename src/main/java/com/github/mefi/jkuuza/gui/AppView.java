@@ -69,6 +69,7 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Selector.SelectorParseException;
 
 /**
  * The application's main frame.
@@ -616,27 +617,32 @@ public class AppView extends FrameView {
 				ExtractionResolver extractionResolver = new ExtractionResolver(rules);
 
 				//TODO:
-				Product product = extractionResolver.resolve(doc);
+				try {
+					Product product = extractionResolver.resolve(doc);
+				
 
-				clearFlashMessages();
-				jepAnalyzerStep3Preview.setText("");
+					clearFlashMessages();
+					jepAnalyzerStep3Preview.setText("");
 
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append(stringBuilder);
+					StringBuilder stringBuilder = new StringBuilder();
+					stringBuilder.append(stringBuilder);
 
-				stringBuilder.append("<strong>Název:</strong> ").append(product.getName()).append("<br>");
-				stringBuilder.append("<strong>Popis:</strong> ").append(product.getDescription()).append("<br>");
-				stringBuilder.append("<strong>Cena:</strong> ").append(product.getPrice()).append("<br>");
-				stringBuilder.append("<strong>Cena s DPH:</strong> ").append(product.getPriceDPH()).append("<br>");
-				stringBuilder.append("<strong>Typ:</strong> ").append(product.getType()).append("<br>");
-				stringBuilder.append("<strong>Výrobce:</strong> ").append(product.getProducer()).append("<br>");
-				stringBuilder.append("<br>");
-				stringBuilder.append("<strong> --- PARAMETRY --- </strong><br>");
-				for (Map.Entry<String, String> en : product.getParams().entrySet()) {
-					stringBuilder.append("<strong>").append(en.getKey()).append("</strong>" + " - ").append(en.getValue()).append("<br>");
+					stringBuilder.append("<strong>Název:</strong> ").append(product.getName()).append("<br>");
+					stringBuilder.append("<strong>Popis:</strong> ").append(product.getDescription()).append("<br>");
+					stringBuilder.append("<strong>Cena:</strong> ").append(product.getPrice()).append("<br>");
+					stringBuilder.append("<strong>Cena s DPH:</strong> ").append(product.getPriceDPH()).append("<br>");
+					stringBuilder.append("<strong>Typ:</strong> ").append(product.getType()).append("<br>");
+					stringBuilder.append("<strong>Výrobce:</strong> ").append(product.getProducer()).append("<br>");
+					stringBuilder.append("<br>");
+					stringBuilder.append("<strong> --- PARAMETRY --- </strong><br>");
+					for (Map.Entry<String, String> en : product.getParams().entrySet()) {
+						stringBuilder.append("<strong>").append(en.getKey()).append("</strong>" + " - ").append(en.getValue()).append("<br>");
+					}
+
+					jepAnalyzerStep3Preview.setText(stringBuilder.toString());
+				} catch (SelectorParseException ex) {
+					displayFlashMessage(ex.getMessage(), FlashMessageType.ERROR);
 				}
-
-				jepAnalyzerStep3Preview.setText(stringBuilder.toString());
 
 			} catch (MalformedURLException ex) {
 				Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
@@ -686,7 +692,7 @@ public class AppView extends FrameView {
 				} catch (IllegalArgumentException ex) {
 					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 				} catch (InvocationTargetException ex) {
-					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
+					displayFlashMessage("Nastala chyba při vyhodnocování podmínky.", FlashMessageType.ERROR);
 				} catch (NoSuchMethodException ex) {
 					Logger.getLogger(AppView.class.getName()).log(Level.SEVERE, null, ex);
 				}
@@ -1181,16 +1187,11 @@ public class AppView extends FrameView {
                 jpCrawlerBodyBottomLayout.setHorizontalGroup(
                         jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jpCrawlerBodyBottomLayout.createSequentialGroup()
+                                .addContainerGap()
                                 .add(jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jpCrawlerBodyBottomLayout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .add(jlbCrawlerResolvedQueriesCountLabel))
-                                        .add(jpCrawlerBodyBottomLayout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .add(jlbCrawlerOutstandingQueriesLabel))
-                                        .add(jpCrawlerBodyBottomLayout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .add(jlbCrawlerUnprocessedQueriesLabel)))
+                                        .add(jlbCrawlerResolvedQueriesCountLabel)
+                                        .add(jlbCrawlerOutstandingQueriesLabel)
+                                        .add(jlbCrawlerUnprocessedQueriesLabel))
                                 .add(32, 32, 32)
                                 .add(jpCrawlerBodyBottomLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                                         .add(jlbCrawlerOutstandingQueries, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1216,7 +1217,7 @@ public class AppView extends FrameView {
                                         .add(jpCrawlerBodyBottomLayout.createSequentialGroup()
                                                 .add(60, 60, 60)
                                                 .add(jlbCrawlerUnprocessedQueriesLabel)))
-                                .addContainerGap(101, Short.MAX_VALUE))
+                                .addContainerGap(136, Short.MAX_VALUE))
                 );
 
                 jsplpCrawlerConsoleSplitPane.setRightComponent(jpCrawlerBodyBottom);
@@ -1603,7 +1604,6 @@ public class AppView extends FrameView {
                 jtaAnalyzerStep2TopDescription.setWrapStyleWord(true);
                 jtaAnalyzerStep2TopDescription.setName("jtaAnalyzerStep2TopDescription"); // NOI18N
 
-                jspAnalyzerStep2Top.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 jspAnalyzerStep2Top.setName("jspAnalyzerStep2Top"); // NOI18N
 
                 jpAnalyzerStep2TopMain.setBorder(null);
@@ -1640,7 +1640,7 @@ public class AppView extends FrameView {
                                 .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpAnalyzerStep2Layout.createSequentialGroup()
                                                 .addContainerGap()
-                                                .add(jbtAnalyzerStep2TopAddComponent, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                                                .add(jbtAnalyzerStep2TopAddComponent, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(jbtAnalyzerStep2RemoveLast, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 154, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jpAnalyzerStep2Layout.createSequentialGroup()
@@ -1649,7 +1649,7 @@ public class AppView extends FrameView {
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                                         .add(jpAnalyzerStep2Layout.createSequentialGroup()
-                                                                .add(jtfAnalyzerStep2Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                                                                .add(jtfAnalyzerStep2Url, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
                                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                                 .add(jlbAnalyzerStep2Preview))
                                                         .add(jtfAnalyzerStep2PreviewDescription)))
@@ -1657,7 +1657,7 @@ public class AppView extends FrameView {
                                                 .add(12, 12, 12)
                                                 .add(jpAnalyzerStep2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jtaAnalyzerStep2TopDescription)
-                                                        .add(jspAnalyzerStep2Top, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE))))
+                                                        .add(jspAnalyzerStep2Top, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE))))
                                 .addContainerGap())
                 );
                 jpAnalyzerStep2Layout.setVerticalGroup(

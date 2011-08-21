@@ -124,6 +124,9 @@ public class ContentExtractor extends ContentHelper {
 
 	
 	public String getValue(String selector) {
+		if (selector.equals("")) {
+			return "";
+		}
 		return doc.select(selector).text();
 	}
 
