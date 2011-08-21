@@ -16,13 +16,10 @@
 
 package com.github.mefi.jkuuza.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.ViewResult;
 import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 
 /**
@@ -52,6 +49,18 @@ public class BodyContentRepository extends CouchDbRepositorySupport<BodyContent>
 					.key(url);
 
 		return db.queryView(query, BodyContent.class).get(0);
+	}
+
+	@View(name = "get_total_count", map = "function(doc) { if(doc.docType == \"bodyContent\") { emit(doc.id, null) }}")
+	public int getTotalCount() {
+
+		ViewQuery query = new ViewQuery()
+					.designDocId("_design/BodyContent")
+					.viewName("get_total_count")
+					.group(true);
+		ViewResult r = db.queryView(query);
+
+		return r.getTotalRows();
 	}
 
 }

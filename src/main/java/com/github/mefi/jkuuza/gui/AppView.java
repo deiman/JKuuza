@@ -40,7 +40,10 @@ import com.github.mefi.jkuuza.model.PageRepository;
 import com.github.mefi.jkuuza.utils.ValueComparator;
 import com.github.mefi.jkuuza.data.AnalyzerCasesLoader;
 import com.github.mefi.jkuuza.model.BasicProductProperties;
+import com.github.mefi.jkuuza.model.BodyContent;
+import com.github.mefi.jkuuza.model.BodyContentRepository;
 import com.github.mefi.jkuuza.model.Product;
+import com.github.mefi.jkuuza.model.ProductRepository;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -301,6 +304,35 @@ public class AppView extends FrameView {
 							list.add(crawlerQueueModel.get(i).toString());
 						}
 						crawler.execute(list);
+
+						// invoking of index update
+						CrawlerConsole.printNewLine();
+						CrawlerConsole.print("Zahájeno přeskupení indexů.");
+						try {							
+							PageRepository pageRepository = new PageRepository(dbConnector.getConnection());
+							pageRepository.getTotalCount();							
+						} catch(Exception ex) {
+						} finally {
+							CrawlerConsole.print("Page [OK].");
+						}
+
+						try {
+							BodyContentRepository bodyContentRepository = new BodyContentRepository(dbConnector.getConnection());
+							bodyContentRepository.getTotalCount();							
+						} catch(Exception ex) {
+						} finally {
+							CrawlerConsole.print("BodyContent [OK].");
+						}
+
+						try {
+							ProductRepository productRepository = new ProductRepository(dbConnector.getConnection());
+							productRepository.getTotalCount();
+						} catch(Exception ex) {
+						} finally {
+							CrawlerConsole.print("Product [OK].");
+						}
+						CrawlerConsole.print("Přeskupení indexů dokončeno.");
+						
 					}
 				} catch (IOException ex) {
 					displayFlashMessage("Nepodařilo se načíst nastavení databáze.", FlashMessageType.ERROR);

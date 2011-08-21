@@ -78,4 +78,16 @@ public class PageRepository extends CouchDbRepositorySupport<Page> {
 		}
 		return map;
 	}
+
+	@View(name = "get_total_count", map = "function(doc) { if(doc.docType == \"page\") { emit(doc.id, null) }}")
+	public int getTotalCount() {
+
+		ViewQuery query = new ViewQuery()
+					.designDocId("_design/Page")
+					.viewName("get_total_count")
+					.group(true);
+		ViewResult r = db.queryView(query);
+
+		return r.getTotalRows();
+	}
 }

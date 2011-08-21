@@ -19,6 +19,7 @@ package com.github.mefi.jkuuza.model;
 import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
@@ -85,5 +86,17 @@ public class ProductRepository extends CouchDbRepositorySupport<Product>{
 			return db.queryView(query, Product.class).get(0);
 		}
 		return null;
+	}
+
+	@View(name = "get_total_count", map = "function(doc) { if(doc.docType == \"product\") { emit(doc.id, null) }}")
+	public int getTotalCount() {
+
+		ViewQuery query = new ViewQuery()
+					.designDocId("_design/Product")
+					.viewName("get_total_count")
+					.group(true);
+		ViewResult r = db.queryView(query);
+
+		return r.getTotalRows();
 	}
 }
